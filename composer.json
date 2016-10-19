@@ -1,0 +1,8 @@
+{
+    "name": "rouenssi/scims-backend",
+    "description": "Un CMS open-source pour les scientifiques",
+    "require": {
+        "slim/slim": "^3.5"
+    },
+    "license": "GPL-3.0"
+}
