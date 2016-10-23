@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="scims" defaultIdMethod="native" namespace="SciMS\Models">
+  <table name="user" phpName="User">
+    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+    <column name="uid" type="varchar" size="16" required="true" />
+    <column name="email" type="varchar" size="254" required="true" />
+    <column name="first_name" type="varchar" size="128" required="true" />
+    <column name="last_name" type="varchar" size="128" required="true" />
+    <column name="password" type="varchar" size="40" required="true" />
+  </table>
+</database>

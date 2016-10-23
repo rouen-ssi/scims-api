@@ -5,5 +5,17 @@
         "slim/slim": "^3.5",
         "propel/propel": "~2.0@dev"
     },
-    "license": "GPL-3.0"
+    "license": "GPL-3.0",
+    "autoload": {
+      "classmap": ["app/"]
+    },
+    "scripts": {
+      "post-install-cmd": [
+        "./propel sql:build --overwrite",
+        "./propel model:build",
+        "./propel sql:insert",
+        "./propel config:convert",
+        "php composer.phar dump-autoload"
+      ]
+    }
 }
