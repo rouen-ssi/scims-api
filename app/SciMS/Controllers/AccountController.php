@@ -15,7 +15,7 @@ class AccountController {
    * Endpoint for create an account
    * @param  ServerRequestInterface  $request  a PSR 7 Request object
    * @param  ResponseInterface       $response a PSR 7 Response object
-   * @return ServerResponseInterface           a PSR 7 Response object containing the response.
+   * @return a PSR 7 Response object containing the response.
    */
   public function create(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();

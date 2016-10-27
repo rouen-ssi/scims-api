@@ -11,6 +11,12 @@ class AuthentificationController {
 
   const TOKEN_HOURS = 24;
 
+  /**
+   * Endpoint used for user authentification
+   * @param  ServerRequestInterface $request  a PSR 7 Request object
+   * @param  ResponseInterface      $response a PSR 7 Response object
+   * @return a PSR 7 Response object containing the response.
+   */
   public function auth(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
@@ -47,6 +53,11 @@ class AuthentificationController {
 
   }
 
+  /**
+   * Generate to new token and stores it in the database for the user given
+   * @param  User   $user the concerned User.
+   * @return returns the newely generated token encoded in base64.
+   */
   private function generateAndStoreToken(User $user) {
     $token = base64_encode(openssl_random_pseudo_bytes(64));
     $user->setToken($token);
