@@ -42,7 +42,7 @@ class AccountController {
     $user->setEmail($body['email']);
     $user->setFirstName($body['first_name']);
     $user->setLastName($body['last_name']);
-    $user->setPassword(sha1($body['password']));
+    $user->setPassword(password_hash($body['password'], PASSWORD_DEFAULT));
     $user->save();
 
     return $response->withStatus(200);
