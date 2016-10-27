@@ -11,7 +11,7 @@
     },
     "scripts": {
       "post-install-cmd": [
-        "./propel sql:build --overwrite",
+        "./propel sql:build",
         "./propel model:build",
         "./propel sql:insert",
         "./propel config:convert",

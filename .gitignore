@@ -1,6 +1,6 @@
 vendor/
 sql/
-app/SciMS/
+app/SciMS/Models
 config/config.php
 
 *.sqlite
