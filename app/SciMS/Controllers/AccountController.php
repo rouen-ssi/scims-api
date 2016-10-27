@@ -2,11 +2,22 @@
 
 namespace SciMS\Controllers;
 
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 
+/**
+ * Controller managing account creations (and other in the future).
+ */
 class AccountController {
 
-  public function create($request, $response, $args) {
+  /**
+   * Endpoint for create an account
+   * @param  ServerRequestInterface  $request  a PSR 7 Request object
+   * @param  ResponseInterface       $response a PSR 7 Response object
+   * @return ServerResponseInterface           a PSR 7 Response object containing the response.
+   */
+  public function create(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
     $user = new User();
