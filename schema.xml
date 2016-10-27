@@ -6,7 +6,7 @@
     <column name="email" type="varchar" size="254" required="true" />
     <column name="first_name" type="varchar" size="128" required="true" />
     <column name="last_name" type="varchar" size="128" required="true" />
-    <column name="password" type="varchar" size="40" required="true" />
+    <column name="password" type="varchar" size="255" required="true" />
     <column name="token" type="varchar" size="255" required="false" />
     <column name="token_expiration" type="varchar" size="8" required="false" />
 
