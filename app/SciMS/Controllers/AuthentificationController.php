@@ -19,7 +19,7 @@ class AuthentificationController {
 
     if (!$user || !password_verify($body['password'], $user->getPassword())) {
       return $response->withJson(array(
-        'error' => 'INVALID_CREDENTIALS'
+        'errors' => array('INVALID_CREDENTIALS')
       ));
     }
 
