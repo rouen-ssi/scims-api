@@ -9,6 +9,12 @@ use SciMS\Models\Article;
 
 class ArticleController {
 
+  /**
+   * Create a new article.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object
+   * @param  ResponseInterface      $response a PRS-7 Response object
+   * @return ResponseInterface a PSR-7 Response object containg the URL of the new article or a list of errors.
+   */
   public function post(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
