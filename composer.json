@@ -13,9 +13,11 @@
       "post-install-cmd": [
         "./propel sql:build",
         "./propel model:build",
-        "./propel sql:insert",
         "./propel config:convert",
         "@composer dump-autoload"
+      ],
+      "create-database": [
+        "./propel sql:insert"
       ],
       "migrate": [
         "./propel diff",
