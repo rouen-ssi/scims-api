@@ -23,9 +23,10 @@ return [
             'connections' => ['scims']
         ],
         'paths' => [
-          'phpDir'     => 'app/',
-          'phpConfDir' => 'config',
-          'sqlDir'     => 'sql'
+          'phpDir'       => 'app/',
+          'phpConfDir'   => 'config',
+          'sqlDir'       => 'sql',
+          'migrationDir' => 'sql/migrations'
         ]
     ]
 ];

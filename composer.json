@@ -16,6 +16,11 @@
         "./propel sql:insert",
         "./propel config:convert",
         "@composer dump-autoload"
+      ],
+      "migrate": [
+        "./propel diff",
+        "./propel migrate",
+        "@composer dump-autoload"
       ]
     }
 }
