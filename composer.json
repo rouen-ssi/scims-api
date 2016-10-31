@@ -15,7 +15,7 @@
         "./propel model:build",
         "./propel sql:insert",
         "./propel config:convert",
-        "php composer.phar dump-autoload"
+        "@composer dump-autoload"
       ]
     }
 }
