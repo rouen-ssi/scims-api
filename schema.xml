@@ -3,7 +3,7 @@
   <table name="user" phpName="User">
     <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
     <column name="uid" type="varchar" size="16" required="true" />
-    <column name="email" type="varchar" size="254" required="true" />
+    <column name="email" type="varchar" size="254" required="true" primaryKey="true" />
     <column name="first_name" type="varchar" size="128" required="true" />
     <column name="last_name" type="varchar" size="128" required="true" />
     <column name="password" type="varchar" size="255" required="true" />
