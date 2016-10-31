@@ -12,7 +12,6 @@
     "scripts": {
       "post-install-cmd": [
         "./propel sql:build",
-        "./propel model:build",
         "./propel config:convert",
         "@composer dump-autoload"
       ],
