@@ -7,7 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 use SciMS\Models\UserQuery;
 
-class AuthentificationController {
+class SignInController {
 
   const TOKEN_HOURS = 24;
 
@@ -17,7 +17,7 @@ class AuthentificationController {
    * @param  ResponseInterface      $response a PSR 7 Response object
    * @return a PSR 7 Response object containing the response.
    */
-  public function auth(ServerRequestInterface $request, ResponseInterface $response) {
+  public function post(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
     // Verifies email address and password

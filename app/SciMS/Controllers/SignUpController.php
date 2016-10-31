@@ -9,7 +9,7 @@ use SciMS\Models\User;
 /**
  * Controller managing account creations (and other in the future).
  */
-class AccountController {
+class SignUpController {
 
   /**
    * Endpoint for create an account
@@ -17,7 +17,7 @@ class AccountController {
    * @param  ResponseInterface       $response a PSR 7 Response object
    * @return a PSR 7 Response object containing the response.
    */
-  public function create(ServerRequestInterface $request, ResponseInterface $response) {
+  public function post(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
     $user = new User();
