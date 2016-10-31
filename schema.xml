@@ -24,6 +24,7 @@
     <column name="user_id" type="integer" required="true" />
     <column name="title" type="varchar" size="128" required="true" />
     <column name="content" type="longvarchar" required="true" />
+    <column name="publication_date" type="integer" required="true" />
 
     <foreign-key foreignTable="user">
       <reference local="user_id" foreign="id" />

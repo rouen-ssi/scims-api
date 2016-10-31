@@ -19,6 +19,7 @@ class ArticleController {
     $article->setUserId($user->getId());
     $article->setTitle($body['title']);
     $article->setContent($body['content']);
+    $article->setPublicationDate(time());
 
     if (!$article->validate()) {
       $errors = [];
