@@ -5,7 +5,7 @@ Ce dépôt est le backend du projet [SciMS](https://github.com/rouenssi-tnp/scim
 ## Installation
 
 Toute l'installation est automatisée grâce à Composer.
-Ce script installera toutes les dépendances et génerera les classes PHP et les fichiers de configuration.
+Ce script installera toutes les dépendances et générera les scripts SQL.
 ```
 php composer.phar install
 ```
