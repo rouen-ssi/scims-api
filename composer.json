@@ -22,6 +22,9 @@
         "./propel diff",
         "./propel migrate",
         "@composer dump-autoload"
+      ],
+      "start": [
+        "php -S localhost:8080 -t app/"
       ]
     }
 }
