@@ -6,8 +6,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 use SciMS\Models\Article;
+use SciMS\Models\ArticleQuery;
 
 class ArticleController {
+
+  const ARTICLES_PER_PAGE = 5;
 
   /**
    * Create a new article.
@@ -15,7 +18,7 @@ class ArticleController {
    * @param  ResponseInterface      $response a PRS-7 Response object
    * @return ResponseInterface a PSR-7 Response object containg the URL of the new article or a list of errors.
    */
-  public function post(ServerRequestInterface $request, ResponseInterface $response) {
+  public function create(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
     // Retreives the User from TokenMiddleware
@@ -43,6 +46,24 @@ class ArticleController {
     return $response->withJson(array(
       'url' => 'blabla'
     ), 200);
+  }
+
+  public function getPage(ServerRequestInterface $request, ResponseInterface $response) {
+    $page = $request->getQueryParam('page', 1);
+
+    $articles = ArticleQuery::create()->paginate($page, self::ARTICLES_PER_PAGE);
+
+    $json = [
+      'articles' => []
+    ];
+
+    foreach ($articles as $article) {
+      $json['articles'][] = $article;
+    }
+
+    return $response->withJson(json_encode($json), 200);
+
+   return $response;
   }
 
 }

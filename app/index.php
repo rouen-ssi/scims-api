@@ -11,10 +11,10 @@ $app = new \Slim\App();
 
 $app->post('/signup', 'SciMS\Controllers\SignUpController:post');
 
-$app->post('/article', 'SciMS\Controllers\ArticleController:post')
+$app->post('/article', 'SciMS\Controllers\ArticleController:create')
   ->add(new TokenMiddleware());
 
-$app->get('/articles', 'SciMS\Controllers\ArticlesController:get');
+$app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
 
 $app->group('/account', function() {
   $this->post('/create', 'SciMS\Controllers\AccountController:create');
