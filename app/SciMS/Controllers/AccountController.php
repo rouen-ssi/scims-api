@@ -5,10 +5,14 @@ namespace SciMS\Controllers;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
+use SciMS\Models\UserQuery;
 
 class AccountController {
 
+  const TOKEN_HOURS = 24;
+  const PASSWORD_MIN_LEN = 6;
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
+  const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
 
   public function changePassword(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
@@ -22,7 +26,16 @@ class AccountController {
         'errors' => [
           self::INVALID_OLD_PASSWORD
         ]
-      ]);
+      ], 400);
+    }
+
+    // Checks the password length
+    if (strlen($body['new_password']) < self::PASSWORD_MIN_LEN) {
+      return $response->withJson([
+        'errors' => [
+          self::INVALID_NEW_PASSWORD
+        ]
+      ], 400);
     }
 
     // Changes the user's password
@@ -30,6 +43,93 @@ class AccountController {
     $user->save();
 
     return $response->withStatus(200);
+  }
+
+  /**
+   * Endpoint for create an account
+   * @param  ServerRequestInterface  $request  a PSR 7 Request object
+   * @param  ResponseInterface       $response a PSR 7 Response object
+   * @return a PSR 7 Response object containing the response.
+   */
+  public function create(ServerRequestInterface $request, ResponseInterface $response) {
+    $body = $request->getParsedBody();
+
+    $user = new User();
+    $user->setUid(uniqid());
+    $user->setEmail($body['email']);
+    $user->setFirstName($body['first_name']);
+    $user->setLastName($body['last_name']);
+    $user->setPassword(password_hash($body['password'], PASSWORD_DEFAULT));
+
+    if (!$user->validate()) {
+      $errors = [];
+      foreach ($user->getValidationFailures() as $failure) {
+        $errors[] = $failure->getMessage();
+      }
+
+      return $response->withJson(array(
+        'errors' => $errors
+      ), 400);
+    }
+
+    $user->save();
+
+    return $response->withStatus(200);
+  }
+
+  /**
+   * Endpoint used for user authentification
+   * @param  ServerRequestInterface $request  a PSR 7 Request object
+   * @param  ResponseInterface      $response a PSR 7 Response object
+   * @return a PSR 7 Response object containing the response.
+   */
+  public function login(ServerRequestInterface $request, ResponseInterface $response) {
+    $body = $request->getParsedBody();
+
+    // Verifies email address and password
+    $user = UserQuery::create()->findOneByEmail($body['email']);
+
+    if (!$user || !password_verify($body['password'], $user->getPassword())) {
+      return $response->withJson(array(
+        'errors' => array('INVALID_CREDENTIALS')
+      ));
+    }
+
+    $token = $user->getToken();
+
+    if ($token) {
+      $token_expiration = new \DateTime();
+      $token_expiration->setTimestamp($user->getTokenExpiration());
+      $date_now = new \DateTime();
+      $date_diff = $date_now->diff($token_expiration);
+
+      // If the user's token is not valid anymore, regenerates it
+      if ($date_diff->h >= self::TOKEN_HOURS) {
+        $token = $this->generateAndStoreToken($user);
+      }
+    } else { // If the user does not have a token, generate it
+      $token = $this->generateAndStoreToken($user);
+    }
+
+    return $response->withJson(array(
+      'first_name' => $user->getFirstName(),
+      'last_name' => $user->getLastName(),
+      'token' => $token
+    ), 200);
+
+  }
+
+  /**
+   * Generate to new token and stores it in the database for the user given
+   * @param  User   $user the concerned User.
+   * @return returns the newely generated token encoded in base64.
+   */
+  private function generateAndStoreToken(User $user) {
+    $token = base64_encode(openssl_random_pseudo_bytes(64));
+    $user->setToken($token);
+    $user->setTokenExpiration(time());
+    $user->save();
+    return $token;
   }
 
 }
