@@ -48,6 +48,13 @@ class ArticleController {
     ), 200);
   }
 
+  /**
+   * Get articles with a specific page.
+   * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE.
+   * @param  ServerRequestInterface $request  a PSR-7 request object.
+   * @param  ResponseInterface      $response a PSR-7 response object.
+   * @return ResponseInterfaace a JSON containing all the articles.
+   */
   public function getPage(ServerRequestInterface $request, ResponseInterface $response) {
     $page = $request->getQueryParam('page', 1);
 

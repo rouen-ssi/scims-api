@@ -14,6 +14,12 @@ class AccountController {
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
 
+  /**
+   * Changes the user's password given by his token.
+   * @param  ServerRequestInterface $request  a PSR-7 request object.
+   * @param  ResponseInterface      $response a PSR-7 response object
+   * @return ResponseInterface a 200 response code if successful or an array of errors.
+   */
   public function changePassword(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
