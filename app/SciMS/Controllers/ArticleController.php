@@ -11,6 +11,7 @@ use SciMS\Models\ArticleQuery;
 class ArticleController {
 
   const ARTICLES_PER_PAGE = 5;
+  const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
 
   /**
    * Create a new article.
@@ -71,6 +72,29 @@ class ArticleController {
     return $response->withJson(json_encode($json), 200);
 
    return $response;
+  }
+
+  /**
+   * Returns an article given by its id.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object.
+   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  array                  $args     arguments in url.
+   * @return ResponseInterface a JSON containing the article informations.
+   */
+  public function getById(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    // Get the article given by its id
+    $article = ArticleQuery::create()->findOneById($args['id']);
+
+    // Returns an error if the article is not found
+    if (!$article) {
+      return $response->withJson([
+        'errors' => [
+          self::ARTICLE_NOT_FOUND
+        ]
+      ], 400);
+    }
+
+    return $response->withJson(json_encode($article), 200);
   }
 
 }
