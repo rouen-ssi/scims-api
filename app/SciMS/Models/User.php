@@ -14,7 +14,17 @@ use SciMS\Models\Base\User as BaseUser;
  * long as it does not already exist in the output directory.
  *
  */
-class User extends BaseUser
-{
+class User extends BaseUser implements \JsonSerializable {
+
+  public function jsonSerialize() {
+    $json = array(
+      'uid' => $this->uid,
+      'email' => $this->email,
+      'last_name' => $this->last_name,
+      'first_name' => $this->first_name
+    );
+
+    return $json;
+  }
 
 }

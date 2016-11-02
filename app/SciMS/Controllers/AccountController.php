@@ -13,6 +13,31 @@ class AccountController {
   const PASSWORD_MIN_LEN = 6;
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
+  const USER_NOT_FOUND = 'USER_NOT_FOUND';
+
+  /**
+   * Get account informations given by its uid.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object.
+   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  array                  $args     arguments passed in the route url.
+   * @return ResponseInterface a PSR-7 Response object containing a JSON with the account informations.
+   */
+  public function get(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    // Get the user given by its uid
+    $user = UserQuery::create()->findOneByUid($args['uid']);
+
+    // Returns an error if the user is not found
+    if (!$user) {
+      return $response->withJson([
+        'errors' => [
+          USER_NOT_FOUND
+        ]
+      ]);
+    }
+
+    // Returns the user's informations
+    return $response->withJson(json_encode($user), 200);
+  }
 
   /**
    * Changes the user's password given by his token.
