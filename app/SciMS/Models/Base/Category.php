@@ -16,38 +16,23 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Propel\Runtime\Validator\Constraints\Unique;
-use SciMS\Models\Article as ChildArticle;
-use SciMS\Models\ArticleQuery as ChildArticleQuery;
-use SciMS\Models\User as ChildUser;
-use SciMS\Models\UserQuery as ChildUserQuery;
-use SciMS\Models\Map\ArticleTableMap;
-use SciMS\Models\Map\UserTableMap;
-use Symfony\Component\Translation\IdentityTranslator;
-use Symfony\Component\Validator\ConstraintValidatorFactory;
-use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Context\ExecutionContextFactory;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
-use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
-use Symfony\Component\Validator\Mapping\Loader\StaticMethodLoader;
-use Symfony\Component\Validator\Validator\RecursiveValidator;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use SciMS\Models\Category as ChildCategory;
+use SciMS\Models\CategoryQuery as ChildCategoryQuery;
+use SciMS\Models\Map\CategoryTableMap;
 
 /**
- * Base class that represents a row from the 'user' table.
+ * Base class that represents a row from the 'category' table.
  *
  *
  *
  * @package    propel.generator.SciMS.Models.Base
  */
-abstract class User implements ActiveRecordInterface
+abstract class Category implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\SciMS\\Models\\Map\\UserTableMap';
+    const TABLE_MAP = '\\SciMS\\Models\\Map\\CategoryTableMap';
 
 
     /**
@@ -84,59 +69,29 @@ abstract class User implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the uid field.
+     * The value for the name field.
      *
      * @var        string
      */
-    protected $uid;
+    protected $name;
 
     /**
-     * The value for the email field.
-     *
-     * @var        string
-     */
-    protected $email;
-
-    /**
-     * The value for the first_name field.
-     *
-     * @var        string
-     */
-    protected $first_name;
-
-    /**
-     * The value for the last_name field.
-     *
-     * @var        string
-     */
-    protected $last_name;
-
-    /**
-     * The value for the password field.
-     *
-     * @var        string
-     */
-    protected $password;
-
-    /**
-     * The value for the token field.
-     *
-     * @var        string
-     */
-    protected $token;
-
-    /**
-     * The value for the token_expiration field.
+     * The value for the parent_category_id field.
      *
      * @var        int
      */
-    protected $token_expiration;
+    protected $parent_category_id;
 
     /**
-     * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
+     * @var        ChildCategory
      */
-    protected $collArticles;
-    protected $collArticlesPartial;
+    protected $aparentCategory;
+
+    /**
+     * @var        ObjectCollection|ChildCategory[] Collection to store aggregation of ChildCategory objects.
+     */
+    protected $collCategoriesRelatedById;
+    protected $collCategoriesRelatedByIdPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -146,31 +101,14 @@ abstract class User implements ActiveRecordInterface
      */
     protected $alreadyInSave = false;
 
-    // validate behavior
-
-    /**
-     * Flag to prevent endless validation loop, if this object is referenced
-     * by another object which falls in this transaction.
-     * @var        boolean
-     */
-    protected $alreadyInValidation = false;
-
-    /**
-     * ConstraintViolationList object
-     *
-     * @see     http://api.symfony.com/2.0/Symfony/Component/Validator/ConstraintViolationList.html
-     * @var     ConstraintViolationList
-     */
-    protected $validationFailures;
-
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildArticle[]
+     * @var ObjectCollection|ChildCategory[]
      */
-    protected $articlesScheduledForDeletion = null;
+    protected $categoriesRelatedByIdScheduledForDeletion = null;
 
     /**
-     * Initializes internal state of SciMS\Models\Base\User object.
+     * Initializes internal state of SciMS\Models\Base\Category object.
      */
     public function __construct()
     {
@@ -265,9 +203,9 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>User</code> instance.  If
-     * <code>obj</code> is an instance of <code>User</code>, delegates to
-     * <code>equals(User)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>Category</code> instance.  If
+     * <code>obj</code> is an instance of <code>Category</code>, delegates to
+     * <code>equals(Category)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -333,7 +271,7 @@ abstract class User implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|User The current object, for fluid interface
+     * @return $this|Category The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -405,80 +343,30 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Get the [uid] column value.
+     * Get the [name] column value.
      *
      * @return string
      */
-    public function getUid()
+    public function getName()
     {
-        return $this->uid;
+        return $this->name;
     }
 
     /**
-     * Get the [email] column value.
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Get the [first_name] column value.
-     *
-     * @return string
-     */
-    public function getFirstName()
-    {
-        return $this->first_name;
-    }
-
-    /**
-     * Get the [last_name] column value.
-     *
-     * @return string
-     */
-    public function getLastName()
-    {
-        return $this->last_name;
-    }
-
-    /**
-     * Get the [password] column value.
-     *
-     * @return string
-     */
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    /**
-     * Get the [token] column value.
-     *
-     * @return string
-     */
-    public function getToken()
-    {
-        return $this->token;
-    }
-
-    /**
-     * Get the [token_expiration] column value.
+     * Get the [parent_category_id] column value.
      *
      * @return int
      */
-    public function getTokenExpiration()
+    public function getParentCategoryId()
     {
-        return $this->token_expiration;
+        return $this->parent_category_id;
     }
 
     /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -488,151 +376,55 @@ abstract class User implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[UserTableMap::COL_ID] = true;
+            $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [uid] column.
+     * Set the value of [name] column.
      *
      * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
      */
-    public function setUid($v)
+    public function setName($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->uid !== $v) {
-            $this->uid = $v;
-            $this->modifiedColumns[UserTableMap::COL_UID] = true;
+        if ($this->name !== $v) {
+            $this->name = $v;
+            $this->modifiedColumns[CategoryTableMap::COL_NAME] = true;
         }
 
         return $this;
-    } // setUid()
+    } // setName()
 
     /**
-     * Set the value of [email] column.
-     *
-     * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
-     */
-    public function setEmail($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->email !== $v) {
-            $this->email = $v;
-            $this->modifiedColumns[UserTableMap::COL_EMAIL] = true;
-        }
-
-        return $this;
-    } // setEmail()
-
-    /**
-     * Set the value of [first_name] column.
-     *
-     * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
-     */
-    public function setFirstName($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->first_name !== $v) {
-            $this->first_name = $v;
-            $this->modifiedColumns[UserTableMap::COL_FIRST_NAME] = true;
-        }
-
-        return $this;
-    } // setFirstName()
-
-    /**
-     * Set the value of [last_name] column.
-     *
-     * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
-     */
-    public function setLastName($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->last_name !== $v) {
-            $this->last_name = $v;
-            $this->modifiedColumns[UserTableMap::COL_LAST_NAME] = true;
-        }
-
-        return $this;
-    } // setLastName()
-
-    /**
-     * Set the value of [password] column.
-     *
-     * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
-     */
-    public function setPassword($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->password !== $v) {
-            $this->password = $v;
-            $this->modifiedColumns[UserTableMap::COL_PASSWORD] = true;
-        }
-
-        return $this;
-    } // setPassword()
-
-    /**
-     * Set the value of [token] column.
-     *
-     * @param string $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
-     */
-    public function setToken($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->token !== $v) {
-            $this->token = $v;
-            $this->modifiedColumns[UserTableMap::COL_TOKEN] = true;
-        }
-
-        return $this;
-    } // setToken()
-
-    /**
-     * Set the value of [token_expiration] column.
+     * Set the value of [parent_category_id] column.
      *
      * @param int $v new value
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
      */
-    public function setTokenExpiration($v)
+    public function setParentCategoryId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->token_expiration !== $v) {
-            $this->token_expiration = $v;
-            $this->modifiedColumns[UserTableMap::COL_TOKEN_EXPIRATION] = true;
+        if ($this->parent_category_id !== $v) {
+            $this->parent_category_id = $v;
+            $this->modifiedColumns[CategoryTableMap::COL_PARENT_CATEGORY_ID] = true;
+        }
+
+        if ($this->aparentCategory !== null && $this->aparentCategory->getId() !== $v) {
+            $this->aparentCategory = null;
         }
 
         return $this;
-    } // setTokenExpiration()
+    } // setParentCategoryId()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -670,29 +462,14 @@ abstract class User implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserTableMap::translateFieldName('Uid', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->uid = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->email = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserTableMap::translateFieldName('FirstName', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->first_name = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('LastName', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->last_name = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->password = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('Token', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->token = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('TokenExpiration', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->token_expiration = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryTableMap::translateFieldName('ParentCategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->parent_category_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -701,10 +478,10 @@ abstract class User implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = UserTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = CategoryTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\User'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Category'), 0, $e);
         }
     }
 
@@ -723,6 +500,9 @@ abstract class User implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
+        if ($this->aparentCategory !== null && $this->parent_category_id !== $this->aparentCategory->getId()) {
+            $this->aparentCategory = null;
+        }
     } // ensureConsistency
 
     /**
@@ -746,13 +526,13 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildUserQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildCategoryQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -762,7 +542,8 @@ abstract class User implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->collArticles = null;
+            $this->aparentCategory = null;
+            $this->collCategoriesRelatedById = null;
 
         } // if (deep)
     }
@@ -773,8 +554,8 @@ abstract class User implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see User::setDeleted()
-     * @see User::isDeleted()
+     * @see Category::setDeleted()
+     * @see Category::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -783,11 +564,11 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildUserQuery::create()
+            $deleteQuery = ChildCategoryQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -818,7 +599,7 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -837,7 +618,7 @@ abstract class User implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                UserTableMap::addInstanceToPool($this);
+                CategoryTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -863,6 +644,18 @@ abstract class User implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
+            // We call the save method on the following object(s) if they
+            // were passed to this object by their corresponding set
+            // method.  This object relates to these object(s) by a
+            // foreign key reference.
+
+            if ($this->aparentCategory !== null) {
+                if ($this->aparentCategory->isModified() || $this->aparentCategory->isNew()) {
+                    $affectedRows += $this->aparentCategory->save($con);
+                }
+                $this->setparentCategory($this->aparentCategory);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -874,17 +667,18 @@ abstract class User implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->articlesScheduledForDeletion !== null) {
-                if (!$this->articlesScheduledForDeletion->isEmpty()) {
-                    \SciMS\Models\ArticleQuery::create()
-                        ->filterByPrimaryKeys($this->articlesScheduledForDeletion->getPrimaryKeys(false))
-                        ->delete($con);
-                    $this->articlesScheduledForDeletion = null;
+            if ($this->categoriesRelatedByIdScheduledForDeletion !== null) {
+                if (!$this->categoriesRelatedByIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->categoriesRelatedByIdScheduledForDeletion as $categoryRelatedById) {
+                        // need to save related object because we set the relation to null
+                        $categoryRelatedById->save($con);
+                    }
+                    $this->categoriesRelatedByIdScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collArticles !== null) {
-                foreach ($this->collArticles as $referrerFK) {
+            if ($this->collCategoriesRelatedById !== null) {
+                foreach ($this->collCategoriesRelatedById as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -911,39 +705,24 @@ abstract class User implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[UserTableMap::COL_ID] = true;
+        $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . UserTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(UserTableMap::COL_ID)) {
+        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(UserTableMap::COL_UID)) {
-            $modifiedColumns[':p' . $index++]  = 'uid';
+        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'name';
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
-            $modifiedColumns[':p' . $index++]  = 'email';
-        }
-        if ($this->isColumnModified(UserTableMap::COL_FIRST_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'first_name';
-        }
-        if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'last_name';
-        }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
-            $modifiedColumns[':p' . $index++]  = 'password';
-        }
-        if ($this->isColumnModified(UserTableMap::COL_TOKEN)) {
-            $modifiedColumns[':p' . $index++]  = 'token';
-        }
-        if ($this->isColumnModified(UserTableMap::COL_TOKEN_EXPIRATION)) {
-            $modifiedColumns[':p' . $index++]  = 'token_expiration';
+        if ($this->isColumnModified(CategoryTableMap::COL_PARENT_CATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'parent_category_id';
         }
 
         $sql = sprintf(
-            'INSERT INTO user (%s) VALUES (%s)',
+            'INSERT INTO category (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -955,26 +734,11 @@ abstract class User implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'uid':
-                        $stmt->bindValue($identifier, $this->uid, PDO::PARAM_STR);
+                    case 'name':
+                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
-                    case 'email':
-                        $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
-                        break;
-                    case 'first_name':
-                        $stmt->bindValue($identifier, $this->first_name, PDO::PARAM_STR);
-                        break;
-                    case 'last_name':
-                        $stmt->bindValue($identifier, $this->last_name, PDO::PARAM_STR);
-                        break;
-                    case 'password':
-                        $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
-                        break;
-                    case 'token':
-                        $stmt->bindValue($identifier, $this->token, PDO::PARAM_STR);
-                        break;
-                    case 'token_expiration':
-                        $stmt->bindValue($identifier, $this->token_expiration, PDO::PARAM_INT);
+                    case 'parent_category_id':
+                        $stmt->bindValue($identifier, $this->parent_category_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -1022,7 +786,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1042,25 +806,10 @@ abstract class User implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getUid();
+                return $this->getName();
                 break;
             case 2:
-                return $this->getEmail();
-                break;
-            case 3:
-                return $this->getFirstName();
-                break;
-            case 4:
-                return $this->getLastName();
-                break;
-            case 5:
-                return $this->getPassword();
-                break;
-            case 6:
-                return $this->getToken();
-                break;
-            case 7:
-                return $this->getTokenExpiration();
+                return $this->getParentCategoryId();
                 break;
             default:
                 return null;
@@ -1086,20 +835,15 @@ abstract class User implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['User'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['User'][$this->hashCode()] = true;
-        $keys = UserTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['Category'][$this->hashCode()] = true;
+        $keys = CategoryTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getUid(),
-            $keys[2] => $this->getEmail(),
-            $keys[3] => $this->getFirstName(),
-            $keys[4] => $this->getLastName(),
-            $keys[5] => $this->getPassword(),
-            $keys[6] => $this->getToken(),
-            $keys[7] => $this->getTokenExpiration(),
+            $keys[1] => $this->getName(),
+            $keys[2] => $this->getParentCategoryId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1107,20 +851,35 @@ abstract class User implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->collArticles) {
+            if (null !== $this->aparentCategory) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'articles';
+                        $key = 'category';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'articles';
+                        $key = 'category';
                         break;
                     default:
-                        $key = 'Articles';
+                        $key = 'parentCategory';
                 }
 
-                $result[$key] = $this->collArticles->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->aparentCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collCategoriesRelatedById) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'categories';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'categories';
+                        break;
+                    default:
+                        $key = 'Categories';
+                }
+
+                $result[$key] = $this->collCategoriesRelatedById->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1136,11 +895,11 @@ abstract class User implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\SciMS\Models\User
+     * @return $this|\SciMS\Models\Category
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1151,7 +910,7 @@ abstract class User implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\SciMS\Models\User
+     * @return $this|\SciMS\Models\Category
      */
     public function setByPosition($pos, $value)
     {
@@ -1160,25 +919,10 @@ abstract class User implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setUid($value);
+                $this->setName($value);
                 break;
             case 2:
-                $this->setEmail($value);
-                break;
-            case 3:
-                $this->setFirstName($value);
-                break;
-            case 4:
-                $this->setLastName($value);
-                break;
-            case 5:
-                $this->setPassword($value);
-                break;
-            case 6:
-                $this->setToken($value);
-                break;
-            case 7:
-                $this->setTokenExpiration($value);
+                $this->setParentCategoryId($value);
                 break;
         } // switch()
 
@@ -1204,31 +948,16 @@ abstract class User implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = UserTableMap::getFieldNames($keyType);
+        $keys = CategoryTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setUid($arr[$keys[1]]);
+            $this->setName($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setEmail($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setFirstName($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setLastName($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setPassword($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setToken($arr[$keys[6]]);
-        }
-        if (array_key_exists($keys[7], $arr)) {
-            $this->setTokenExpiration($arr[$keys[7]]);
+            $this->setParentCategoryId($arr[$keys[2]]);
         }
     }
 
@@ -1249,7 +978,7 @@ abstract class User implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\SciMS\Models\User The current object, for fluid interface
+     * @return $this|\SciMS\Models\Category The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1269,31 +998,16 @@ abstract class User implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(UserTableMap::DATABASE_NAME);
+        $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(UserTableMap::COL_ID)) {
-            $criteria->add(UserTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
+            $criteria->add(CategoryTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(UserTableMap::COL_UID)) {
-            $criteria->add(UserTableMap::COL_UID, $this->uid);
+        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
+            $criteria->add(CategoryTableMap::COL_NAME, $this->name);
         }
-        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
-            $criteria->add(UserTableMap::COL_EMAIL, $this->email);
-        }
-        if ($this->isColumnModified(UserTableMap::COL_FIRST_NAME)) {
-            $criteria->add(UserTableMap::COL_FIRST_NAME, $this->first_name);
-        }
-        if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
-            $criteria->add(UserTableMap::COL_LAST_NAME, $this->last_name);
-        }
-        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
-            $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
-        }
-        if ($this->isColumnModified(UserTableMap::COL_TOKEN)) {
-            $criteria->add(UserTableMap::COL_TOKEN, $this->token);
-        }
-        if ($this->isColumnModified(UserTableMap::COL_TOKEN_EXPIRATION)) {
-            $criteria->add(UserTableMap::COL_TOKEN_EXPIRATION, $this->token_expiration);
+        if ($this->isColumnModified(CategoryTableMap::COL_PARENT_CATEGORY_ID)) {
+            $criteria->add(CategoryTableMap::COL_PARENT_CATEGORY_ID, $this->parent_category_id);
         }
 
         return $criteria;
@@ -1311,9 +1025,8 @@ abstract class User implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildUserQuery::create();
-        $criteria->add(UserTableMap::COL_ID, $this->id);
-        $criteria->add(UserTableMap::COL_EMAIL, $this->email);
+        $criteria = ChildCategoryQuery::create();
+        $criteria->add(CategoryTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1326,8 +1039,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId() &&
-            null !== $this->getEmail();
+        $validPk = null !== $this->getId();
 
         $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
@@ -1342,29 +1054,23 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * Returns the composite primary key for this object.
-     * The array elements will be in same order as specified in XML.
-     * @return array
+     * Returns the primary key for this object (row).
+     * @return int
      */
     public function getPrimaryKey()
     {
-        $pks = array();
-        $pks[0] = $this->getId();
-        $pks[1] = $this->getEmail();
-
-        return $pks;
+        return $this->getId();
     }
 
     /**
-     * Set the [composite] primary key.
+     * Generic method to set the primary key (id column).
      *
-     * @param      array $keys The elements of the composite key (order must match the order in XML file).
+     * @param       int $key Primary key.
      * @return void
      */
-    public function setPrimaryKey($keys)
+    public function setPrimaryKey($key)
     {
-        $this->setId($keys[0]);
-        $this->setEmail($keys[1]);
+        $this->setId($key);
     }
 
     /**
@@ -1373,7 +1079,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getId()) && (null === $this->getEmail());
+        return null === $this->getId();
     }
 
     /**
@@ -1382,29 +1088,24 @@ abstract class User implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \SciMS\Models\User (or compatible) type.
+     * @param      object $copyObj An object of \SciMS\Models\Category (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUid($this->getUid());
-        $copyObj->setEmail($this->getEmail());
-        $copyObj->setFirstName($this->getFirstName());
-        $copyObj->setLastName($this->getLastName());
-        $copyObj->setPassword($this->getPassword());
-        $copyObj->setToken($this->getToken());
-        $copyObj->setTokenExpiration($this->getTokenExpiration());
+        $copyObj->setName($this->getName());
+        $copyObj->setParentCategoryId($this->getParentCategoryId());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getArticles() as $relObj) {
+            foreach ($this->getCategoriesRelatedById() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addArticle($relObj->copy($deepCopy));
+                    $copyObj->addCategoryRelatedById($relObj->copy($deepCopy));
                 }
             }
 
@@ -1425,7 +1126,7 @@ abstract class User implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \SciMS\Models\User Clone of current object.
+     * @return \SciMS\Models\Category Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1436,6 +1137,57 @@ abstract class User implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
+    }
+
+    /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param  ChildCategory $v
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setparentCategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setParentCategoryId(NULL);
+        } else {
+            $this->setParentCategoryId($v->getId());
+        }
+
+        $this->aparentCategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addCategoryRelatedById($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getparentCategory(ConnectionInterface $con = null)
+    {
+        if ($this->aparentCategory === null && ($this->parent_category_id !== null)) {
+            $this->aparentCategory = ChildCategoryQuery::create()->findPk($this->parent_category_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aparentCategory->addCategoriesRelatedById($this);
+             */
+        }
+
+        return $this->aparentCategory;
     }
 
 
@@ -1449,37 +1201,37 @@ abstract class User implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('Article' == $relationName) {
-            return $this->initArticles();
+        if ('CategoryRelatedById' == $relationName) {
+            return $this->initCategoriesRelatedById();
         }
     }
 
     /**
-     * Clears out the collArticles collection
+     * Clears out the collCategoriesRelatedById collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addArticles()
+     * @see        addCategoriesRelatedById()
      */
-    public function clearArticles()
+    public function clearCategoriesRelatedById()
     {
-        $this->collArticles = null; // important to set this to NULL since that means it is uninitialized
+        $this->collCategoriesRelatedById = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collArticles collection loaded partially.
+     * Reset is the collCategoriesRelatedById collection loaded partially.
      */
-    public function resetPartialArticles($v = true)
+    public function resetPartialCategoriesRelatedById($v = true)
     {
-        $this->collArticlesPartial = $v;
+        $this->collCategoriesRelatedByIdPartial = $v;
     }
 
     /**
-     * Initializes the collArticles collection.
+     * Initializes the collCategoriesRelatedById collection.
      *
-     * By default this just sets the collArticles collection to an empty array (like clearcollArticles());
+     * By default this just sets the collCategoriesRelatedById collection to an empty array (like clearcollCategoriesRelatedById());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1488,162 +1240,162 @@ abstract class User implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initArticles($overrideExisting = true)
+    public function initCategoriesRelatedById($overrideExisting = true)
     {
-        if (null !== $this->collArticles && !$overrideExisting) {
+        if (null !== $this->collCategoriesRelatedById && !$overrideExisting) {
             return;
         }
 
-        $collectionClassName = ArticleTableMap::getTableMap()->getCollectionClassName();
+        $collectionClassName = CategoryTableMap::getTableMap()->getCollectionClassName();
 
-        $this->collArticles = new $collectionClassName;
-        $this->collArticles->setModel('\SciMS\Models\Article');
+        $this->collCategoriesRelatedById = new $collectionClassName;
+        $this->collCategoriesRelatedById->setModel('\SciMS\Models\Category');
     }
 
     /**
-     * Gets an array of ChildArticle objects which contain a foreign key that references this object.
+     * Gets an array of ChildCategory objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildUser is new, it will return
+     * If this ChildCategory is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     * @return ObjectCollection|ChildCategory[] List of ChildCategory objects
      * @throws PropelException
      */
-    public function getArticles(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getCategoriesRelatedById(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesPartial && !$this->isNew();
-        if (null === $this->collArticles || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collArticles) {
+        $partial = $this->collCategoriesRelatedByIdPartial && !$this->isNew();
+        if (null === $this->collCategoriesRelatedById || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collCategoriesRelatedById) {
                 // return empty collection
-                $this->initArticles();
+                $this->initCategoriesRelatedById();
             } else {
-                $collArticles = ChildArticleQuery::create(null, $criteria)
-                    ->filterByuser($this)
+                $collCategoriesRelatedById = ChildCategoryQuery::create(null, $criteria)
+                    ->filterByparentCategory($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collArticlesPartial && count($collArticles)) {
-                        $this->initArticles(false);
+                    if (false !== $this->collCategoriesRelatedByIdPartial && count($collCategoriesRelatedById)) {
+                        $this->initCategoriesRelatedById(false);
 
-                        foreach ($collArticles as $obj) {
-                            if (false == $this->collArticles->contains($obj)) {
-                                $this->collArticles->append($obj);
+                        foreach ($collCategoriesRelatedById as $obj) {
+                            if (false == $this->collCategoriesRelatedById->contains($obj)) {
+                                $this->collCategoriesRelatedById->append($obj);
                             }
                         }
 
-                        $this->collArticlesPartial = true;
+                        $this->collCategoriesRelatedByIdPartial = true;
                     }
 
-                    return $collArticles;
+                    return $collCategoriesRelatedById;
                 }
 
-                if ($partial && $this->collArticles) {
-                    foreach ($this->collArticles as $obj) {
+                if ($partial && $this->collCategoriesRelatedById) {
+                    foreach ($this->collCategoriesRelatedById as $obj) {
                         if ($obj->isNew()) {
-                            $collArticles[] = $obj;
+                            $collCategoriesRelatedById[] = $obj;
                         }
                     }
                 }
 
-                $this->collArticles = $collArticles;
-                $this->collArticlesPartial = false;
+                $this->collCategoriesRelatedById = $collCategoriesRelatedById;
+                $this->collCategoriesRelatedByIdPartial = false;
             }
         }
 
-        return $this->collArticles;
+        return $this->collCategoriesRelatedById;
     }
 
     /**
-     * Sets a collection of ChildArticle objects related by a one-to-many relationship
+     * Sets a collection of ChildCategory objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $articles A Propel collection.
+     * @param      Collection $categoriesRelatedById A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildUser The current object (for fluent API support)
+     * @return $this|ChildCategory The current object (for fluent API support)
      */
-    public function setArticles(Collection $articles, ConnectionInterface $con = null)
+    public function setCategoriesRelatedById(Collection $categoriesRelatedById, ConnectionInterface $con = null)
     {
-        /** @var ChildArticle[] $articlesToDelete */
-        $articlesToDelete = $this->getArticles(new Criteria(), $con)->diff($articles);
+        /** @var ChildCategory[] $categoriesRelatedByIdToDelete */
+        $categoriesRelatedByIdToDelete = $this->getCategoriesRelatedById(new Criteria(), $con)->diff($categoriesRelatedById);
 
 
-        $this->articlesScheduledForDeletion = $articlesToDelete;
+        $this->categoriesRelatedByIdScheduledForDeletion = $categoriesRelatedByIdToDelete;
 
-        foreach ($articlesToDelete as $articleRemoved) {
-            $articleRemoved->setuser(null);
+        foreach ($categoriesRelatedByIdToDelete as $categoryRelatedByIdRemoved) {
+            $categoryRelatedByIdRemoved->setparentCategory(null);
         }
 
-        $this->collArticles = null;
-        foreach ($articles as $article) {
-            $this->addArticle($article);
+        $this->collCategoriesRelatedById = null;
+        foreach ($categoriesRelatedById as $categoryRelatedById) {
+            $this->addCategoryRelatedById($categoryRelatedById);
         }
 
-        $this->collArticles = $articles;
-        $this->collArticlesPartial = false;
+        $this->collCategoriesRelatedById = $categoriesRelatedById;
+        $this->collCategoriesRelatedByIdPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related Article objects.
+     * Returns the number of related Category objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related Article objects.
+     * @return int             Count of related Category objects.
      * @throws PropelException
      */
-    public function countArticles(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countCategoriesRelatedById(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesPartial && !$this->isNew();
-        if (null === $this->collArticles || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collArticles) {
+        $partial = $this->collCategoriesRelatedByIdPartial && !$this->isNew();
+        if (null === $this->collCategoriesRelatedById || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collCategoriesRelatedById) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getArticles());
+                return count($this->getCategoriesRelatedById());
             }
 
-            $query = ChildArticleQuery::create(null, $criteria);
+            $query = ChildCategoryQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterByuser($this)
+                ->filterByparentCategory($this)
                 ->count($con);
         }
 
-        return count($this->collArticles);
+        return count($this->collCategoriesRelatedById);
     }
 
     /**
-     * Method called to associate a ChildArticle object to this object
-     * through the ChildArticle foreign key attribute.
+     * Method called to associate a ChildCategory object to this object
+     * through the ChildCategory foreign key attribute.
      *
-     * @param  ChildArticle $l ChildArticle
-     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     * @param  ChildCategory $l ChildCategory
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
      */
-    public function addArticle(ChildArticle $l)
+    public function addCategoryRelatedById(ChildCategory $l)
     {
-        if ($this->collArticles === null) {
-            $this->initArticles();
-            $this->collArticlesPartial = true;
+        if ($this->collCategoriesRelatedById === null) {
+            $this->initCategoriesRelatedById();
+            $this->collCategoriesRelatedByIdPartial = true;
         }
 
-        if (!$this->collArticles->contains($l)) {
-            $this->doAddArticle($l);
+        if (!$this->collCategoriesRelatedById->contains($l)) {
+            $this->doAddCategoryRelatedById($l);
 
-            if ($this->articlesScheduledForDeletion and $this->articlesScheduledForDeletion->contains($l)) {
-                $this->articlesScheduledForDeletion->remove($this->articlesScheduledForDeletion->search($l));
+            if ($this->categoriesRelatedByIdScheduledForDeletion and $this->categoriesRelatedByIdScheduledForDeletion->contains($l)) {
+                $this->categoriesRelatedByIdScheduledForDeletion->remove($this->categoriesRelatedByIdScheduledForDeletion->search($l));
             }
         }
 
@@ -1651,29 +1403,29 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildArticle $article The ChildArticle object to add.
+     * @param ChildCategory $categoryRelatedById The ChildCategory object to add.
      */
-    protected function doAddArticle(ChildArticle $article)
+    protected function doAddCategoryRelatedById(ChildCategory $categoryRelatedById)
     {
-        $this->collArticles[]= $article;
-        $article->setuser($this);
+        $this->collCategoriesRelatedById[]= $categoryRelatedById;
+        $categoryRelatedById->setparentCategory($this);
     }
 
     /**
-     * @param  ChildArticle $article The ChildArticle object to remove.
-     * @return $this|ChildUser The current object (for fluent API support)
+     * @param  ChildCategory $categoryRelatedById The ChildCategory object to remove.
+     * @return $this|ChildCategory The current object (for fluent API support)
      */
-    public function removeArticle(ChildArticle $article)
+    public function removeCategoryRelatedById(ChildCategory $categoryRelatedById)
     {
-        if ($this->getArticles()->contains($article)) {
-            $pos = $this->collArticles->search($article);
-            $this->collArticles->remove($pos);
-            if (null === $this->articlesScheduledForDeletion) {
-                $this->articlesScheduledForDeletion = clone $this->collArticles;
-                $this->articlesScheduledForDeletion->clear();
+        if ($this->getCategoriesRelatedById()->contains($categoryRelatedById)) {
+            $pos = $this->collCategoriesRelatedById->search($categoryRelatedById);
+            $this->collCategoriesRelatedById->remove($pos);
+            if (null === $this->categoriesRelatedByIdScheduledForDeletion) {
+                $this->categoriesRelatedByIdScheduledForDeletion = clone $this->collCategoriesRelatedById;
+                $this->categoriesRelatedByIdScheduledForDeletion->clear();
             }
-            $this->articlesScheduledForDeletion[]= clone $article;
-            $article->setuser(null);
+            $this->categoriesRelatedByIdScheduledForDeletion[]= $categoryRelatedById;
+            $categoryRelatedById->setparentCategory(null);
         }
 
         return $this;
@@ -1686,14 +1438,12 @@ abstract class User implements ActiveRecordInterface
      */
     public function clear()
     {
+        if (null !== $this->aparentCategory) {
+            $this->aparentCategory->removeCategoryRelatedById($this);
+        }
         $this->id = null;
-        $this->uid = null;
-        $this->email = null;
-        $this->first_name = null;
-        $this->last_name = null;
-        $this->password = null;
-        $this->token = null;
-        $this->token_expiration = null;
+        $this->name = null;
+        $this->parent_category_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->resetModified();
@@ -1712,14 +1462,15 @@ abstract class User implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collArticles) {
-                foreach ($this->collArticles as $o) {
+            if ($this->collCategoriesRelatedById) {
+                foreach ($this->collCategoriesRelatedById as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
         } // if ($deep)
 
-        $this->collArticles = null;
+        $this->collCategoriesRelatedById = null;
+        $this->aparentCategory = null;
     }
 
     /**
@@ -1729,85 +1480,7 @@ abstract class User implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(UserTableMap::DEFAULT_STRING_FORMAT);
-    }
-
-    // validate behavior
-
-    /**
-     * Configure validators constraints. The Validator object uses this method
-     * to perform object validation.
-     *
-     * @param ClassMetadata $metadata
-     */
-    static public function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('email', new Email(array ('message' => 'INVALID_EMAIL',)));
-        $metadata->addPropertyConstraint('email', new NotNull(array ('message' => 'INVALID_EMAIL',)));
-        $metadata->addPropertyConstraint('email', new Unique(array ('message' => 'EMAIL_ALREADY_EXISTS',)));
-        $metadata->addPropertyConstraint('first_name', new NotNull(array ('message' => 'INVALID_FIRST_NAME',)));
-        $metadata->addPropertyConstraint('last_name', new NotNull(array ('message' => 'INVALID_LAST_NAME',)));
-        $metadata->addPropertyConstraint('password', new NotNull(array ('message' => 'INVALID_PASSWORD',)));
-    }
-
-    /**
-     * Validates the object and all objects related to this table.
-     *
-     * @see        getValidationFailures()
-     * @param      ValidatorInterface|null $validator A Validator class instance
-     * @return     boolean Whether all objects pass validation.
-     */
-    public function validate(ValidatorInterface $validator = null)
-    {
-        if (null === $validator) {
-            $validator = new RecursiveValidator(
-                new ExecutionContextFactory(new IdentityTranslator()),
-                new LazyLoadingMetadataFactory(new StaticMethodLoader()),
-                new ConstraintValidatorFactory()
-            );
-        }
-
-        $failureMap = new ConstraintViolationList();
-
-        if (!$this->alreadyInValidation) {
-            $this->alreadyInValidation = true;
-            $retval = null;
-
-
-            $retval = $validator->validate($this);
-            if (count($retval) > 0) {
-                $failureMap->addAll($retval);
-            }
-
-            if (null !== $this->collArticles) {
-                foreach ($this->collArticles as $referrerFK) {
-                    if (method_exists($referrerFK, 'validate')) {
-                        if (!$referrerFK->validate($validator)) {
-                            $failureMap->addAll($referrerFK->getValidationFailures());
-                        }
-                    }
-                }
-            }
-
-            $this->alreadyInValidation = false;
-        }
-
-        $this->validationFailures = $failureMap;
-
-        return (Boolean) (!(count($this->validationFailures) > 0));
-
-    }
-
-    /**
-     * Gets any ConstraintViolation objects that resulted from last call to validate().
-     *
-     *
-     * @return     object ConstraintViolationList
-     * @see        validate()
-     */
-    public function getValidationFailures()
-    {
-        return $this->validationFailures;
+        return (string) $this->exportTo(CategoryTableMap::DEFAULT_STRING_FORMAT);
     }
 
     /**

@@ -15,11 +15,10 @@ use SciMS\Models\Base\Article as BaseArticle;
  *
  */
 class Article extends BaseArticle implements \JsonSerializable {
-
   public function jsonSerialize() {
     $json = array(
       'id' => $this->id,
-      'user_uid' => $this->user_uid,
+      'user_uid' => $this->getUser()->getUid(),
       'title' => $this->title,
       'content' => $this->content
     );

@@ -109,7 +109,7 @@ abstract class Article implements ActiveRecordInterface
     /**
      * @var        ChildUser
      */
-    protected $aUser;
+    protected $auser;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -448,8 +448,8 @@ abstract class Article implements ActiveRecordInterface
             $this->modifiedColumns[ArticleTableMap::COL_USER_ID] = true;
         }
 
-        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
-            $this->aUser = null;
+        if ($this->auser !== null && $this->auser->getId() !== $v) {
+            $this->auser = null;
         }
 
         return $this;
@@ -595,8 +595,8 @@ abstract class Article implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
-            $this->aUser = null;
+        if ($this->auser !== null && $this->user_id !== $this->auser->getId()) {
+            $this->auser = null;
         }
     } // ensureConsistency
 
@@ -637,7 +637,7 @@ abstract class Article implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aUser = null;
+            $this->auser = null;
         } // if (deep)
     }
 
@@ -742,11 +742,11 @@ abstract class Article implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aUser !== null) {
-                if ($this->aUser->isModified() || $this->aUser->isNew()) {
-                    $affectedRows += $this->aUser->save($con);
+            if ($this->auser !== null) {
+                if ($this->auser->isModified() || $this->auser->isNew()) {
+                    $affectedRows += $this->auser->save($con);
                 }
-                $this->setUser($this->aUser);
+                $this->setuser($this->auser);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -946,7 +946,7 @@ abstract class Article implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aUser) {
+            if (null !== $this->auser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -956,10 +956,10 @@ abstract class Article implements ActiveRecordInterface
                         $key = 'user';
                         break;
                     default:
-                        $key = 'User';
+                        $key = 'user';
                 }
 
-                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->auser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1232,7 +1232,7 @@ abstract class Article implements ActiveRecordInterface
      * @return $this|\SciMS\Models\Article The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setUser(ChildUser $v = null)
+    public function setuser(ChildUser $v = null)
     {
         if ($v === null) {
             $this->setUserId(NULL);
@@ -1240,7 +1240,7 @@ abstract class Article implements ActiveRecordInterface
             $this->setUserId($v->getId());
         }
 
-        $this->aUser = $v;
+        $this->auser = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildUser object, it will not be re-added.
@@ -1260,10 +1260,10 @@ abstract class Article implements ActiveRecordInterface
      * @return ChildUser The associated ChildUser object.
      * @throws PropelException
      */
-    public function getUser(ConnectionInterface $con = null)
+    public function getuser(ConnectionInterface $con = null)
     {
-        if ($this->aUser === null && ($this->user_id !== null)) {
-            $this->aUser = ChildUserQuery::create()
+        if ($this->auser === null && ($this->user_id !== null)) {
+            $this->auser = ChildUserQuery::create()
                 ->filterByArticle($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1271,11 +1271,11 @@ abstract class Article implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aUser->addArticles($this);
+                $this->auser->addArticles($this);
              */
         }
 
-        return $this->aUser;
+        return $this->auser;
     }
 
     /**
@@ -1285,8 +1285,8 @@ abstract class Article implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aUser) {
-            $this->aUser->removeArticle($this);
+        if (null !== $this->auser) {
+            $this->auser->removeArticle($this);
         }
         $this->id = null;
         $this->user_id = null;
@@ -1313,7 +1313,7 @@ abstract class Article implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->aUser = null;
+        $this->auser = null;
     }
 
     /**
@@ -1369,9 +1369,9 @@ abstract class Article implements ActiveRecordInterface
             // foreign key reference.
 
             // If validate() method exists, the validate-behavior is configured for related object
-            if (method_exists($this->aUser, 'validate')) {
-                if (!$this->aUser->validate($validator)) {
-                    $failureMap->addAll($this->aUser->getValidationFailures());
+            if (method_exists($this->auser, 'validate')) {
+                if (!$this->auser->validate($validator)) {
+                    $failureMap->addAll($this->auser->getValidationFailures());
                 }
             }
 

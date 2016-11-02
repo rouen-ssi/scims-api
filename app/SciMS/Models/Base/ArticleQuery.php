@@ -40,15 +40,15 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildArticleQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildArticleQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
- * @method     ChildArticleQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
- * @method     ChildArticleQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
+ * @method     ChildArticleQuery leftJoinuser($relationAlias = null) Adds a LEFT JOIN clause to the query using the user relation
+ * @method     ChildArticleQuery rightJoinuser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the user relation
+ * @method     ChildArticleQuery innerJoinuser($relationAlias = null) Adds a INNER JOIN clause to the query using the user relation
  *
- * @method     ChildArticleQuery joinWithUser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the User relation
+ * @method     ChildArticleQuery joinWithuser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the user relation
  *
- * @method     ChildArticleQuery leftJoinWithUser() Adds a LEFT JOIN clause and with to the query using the User relation
- * @method     ChildArticleQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
- * @method     ChildArticleQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
+ * @method     ChildArticleQuery leftJoinWithuser() Adds a LEFT JOIN clause and with to the query using the user relation
+ * @method     ChildArticleQuery rightJoinWithuser() Adds a RIGHT JOIN clause and with to the query using the user relation
+ * @method     ChildArticleQuery innerJoinWithuser() Adds a INNER JOIN clause and with to the query using the user relation
  *
  * @method     \SciMS\Models\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -315,7 +315,7 @@ abstract class ArticleQuery extends ModelCriteria
      * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
      * </code>
      *
-     * @see       filterByUser()
+     * @see       filterByuser()
      *
      * @param     mixed $userId The value to use as filter.
      *              Use scalar values for equality.
@@ -449,7 +449,7 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return ChildArticleQuery The current query, for fluid interface
      */
-    public function filterByUser($user, $comparison = null)
+    public function filterByuser($user, $comparison = null)
     {
         if ($user instanceof \SciMS\Models\User) {
             return $this
@@ -462,22 +462,22 @@ abstract class ArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ArticleTableMap::COL_USER_ID, $user->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByUser() only accepts arguments of type \SciMS\Models\User or Collection');
+            throw new PropelException('filterByuser() only accepts arguments of type \SciMS\Models\User or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the User relation
+     * Adds a JOIN clause to the query using the user relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildArticleQuery The current query, for fluid interface
      */
-    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinuser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('User');
+        $relationMap = $tableMap->getRelation('user');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -492,14 +492,14 @@ abstract class ArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'User');
+            $this->addJoinObject($join, 'user');
         }
 
         return $this;
     }
 
     /**
-     * Use the User relation User object
+     * Use the user relation User object
      *
      * @see useQuery()
      *
@@ -509,11 +509,11 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\UserQuery A secondary query class using the current class as primary query
      */
-    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useuserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinUser($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'User', '\SciMS\Models\UserQuery');
+            ->joinuser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'user', '\SciMS\Models\UserQuery');
     }
 
     /**
