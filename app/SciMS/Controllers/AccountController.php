@@ -48,7 +48,7 @@ class AccountController {
   public function changePassword(ServerRequestInterface $request, ResponseInterface $response) {
     $body = $request->getParsedBody();
 
-    // Get the users from TokenMiddleware
+    // Gets the users from TokenMiddleware
     $user = $request->getAttribute('user');
 
     // Checks if the given old password matches
@@ -71,6 +71,39 @@ class AccountController {
 
     // Changes the user's password
     $user->setPassword(password_hash($body['new_password'], PASSWORD_DEFAULT));
+    $user->save();
+
+    return $response->withStatus(200);
+  }
+
+  /**
+   * Updates the user's information given by its token.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object.
+   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @return ResponseInterface http 200 or a json containing errors if errors.
+   */
+  public function changeInformations(ServerRequestInterface $request, ResponseInterface $response) {
+    $body = $request->getParsedBody();
+
+    // Gets the users from TokenMiddleware
+    $user = $request->getAttribute('user');
+
+    // Updates the user's informations
+    $user->setEmail($body['email']);
+    $user->setLastName($body['last_name']);
+    $user->setFirstName($body['first_name']);
+
+    if (!$user->validate()) {
+      $errors = [];
+      foreach ($user->getValidationFailures() as $failure) {
+        $errors[] = $failure->getMessage();
+      }
+
+      return $response->withJson([
+        'errors' => $errors
+      ], 400);
+    }
+
     $user->save();
 
     return $response->withStatus(200);

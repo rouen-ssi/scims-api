@@ -1743,6 +1743,7 @@ abstract class User implements ActiveRecordInterface
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('email', new Email(array ('message' => 'INVALID_EMAIL',)));
+        $metadata->addPropertyConstraint('email', new NotNull(array ('message' => 'INVALID_EMAIL',)));
         $metadata->addPropertyConstraint('email', new Unique(array ('message' => 'EMAIL_ALREADY_EXISTS',)));
         $metadata->addPropertyConstraint('first_name', new NotNull(array ('message' => 'INVALID_FIRST_NAME',)));
         $metadata->addPropertyConstraint('last_name', new NotNull(array ('message' => 'INVALID_LAST_NAME',)));

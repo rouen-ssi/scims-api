@@ -27,4 +27,7 @@ $app->group('/account', function() {
     ->add(new TokenMiddleware());
 });
 
+$app->put('/account', 'SciMS\Controllers\AccountController:changeInformations')
+  ->add(new TokenMiddleware());
+
 $app->run();

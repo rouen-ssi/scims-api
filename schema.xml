@@ -11,7 +11,8 @@
     <column name="token_expiration" type="integer" size="8" required="false" />
 
     <behavior name="validate">
-      <parameter name="email_invalid" value="{column: email, validator: Email, options: {message: INVALID_EMAIL}}" />
+      <parameter name="email_format" value="{column: email, validator: Email, options: {message: INVALID_EMAIL}}" />
+      <parameter name="email_not_null" value="{column: email, validator: NotNull, options: {message: INVALID_EMAIL}}" />
       <parameter name="email_already_exists" value="{column: email, validator: Unique, options: {message: EMAIL_ALREADY_EXISTS}}" />
       <parameter name="first_name" value="{column: first_name, validator: NotNull, options: {message: INVALID_FIRST_NAME}}" />
       <parameter name="last_name" value="{column: last_name, validator: NotNull, options: {message: INVALID_LAST_NAME}}" />
