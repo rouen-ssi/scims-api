@@ -30,7 +30,7 @@ class AccountController {
     if (!$user) {
       return $response->withJson([
         'errors' => [
-          USER_NOT_FOUND
+          self::USER_NOT_FOUND
         ]
       ]);
     }
