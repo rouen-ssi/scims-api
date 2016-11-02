@@ -19,6 +19,7 @@
         "./propel sql:insert"
       ],
       "migrate": [
+        "./propel model:build",
         "./propel diff",
         "./propel migrate",
         "@composer dump-autoload"
