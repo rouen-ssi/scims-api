@@ -9,30 +9,29 @@ use SciMS\Middlewares\TokenMiddleware;
 
 $app = new \Slim\App();
 
-$app->post('/signup', 'SciMS\Controllers\SignUpController:post');
-
-$app->post('/article', 'SciMS\Controllers\ArticleController:create')
-  ->add(new TokenMiddleware());
+$app->group('/article', function() {
+  $this->post('', 'SciMS\Controllers\ArticleController:create')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->get('/{id}', 'SciMS\Controllers\ArticleController:getById');
+  $this->delete('/{id}', 'SciMS\Controllers\ArticleController:delete')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+});
 
 $app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
 
-$app->get('/article/{id}', 'SciMS\Controllers\ArticleController:getById');
-$app->delete('/article/{id}', 'SciMS\Controllers\ArticleController:delete');
-
 $app->group('/account', function() {
   $this->get('/{uid}', 'SciMS\Controllers\AccountController:get')
-    ->add(new TokenMiddleware());
+    ->add('SciMS\Middlewares\TokenMiddleware');
   $this->post('/create', 'SciMS\Controllers\AccountController:create');
   $this->post('/login', 'SciMS\Controllers\AccountController:login');
   $this->put('/password', 'SciMS\Controllers\AccountController:changePassword')
-    ->add(new TokenMiddleware());
+    ->add('SciMS\Middlewares\TokenMiddleware');
 });
-
-$app->put('/account', 'SciMS\Controllers\AccountController:changeInformations')
-  ->add(new TokenMiddleware());
 
 $app->get('/categories', 'SciMS\Controllers\CategoryController:getCategories');
 $app->post('/category', 'SciMS\Controllers\CategoryController:addCategory')
-  ->add(new TokenMiddleware());
+  ->add('SciMS\Middlewares\TokenMiddleware');
 
 $app->run();
