@@ -17,6 +17,7 @@ $app->post('/article', 'SciMS\Controllers\ArticleController:create')
 $app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
 
 $app->get('/article/{id}', 'SciMS\Controllers\ArticleController:getById');
+$app->delete('/article/{id}', 'SciMS\Controllers\ArticleController:delete');
 
 $app->group('/account', function() {
   $this->get('/{uid}', 'SciMS\Controllers\AccountController:get')

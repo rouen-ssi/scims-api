@@ -97,4 +97,28 @@ class ArticleController {
     return $response->withJson(json_encode($article), 200);
   }
 
+  /**
+   * Endpoint to delete an article given by its id.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object.
+   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  array                  $args     an array containing url arguments.
+   * @return http 200 of ok or 400 if errors.
+   */
+  public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    // Retreives the article with its id
+    $article = ArticleQuery::create()->findPK($args['id']);
+
+    if (!$article) {
+      return $response->withJson([
+        'errors' => [
+          ARTICLE_NOT_FOUND
+        ]
+      ], 400);
+    }
+
+    $article->delete();
+
+    return $response->withJson(200);
+  }
+
 }
