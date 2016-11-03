@@ -30,4 +30,8 @@ $app->group('/account', function() {
 $app->put('/account', 'SciMS\Controllers\AccountController:changeInformations')
   ->add(new TokenMiddleware());
 
+$app->get('/categories', 'SciMS\Controllers\CategoryController:getCategories');
+$app->post('/category', 'SciMS\Controllers\CategoryController:addCategory')
+  ->add(new TokenMiddleware());
+
 $app->run();

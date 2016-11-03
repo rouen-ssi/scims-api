@@ -14,7 +14,14 @@ use SciMS\Models\Base\Category as BaseCategory;
  * long as it does not already exist in the output directory.
  *
  */
-class Category extends BaseCategory
-{
+class Category extends BaseCategory implements \JsonSerializable {
+
+  public function jsonSerialize() {
+    return [
+      'id' => $this->id,
+      'title' => $this->title,
+      'parent_categories' => $this->getParentCategory()
+    ];
+  }
 
 }

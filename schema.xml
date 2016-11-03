@@ -41,5 +41,8 @@
     <foreign-key foreignTable="category" phpName="parentCategory">
       <reference local="parent_category_id" foreign="id" />
     </foreign-key>
+    <behavior name="validate">
+      <parameter name="name_notnull" value="{column: name, validator: NotNull, options: {message: INVALID_NAME}}" />
+    </behavior>
   </table>
 </database>
