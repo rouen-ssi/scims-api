@@ -18,9 +18,16 @@ class CategoryController {
    * @return ResponseInterface a JSON containing all the categories and their subcategories.
    */
   public function getCategories(ServerRequestInterface $request, ResponseInterface $response) {
-    $categories = CategoryQuery::create()->findAll();
+    $categories = CategoryQuery::create()->find();
 
-    return $response->withJson($categories, 200);
+    $json = [
+      'categories' => []
+    ];
+    foreach ($categories as $category) {
+      $json['categories'][] = $category;
+    }
+
+    return $response->withJson($json, 200);
   }
 
   /**
@@ -61,16 +68,6 @@ class CategoryController {
     }
 
     $category->save();
-  }
-
-  /**
-   * Endpoint to add a subcategory.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
-   * @return ResponseInterface a JSON containing all the categories and their subcategories.
-   */
-  public function addSubcategory(ServerRequestInterface $request, ResponseInterface $response) {
-
   }
 
 }

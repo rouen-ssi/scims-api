@@ -19,8 +19,8 @@ class Category extends BaseCategory implements \JsonSerializable {
   public function jsonSerialize() {
     return [
       'id' => $this->id,
-      'title' => $this->title,
-      'parent_categories' => $this->getParentCategory()
+      'name' => $this->name,
+      'parent_categories' => $this->parent_category_id
     ];
   }
 
