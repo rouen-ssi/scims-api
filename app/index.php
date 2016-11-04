@@ -12,9 +12,13 @@ $app = new \Slim\App();
 $app->group('/article', function() {
   $this->post('', 'SciMS\Controllers\ArticleController:create')
     ->add('SciMS\Middlewares\TokenMiddleware');
-  $this->get('/{id}', 'SciMS\Controllers\ArticleController:getById');
-  $this->delete('/{id}', 'SciMS\Controllers\ArticleController:delete')
-    ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->group('/{id}', function() {
+    $this->get('', 'SciMS\Controllers\ArticleController:getById');
+    $this->put('', 'SciMS\Controllers\ArticleController:edit')
+      ->add('SciMS\Middlewares\TokenMiddleware');
+    $this->delete('', 'SciMS\Controllers\ArticleController:delete')
+      ->add('SciMS\Middlewares\TokenMiddleware');
+  });
 });
 
 $app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');

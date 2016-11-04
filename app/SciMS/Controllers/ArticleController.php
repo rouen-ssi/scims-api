@@ -50,6 +50,50 @@ class ArticleController {
   }
 
   /**
+   * Edits an article given by its id.
+   * @param  ServerRequestInterface $request  a PSR-7 Request object.
+   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  array                  $args     the article id passed in the url.
+   * @return ResponseInterface an http 200 or a JSON if errors.
+   */
+  public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+    // Retreives all the parameters.
+    $articleTitle = $request->getParsedBodyParam('title', NULL);
+    $articleContent = $request->getParsedBodyParam('content', NULL);
+
+    // Retreives the article by its id.
+    // Returns an error if the article is not found.
+    $article = ArticleQuery::create()->findPK($args['id']);
+    if (!$article) {
+      return $reponse->withJson([
+        'errors' => [
+          self::ARTICLE_NOT_FOUND
+        ]
+      ], 400);
+    }
+
+    // Updates the article informations.
+    $article->setTitle($articleTitle);
+    $article->setContent($articleContent);
+
+    // Validates the new data.
+    // Returns errors if the new data are not valid.
+    if (!$article->validate()) {
+      $errors = [];
+      foreach ($article->getValidationFailures() as $failure) {
+        $errors[] = $failure->getMessage();
+      }
+      return $response->withJson([
+        'errors' => $errors
+      ], 400);
+    }
+
+    // Saves the new data and send http 200.
+    $article->save();
+    return $response->withStatus(200);
+  }
+
+  /**
    * Get articles with a specific page.
    * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE.
    * @param  ServerRequestInterface $request  a PSR-7 request object.
