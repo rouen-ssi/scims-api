@@ -153,6 +153,20 @@ class CategoryTableMap extends TableMap
     1 => ':id',
   ),
 ), 'CASCADE', null, null, false);
+        $this->addRelation('ArticleRelatedByCategoryId', '\\SciMS\\Models\\Article', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':category_id',
+    1 => ':id',
+  ),
+), null, null, 'ArticlesRelatedByCategoryId', false);
+        $this->addRelation('ArticleRelatedBySubcategoryId', '\\SciMS\\Models\\Article', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':subcategory_id',
+    1 => ':id',
+  ),
+), null, null, 'ArticlesRelatedBySubcategoryId', false);
         $this->addRelation('CategoryRelatedById', '\\SciMS\\Models\\Category', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (

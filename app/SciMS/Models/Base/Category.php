@@ -16,8 +16,11 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use SciMS\Models\Article as ChildArticle;
+use SciMS\Models\ArticleQuery as ChildArticleQuery;
 use SciMS\Models\Category as ChildCategory;
 use SciMS\Models\CategoryQuery as ChildCategoryQuery;
+use SciMS\Models\Map\ArticleTableMap;
 use SciMS\Models\Map\CategoryTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
@@ -99,6 +102,18 @@ abstract class Category implements ActiveRecordInterface
     protected $aparentCategory;
 
     /**
+     * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
+     */
+    protected $collArticlesRelatedByCategoryId;
+    protected $collArticlesRelatedByCategoryIdPartial;
+
+    /**
+     * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
+     */
+    protected $collArticlesRelatedBySubcategoryId;
+    protected $collArticlesRelatedBySubcategoryIdPartial;
+
+    /**
      * @var        ObjectCollection|ChildCategory[] Collection to store aggregation of ChildCategory objects.
      */
     protected $collCategoriesRelatedById;
@@ -128,6 +143,18 @@ abstract class Category implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildArticle[]
+     */
+    protected $articlesRelatedByCategoryIdScheduledForDeletion = null;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildArticle[]
+     */
+    protected $articlesRelatedBySubcategoryIdScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -588,6 +615,10 @@ abstract class Category implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aparentCategory = null;
+            $this->collArticlesRelatedByCategoryId = null;
+
+            $this->collArticlesRelatedBySubcategoryId = null;
+
             $this->collCategoriesRelatedById = null;
 
         } // if (deep)
@@ -710,6 +741,42 @@ abstract class Category implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->articlesRelatedByCategoryIdScheduledForDeletion !== null) {
+                if (!$this->articlesRelatedByCategoryIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->articlesRelatedByCategoryIdScheduledForDeletion as $articleRelatedByCategoryId) {
+                        // need to save related object because we set the relation to null
+                        $articleRelatedByCategoryId->save($con);
+                    }
+                    $this->articlesRelatedByCategoryIdScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collArticlesRelatedByCategoryId !== null) {
+                foreach ($this->collArticlesRelatedByCategoryId as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->articlesRelatedBySubcategoryIdScheduledForDeletion !== null) {
+                if (!$this->articlesRelatedBySubcategoryIdScheduledForDeletion->isEmpty()) {
+                    foreach ($this->articlesRelatedBySubcategoryIdScheduledForDeletion as $articleRelatedBySubcategoryId) {
+                        // need to save related object because we set the relation to null
+                        $articleRelatedBySubcategoryId->save($con);
+                    }
+                    $this->articlesRelatedBySubcategoryIdScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collArticlesRelatedBySubcategoryId !== null) {
+                foreach ($this->collArticlesRelatedBySubcategoryId as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->categoriesRelatedByIdScheduledForDeletion !== null) {
@@ -909,6 +976,36 @@ abstract class Category implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aparentCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collArticlesRelatedByCategoryId) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'articles';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'articles';
+                        break;
+                    default:
+                        $key = 'Articles';
+                }
+
+                $result[$key] = $this->collArticlesRelatedByCategoryId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            }
+            if (null !== $this->collArticlesRelatedBySubcategoryId) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'articles';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'articles';
+                        break;
+                    default:
+                        $key = 'Articles';
+                }
+
+                $result[$key] = $this->collArticlesRelatedBySubcategoryId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collCategoriesRelatedById) {
 
@@ -1147,6 +1244,18 @@ abstract class Category implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getArticlesRelatedByCategoryId() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addArticleRelatedByCategoryId($relObj->copy($deepCopy));
+                }
+            }
+
+            foreach ($this->getArticlesRelatedBySubcategoryId() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addArticleRelatedBySubcategoryId($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getCategoriesRelatedById() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addCategoryRelatedById($relObj->copy($deepCopy));
@@ -1245,9 +1354,515 @@ abstract class Category implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('ArticleRelatedByCategoryId' == $relationName) {
+            return $this->initArticlesRelatedByCategoryId();
+        }
+        if ('ArticleRelatedBySubcategoryId' == $relationName) {
+            return $this->initArticlesRelatedBySubcategoryId();
+        }
         if ('CategoryRelatedById' == $relationName) {
             return $this->initCategoriesRelatedById();
         }
+    }
+
+    /**
+     * Clears out the collArticlesRelatedByCategoryId collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addArticlesRelatedByCategoryId()
+     */
+    public function clearArticlesRelatedByCategoryId()
+    {
+        $this->collArticlesRelatedByCategoryId = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collArticlesRelatedByCategoryId collection loaded partially.
+     */
+    public function resetPartialArticlesRelatedByCategoryId($v = true)
+    {
+        $this->collArticlesRelatedByCategoryIdPartial = $v;
+    }
+
+    /**
+     * Initializes the collArticlesRelatedByCategoryId collection.
+     *
+     * By default this just sets the collArticlesRelatedByCategoryId collection to an empty array (like clearcollArticlesRelatedByCategoryId());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initArticlesRelatedByCategoryId($overrideExisting = true)
+    {
+        if (null !== $this->collArticlesRelatedByCategoryId && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = ArticleTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collArticlesRelatedByCategoryId = new $collectionClassName;
+        $this->collArticlesRelatedByCategoryId->setModel('\SciMS\Models\Article');
+    }
+
+    /**
+     * Gets an array of ChildArticle objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCategory is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     * @throws PropelException
+     */
+    public function getArticlesRelatedByCategoryId(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticlesRelatedByCategoryIdPartial && !$this->isNew();
+        if (null === $this->collArticlesRelatedByCategoryId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collArticlesRelatedByCategoryId) {
+                // return empty collection
+                $this->initArticlesRelatedByCategoryId();
+            } else {
+                $collArticlesRelatedByCategoryId = ChildArticleQuery::create(null, $criteria)
+                    ->filterBycategory($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collArticlesRelatedByCategoryIdPartial && count($collArticlesRelatedByCategoryId)) {
+                        $this->initArticlesRelatedByCategoryId(false);
+
+                        foreach ($collArticlesRelatedByCategoryId as $obj) {
+                            if (false == $this->collArticlesRelatedByCategoryId->contains($obj)) {
+                                $this->collArticlesRelatedByCategoryId->append($obj);
+                            }
+                        }
+
+                        $this->collArticlesRelatedByCategoryIdPartial = true;
+                    }
+
+                    return $collArticlesRelatedByCategoryId;
+                }
+
+                if ($partial && $this->collArticlesRelatedByCategoryId) {
+                    foreach ($this->collArticlesRelatedByCategoryId as $obj) {
+                        if ($obj->isNew()) {
+                            $collArticlesRelatedByCategoryId[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collArticlesRelatedByCategoryId = $collArticlesRelatedByCategoryId;
+                $this->collArticlesRelatedByCategoryIdPartial = false;
+            }
+        }
+
+        return $this->collArticlesRelatedByCategoryId;
+    }
+
+    /**
+     * Sets a collection of ChildArticle objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $articlesRelatedByCategoryId A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function setArticlesRelatedByCategoryId(Collection $articlesRelatedByCategoryId, ConnectionInterface $con = null)
+    {
+        /** @var ChildArticle[] $articlesRelatedByCategoryIdToDelete */
+        $articlesRelatedByCategoryIdToDelete = $this->getArticlesRelatedByCategoryId(new Criteria(), $con)->diff($articlesRelatedByCategoryId);
+
+
+        $this->articlesRelatedByCategoryIdScheduledForDeletion = $articlesRelatedByCategoryIdToDelete;
+
+        foreach ($articlesRelatedByCategoryIdToDelete as $articleRelatedByCategoryIdRemoved) {
+            $articleRelatedByCategoryIdRemoved->setcategory(null);
+        }
+
+        $this->collArticlesRelatedByCategoryId = null;
+        foreach ($articlesRelatedByCategoryId as $articleRelatedByCategoryId) {
+            $this->addArticleRelatedByCategoryId($articleRelatedByCategoryId);
+        }
+
+        $this->collArticlesRelatedByCategoryId = $articlesRelatedByCategoryId;
+        $this->collArticlesRelatedByCategoryIdPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Article objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Article objects.
+     * @throws PropelException
+     */
+    public function countArticlesRelatedByCategoryId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticlesRelatedByCategoryIdPartial && !$this->isNew();
+        if (null === $this->collArticlesRelatedByCategoryId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collArticlesRelatedByCategoryId) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getArticlesRelatedByCategoryId());
+            }
+
+            $query = ChildArticleQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterBycategory($this)
+                ->count($con);
+        }
+
+        return count($this->collArticlesRelatedByCategoryId);
+    }
+
+    /**
+     * Method called to associate a ChildArticle object to this object
+     * through the ChildArticle foreign key attribute.
+     *
+     * @param  ChildArticle $l ChildArticle
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     */
+    public function addArticleRelatedByCategoryId(ChildArticle $l)
+    {
+        if ($this->collArticlesRelatedByCategoryId === null) {
+            $this->initArticlesRelatedByCategoryId();
+            $this->collArticlesRelatedByCategoryIdPartial = true;
+        }
+
+        if (!$this->collArticlesRelatedByCategoryId->contains($l)) {
+            $this->doAddArticleRelatedByCategoryId($l);
+
+            if ($this->articlesRelatedByCategoryIdScheduledForDeletion and $this->articlesRelatedByCategoryIdScheduledForDeletion->contains($l)) {
+                $this->articlesRelatedByCategoryIdScheduledForDeletion->remove($this->articlesRelatedByCategoryIdScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildArticle $articleRelatedByCategoryId The ChildArticle object to add.
+     */
+    protected function doAddArticleRelatedByCategoryId(ChildArticle $articleRelatedByCategoryId)
+    {
+        $this->collArticlesRelatedByCategoryId[]= $articleRelatedByCategoryId;
+        $articleRelatedByCategoryId->setcategory($this);
+    }
+
+    /**
+     * @param  ChildArticle $articleRelatedByCategoryId The ChildArticle object to remove.
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function removeArticleRelatedByCategoryId(ChildArticle $articleRelatedByCategoryId)
+    {
+        if ($this->getArticlesRelatedByCategoryId()->contains($articleRelatedByCategoryId)) {
+            $pos = $this->collArticlesRelatedByCategoryId->search($articleRelatedByCategoryId);
+            $this->collArticlesRelatedByCategoryId->remove($pos);
+            if (null === $this->articlesRelatedByCategoryIdScheduledForDeletion) {
+                $this->articlesRelatedByCategoryIdScheduledForDeletion = clone $this->collArticlesRelatedByCategoryId;
+                $this->articlesRelatedByCategoryIdScheduledForDeletion->clear();
+            }
+            $this->articlesRelatedByCategoryIdScheduledForDeletion[]= $articleRelatedByCategoryId;
+            $articleRelatedByCategoryId->setcategory(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Category is new, it will return
+     * an empty collection; or if this Category has previously
+     * been saved, it will retrieve related ArticlesRelatedByCategoryId from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Category.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     */
+    public function getArticlesRelatedByCategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildArticleQuery::create(null, $criteria);
+        $query->joinWith('user', $joinBehavior);
+
+        return $this->getArticlesRelatedByCategoryId($query, $con);
+    }
+
+    /**
+     * Clears out the collArticlesRelatedBySubcategoryId collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addArticlesRelatedBySubcategoryId()
+     */
+    public function clearArticlesRelatedBySubcategoryId()
+    {
+        $this->collArticlesRelatedBySubcategoryId = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collArticlesRelatedBySubcategoryId collection loaded partially.
+     */
+    public function resetPartialArticlesRelatedBySubcategoryId($v = true)
+    {
+        $this->collArticlesRelatedBySubcategoryIdPartial = $v;
+    }
+
+    /**
+     * Initializes the collArticlesRelatedBySubcategoryId collection.
+     *
+     * By default this just sets the collArticlesRelatedBySubcategoryId collection to an empty array (like clearcollArticlesRelatedBySubcategoryId());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initArticlesRelatedBySubcategoryId($overrideExisting = true)
+    {
+        if (null !== $this->collArticlesRelatedBySubcategoryId && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = ArticleTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collArticlesRelatedBySubcategoryId = new $collectionClassName;
+        $this->collArticlesRelatedBySubcategoryId->setModel('\SciMS\Models\Article');
+    }
+
+    /**
+     * Gets an array of ChildArticle objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildCategory is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     * @throws PropelException
+     */
+    public function getArticlesRelatedBySubcategoryId(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticlesRelatedBySubcategoryIdPartial && !$this->isNew();
+        if (null === $this->collArticlesRelatedBySubcategoryId || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collArticlesRelatedBySubcategoryId) {
+                // return empty collection
+                $this->initArticlesRelatedBySubcategoryId();
+            } else {
+                $collArticlesRelatedBySubcategoryId = ChildArticleQuery::create(null, $criteria)
+                    ->filterBysubcategory($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collArticlesRelatedBySubcategoryIdPartial && count($collArticlesRelatedBySubcategoryId)) {
+                        $this->initArticlesRelatedBySubcategoryId(false);
+
+                        foreach ($collArticlesRelatedBySubcategoryId as $obj) {
+                            if (false == $this->collArticlesRelatedBySubcategoryId->contains($obj)) {
+                                $this->collArticlesRelatedBySubcategoryId->append($obj);
+                            }
+                        }
+
+                        $this->collArticlesRelatedBySubcategoryIdPartial = true;
+                    }
+
+                    return $collArticlesRelatedBySubcategoryId;
+                }
+
+                if ($partial && $this->collArticlesRelatedBySubcategoryId) {
+                    foreach ($this->collArticlesRelatedBySubcategoryId as $obj) {
+                        if ($obj->isNew()) {
+                            $collArticlesRelatedBySubcategoryId[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collArticlesRelatedBySubcategoryId = $collArticlesRelatedBySubcategoryId;
+                $this->collArticlesRelatedBySubcategoryIdPartial = false;
+            }
+        }
+
+        return $this->collArticlesRelatedBySubcategoryId;
+    }
+
+    /**
+     * Sets a collection of ChildArticle objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $articlesRelatedBySubcategoryId A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function setArticlesRelatedBySubcategoryId(Collection $articlesRelatedBySubcategoryId, ConnectionInterface $con = null)
+    {
+        /** @var ChildArticle[] $articlesRelatedBySubcategoryIdToDelete */
+        $articlesRelatedBySubcategoryIdToDelete = $this->getArticlesRelatedBySubcategoryId(new Criteria(), $con)->diff($articlesRelatedBySubcategoryId);
+
+
+        $this->articlesRelatedBySubcategoryIdScheduledForDeletion = $articlesRelatedBySubcategoryIdToDelete;
+
+        foreach ($articlesRelatedBySubcategoryIdToDelete as $articleRelatedBySubcategoryIdRemoved) {
+            $articleRelatedBySubcategoryIdRemoved->setsubcategory(null);
+        }
+
+        $this->collArticlesRelatedBySubcategoryId = null;
+        foreach ($articlesRelatedBySubcategoryId as $articleRelatedBySubcategoryId) {
+            $this->addArticleRelatedBySubcategoryId($articleRelatedBySubcategoryId);
+        }
+
+        $this->collArticlesRelatedBySubcategoryId = $articlesRelatedBySubcategoryId;
+        $this->collArticlesRelatedBySubcategoryIdPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Article objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Article objects.
+     * @throws PropelException
+     */
+    public function countArticlesRelatedBySubcategoryId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticlesRelatedBySubcategoryIdPartial && !$this->isNew();
+        if (null === $this->collArticlesRelatedBySubcategoryId || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collArticlesRelatedBySubcategoryId) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getArticlesRelatedBySubcategoryId());
+            }
+
+            $query = ChildArticleQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterBysubcategory($this)
+                ->count($con);
+        }
+
+        return count($this->collArticlesRelatedBySubcategoryId);
+    }
+
+    /**
+     * Method called to associate a ChildArticle object to this object
+     * through the ChildArticle foreign key attribute.
+     *
+     * @param  ChildArticle $l ChildArticle
+     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     */
+    public function addArticleRelatedBySubcategoryId(ChildArticle $l)
+    {
+        if ($this->collArticlesRelatedBySubcategoryId === null) {
+            $this->initArticlesRelatedBySubcategoryId();
+            $this->collArticlesRelatedBySubcategoryIdPartial = true;
+        }
+
+        if (!$this->collArticlesRelatedBySubcategoryId->contains($l)) {
+            $this->doAddArticleRelatedBySubcategoryId($l);
+
+            if ($this->articlesRelatedBySubcategoryIdScheduledForDeletion and $this->articlesRelatedBySubcategoryIdScheduledForDeletion->contains($l)) {
+                $this->articlesRelatedBySubcategoryIdScheduledForDeletion->remove($this->articlesRelatedBySubcategoryIdScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildArticle $articleRelatedBySubcategoryId The ChildArticle object to add.
+     */
+    protected function doAddArticleRelatedBySubcategoryId(ChildArticle $articleRelatedBySubcategoryId)
+    {
+        $this->collArticlesRelatedBySubcategoryId[]= $articleRelatedBySubcategoryId;
+        $articleRelatedBySubcategoryId->setsubcategory($this);
+    }
+
+    /**
+     * @param  ChildArticle $articleRelatedBySubcategoryId The ChildArticle object to remove.
+     * @return $this|ChildCategory The current object (for fluent API support)
+     */
+    public function removeArticleRelatedBySubcategoryId(ChildArticle $articleRelatedBySubcategoryId)
+    {
+        if ($this->getArticlesRelatedBySubcategoryId()->contains($articleRelatedBySubcategoryId)) {
+            $pos = $this->collArticlesRelatedBySubcategoryId->search($articleRelatedBySubcategoryId);
+            $this->collArticlesRelatedBySubcategoryId->remove($pos);
+            if (null === $this->articlesRelatedBySubcategoryIdScheduledForDeletion) {
+                $this->articlesRelatedBySubcategoryIdScheduledForDeletion = clone $this->collArticlesRelatedBySubcategoryId;
+                $this->articlesRelatedBySubcategoryIdScheduledForDeletion->clear();
+            }
+            $this->articlesRelatedBySubcategoryIdScheduledForDeletion[]= $articleRelatedBySubcategoryId;
+            $articleRelatedBySubcategoryId->setsubcategory(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Category is new, it will return
+     * an empty collection; or if this Category has previously
+     * been saved, it will retrieve related ArticlesRelatedBySubcategoryId from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Category.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     */
+    public function getArticlesRelatedBySubcategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildArticleQuery::create(null, $criteria);
+        $query->joinWith('user', $joinBehavior);
+
+        return $this->getArticlesRelatedBySubcategoryId($query, $con);
     }
 
     /**
@@ -1507,6 +2122,16 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collArticlesRelatedByCategoryId) {
+                foreach ($this->collArticlesRelatedByCategoryId as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
+            if ($this->collArticlesRelatedBySubcategoryId) {
+                foreach ($this->collArticlesRelatedBySubcategoryId as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collCategoriesRelatedById) {
                 foreach ($this->collCategoriesRelatedById as $o) {
                     $o->clearAllReferences($deep);
@@ -1514,6 +2139,8 @@ abstract class Category implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collArticlesRelatedByCategoryId = null;
+        $this->collArticlesRelatedBySubcategoryId = null;
         $this->collCategoriesRelatedById = null;
         $this->aparentCategory = null;
     }
@@ -1581,6 +2208,24 @@ abstract class Category implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collArticlesRelatedByCategoryId) {
+                foreach ($this->collArticlesRelatedByCategoryId as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
+            if (null !== $this->collArticlesRelatedBySubcategoryId) {
+                foreach ($this->collArticlesRelatedBySubcategoryId as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
             if (null !== $this->collCategoriesRelatedById) {
                 foreach ($this->collCategoriesRelatedById as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {

@@ -14,22 +14,26 @@ class ArticleController {
   const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
 
   /**
-   * Create a new article.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object
-   * @param  ResponseInterface      $response a PRS-7 Response object
-   * @return ResponseInterface a PSR-7 Response object containg the URL of the new article or a list of errors.
+   * Endpoint to create an article.
+   * Returns the newly created article id or errors.
    */
   public function create(ServerRequestInterface $request, ResponseInterface $response) {
-    $body = $request->getParsedBody();
+    // Retreives the parameters.
+    $title = $request->getParsedBodyParam('title', '');
+    $content = $request->getParsedBodyParam('content', '');
+    $categoryId = $request->getParsedBodyParam('category_id', -1);
+    $subcategoryId = $request->getParsedBodyParam('subcategory_id', -1);
 
-    // Retreives the User from TokenMiddleware
+    // Retreives the User from the given token.
     $user = $request->getAttribute('user');
 
     $article = new Article();
     $article->setUserId($user->getId());
-    $article->setTitle($body['title']);
-    $article->setContent($body['content']);
+    $article->setTitle($title);
+    $article->setContent($content);
     $article->setPublicationDate(time());
+    $article->setCategoryId($categoryId);
+    $article->setSubcategoryId($subcategoryId);
 
     if (!$article->validate()) {
       $errors = [];
@@ -45,21 +49,20 @@ class ArticleController {
     $article->save();
 
     return $response->withJson(array(
-      'url' => 'blabla'
+      'id' => $article->getId()
     ), 200);
   }
 
   /**
-   * Edits an article given by its id.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
-   * @param  array                  $args     the article id passed in the url.
-   * @return ResponseInterface an http 200 or a JSON if errors.
+   * Endpoint to edit an article given by its id.
+   * Returns an http 200 status if success or errors.
    */
   public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args) {
     // Retreives all the parameters.
-    $articleTitle = $request->getParsedBodyParam('title', NULL);
-    $articleContent = $request->getParsedBodyParam('content', NULL);
+    $articleTitle = $request->getParsedBodyParam('title', '');
+    $articleContent = $request->getParsedBodyParam('content', '');
+    $categoryId = $request->getParsedBodyParam('category_id', '-1');
+    $subcategoryId = $request->getParsedBodyParam('content', '');
 
     // Retreives the article by its id.
     // Returns an error if the article is not found.
@@ -75,6 +78,8 @@ class ArticleController {
     // Updates the article informations.
     $article->setTitle($articleTitle);
     $article->setContent($articleContent);
+    $article->setCategoryId($categoryId);
+    $article->setSubcategoryId($subcategoryId);
 
     // Validates the new data.
     // Returns errors if the new data are not valid.

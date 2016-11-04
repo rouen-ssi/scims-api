@@ -25,12 +25,16 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildArticleQuery orderByContent($order = Criteria::ASC) Order by the content column
  * @method     ChildArticleQuery orderByPublicationDate($order = Criteria::ASC) Order by the publication_date column
+ * @method     ChildArticleQuery orderByCategoryId($order = Criteria::ASC) Order by the category_id column
+ * @method     ChildArticleQuery orderBySubcategoryId($order = Criteria::ASC) Order by the subcategory_id column
  *
  * @method     ChildArticleQuery groupById() Group by the id column
  * @method     ChildArticleQuery groupByUserId() Group by the user_id column
  * @method     ChildArticleQuery groupByTitle() Group by the title column
  * @method     ChildArticleQuery groupByContent() Group by the content column
  * @method     ChildArticleQuery groupByPublicationDate() Group by the publication_date column
+ * @method     ChildArticleQuery groupByCategoryId() Group by the category_id column
+ * @method     ChildArticleQuery groupBySubcategoryId() Group by the subcategory_id column
  *
  * @method     ChildArticleQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildArticleQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -50,7 +54,27 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWithuser() Adds a RIGHT JOIN clause and with to the query using the user relation
  * @method     ChildArticleQuery innerJoinWithuser() Adds a INNER JOIN clause and with to the query using the user relation
  *
- * @method     \SciMS\Models\UserQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildArticleQuery leftJoincategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the category relation
+ * @method     ChildArticleQuery rightJoincategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the category relation
+ * @method     ChildArticleQuery innerJoincategory($relationAlias = null) Adds a INNER JOIN clause to the query using the category relation
+ *
+ * @method     ChildArticleQuery joinWithcategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the category relation
+ *
+ * @method     ChildArticleQuery leftJoinWithcategory() Adds a LEFT JOIN clause and with to the query using the category relation
+ * @method     ChildArticleQuery rightJoinWithcategory() Adds a RIGHT JOIN clause and with to the query using the category relation
+ * @method     ChildArticleQuery innerJoinWithcategory() Adds a INNER JOIN clause and with to the query using the category relation
+ *
+ * @method     ChildArticleQuery leftJoinsubcategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the subcategory relation
+ * @method     ChildArticleQuery rightJoinsubcategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the subcategory relation
+ * @method     ChildArticleQuery innerJoinsubcategory($relationAlias = null) Adds a INNER JOIN clause to the query using the subcategory relation
+ *
+ * @method     ChildArticleQuery joinWithsubcategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the subcategory relation
+ *
+ * @method     ChildArticleQuery leftJoinWithsubcategory() Adds a LEFT JOIN clause and with to the query using the subcategory relation
+ * @method     ChildArticleQuery rightJoinWithsubcategory() Adds a RIGHT JOIN clause and with to the query using the subcategory relation
+ * @method     ChildArticleQuery innerJoinWithsubcategory() Adds a INNER JOIN clause and with to the query using the subcategory relation
+ *
+ * @method     \SciMS\Models\UserQuery|\SciMS\Models\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildArticle findOne(ConnectionInterface $con = null) Return the first ChildArticle matching the query
  * @method     ChildArticle findOneOrCreate(ConnectionInterface $con = null) Return the first ChildArticle matching the query, or a new ChildArticle object populated from the query conditions when no match is found
@@ -59,7 +83,9 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle findOneByUserId(int $user_id) Return the first ChildArticle filtered by the user_id column
  * @method     ChildArticle findOneByTitle(string $title) Return the first ChildArticle filtered by the title column
  * @method     ChildArticle findOneByContent(string $content) Return the first ChildArticle filtered by the content column
- * @method     ChildArticle findOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column *
+ * @method     ChildArticle findOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column
+ * @method     ChildArticle findOneByCategoryId(int $category_id) Return the first ChildArticle filtered by the category_id column
+ * @method     ChildArticle findOneBySubcategoryId(int $subcategory_id) Return the first ChildArticle filtered by the subcategory_id column *
 
  * @method     ChildArticle requirePk($key, ConnectionInterface $con = null) Return the ChildArticle by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOne(ConnectionInterface $con = null) Return the first ChildArticle matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -69,6 +95,8 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle requireOneByTitle(string $title) Return the first ChildArticle filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByContent(string $content) Return the first ChildArticle filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildArticle requireOneByCategoryId(int $category_id) Return the first ChildArticle filtered by the category_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildArticle requireOneBySubcategoryId(int $subcategory_id) Return the first ChildArticle filtered by the subcategory_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildArticle[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildArticle objects based on current ModelCriteria
  * @method     ChildArticle[]|ObjectCollection findById(int $id) Return ChildArticle objects filtered by the id column
@@ -76,6 +104,8 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle[]|ObjectCollection findByTitle(string $title) Return ChildArticle objects filtered by the title column
  * @method     ChildArticle[]|ObjectCollection findByContent(string $content) Return ChildArticle objects filtered by the content column
  * @method     ChildArticle[]|ObjectCollection findByPublicationDate(int $publication_date) Return ChildArticle objects filtered by the publication_date column
+ * @method     ChildArticle[]|ObjectCollection findByCategoryId(int $category_id) Return ChildArticle objects filtered by the category_id column
+ * @method     ChildArticle[]|ObjectCollection findBySubcategoryId(int $subcategory_id) Return ChildArticle objects filtered by the subcategory_id column
  * @method     ChildArticle[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -174,7 +204,7 @@ abstract class ArticleQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, user_id, title, content, publication_date FROM article WHERE id = :p0';
+        $sql = 'SELECT id, user_id, title, content, publication_date, category_id, subcategory_id FROM article WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -440,6 +470,92 @@ abstract class ArticleQuery extends ModelCriteria
     }
 
     /**
+     * Filter the query on the category_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByCategoryId(1234); // WHERE category_id = 1234
+     * $query->filterByCategoryId(array(12, 34)); // WHERE category_id IN (12, 34)
+     * $query->filterByCategoryId(array('min' => 12)); // WHERE category_id > 12
+     * </code>
+     *
+     * @see       filterBycategory()
+     *
+     * @param     mixed $categoryId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterByCategoryId($categoryId = null, $comparison = null)
+    {
+        if (is_array($categoryId)) {
+            $useMinMax = false;
+            if (isset($categoryId['min'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $categoryId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($categoryId['max'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $categoryId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $categoryId, $comparison);
+    }
+
+    /**
+     * Filter the query on the subcategory_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySubcategoryId(1234); // WHERE subcategory_id = 1234
+     * $query->filterBySubcategoryId(array(12, 34)); // WHERE subcategory_id IN (12, 34)
+     * $query->filterBySubcategoryId(array('min' => 12)); // WHERE subcategory_id > 12
+     * </code>
+     *
+     * @see       filterBysubcategory()
+     *
+     * @param     mixed $subcategoryId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterBySubcategoryId($subcategoryId = null, $comparison = null)
+    {
+        if (is_array($subcategoryId)) {
+            $useMinMax = false;
+            if (isset($subcategoryId['min'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $subcategoryId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($subcategoryId['max'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $subcategoryId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $subcategoryId, $comparison);
+    }
+
+    /**
      * Filter the query by a related \SciMS\Models\User object
      *
      * @param \SciMS\Models\User|ObjectCollection $user The related object(s) to use as filter
@@ -514,6 +630,160 @@ abstract class ArticleQuery extends ModelCriteria
         return $this
             ->joinuser($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'user', '\SciMS\Models\UserQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\Category object
+     *
+     * @param \SciMS\Models\Category|ObjectCollection $category The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterBycategory($category, $comparison = null)
+    {
+        if ($category instanceof \SciMS\Models\Category) {
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $category->getId(), $comparison);
+        } elseif ($category instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $category->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterBycategory() only accepts arguments of type \SciMS\Models\Category or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the category relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function joincategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('category');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'category');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the category relation Category object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\CategoryQuery A secondary query class using the current class as primary query
+     */
+    public function usecategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joincategory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'category', '\SciMS\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\Category object
+     *
+     * @param \SciMS\Models\Category|ObjectCollection $category The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @throws \Propel\Runtime\Exception\PropelException
+     *
+     * @return ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterBysubcategory($category, $comparison = null)
+    {
+        if ($category instanceof \SciMS\Models\Category) {
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $category->getId(), $comparison);
+        } elseif ($category instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $category->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterBysubcategory() only accepts arguments of type \SciMS\Models\Category or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the subcategory relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function joinsubcategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('subcategory');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'subcategory');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the subcategory relation Category object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\CategoryQuery A secondary query class using the current class as primary query
+     */
+    public function usesubcategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinsubcategory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'subcategory', '\SciMS\Models\CategoryQuery');
     }
 
     /**

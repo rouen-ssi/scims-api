@@ -16,6 +16,8 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use SciMS\Models\ArticleQuery as ChildArticleQuery;
+use SciMS\Models\Category as ChildCategory;
+use SciMS\Models\CategoryQuery as ChildCategoryQuery;
 use SciMS\Models\User as ChildUser;
 use SciMS\Models\UserQuery as ChildUserQuery;
 use SciMS\Models\Map\ArticleTableMap;
@@ -107,9 +109,35 @@ abstract class Article implements ActiveRecordInterface
     protected $publication_date;
 
     /**
+     * The value for the category_id field.
+     *
+     * Note: this column has a database default value of: -1
+     * @var        int
+     */
+    protected $category_id;
+
+    /**
+     * The value for the subcategory_id field.
+     *
+     * Note: this column has a database default value of: -1
+     * @var        int
+     */
+    protected $subcategory_id;
+
+    /**
      * @var        ChildUser
      */
     protected $auser;
+
+    /**
+     * @var        ChildCategory
+     */
+    protected $acategory;
+
+    /**
+     * @var        ChildCategory
+     */
+    protected $asubcategory;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -137,10 +165,24 @@ abstract class Article implements ActiveRecordInterface
     protected $validationFailures;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->category_id = -1;
+        $this->subcategory_id = -1;
+    }
+
+    /**
      * Initializes internal state of SciMS\Models\Base\Article object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -412,6 +454,26 @@ abstract class Article implements ActiveRecordInterface
     }
 
     /**
+     * Get the [category_id] column value.
+     *
+     * @return int
+     */
+    public function getCategoryId()
+    {
+        return $this->category_id;
+    }
+
+    /**
+     * Get the [subcategory_id] column value.
+     *
+     * @return int
+     */
+    public function getSubcategoryId()
+    {
+        return $this->subcategory_id;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -516,6 +578,54 @@ abstract class Article implements ActiveRecordInterface
     } // setPublicationDate()
 
     /**
+     * Set the value of [category_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function setCategoryId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->category_id !== $v) {
+            $this->category_id = $v;
+            $this->modifiedColumns[ArticleTableMap::COL_CATEGORY_ID] = true;
+        }
+
+        if ($this->acategory !== null && $this->acategory->getId() !== $v) {
+            $this->acategory = null;
+        }
+
+        return $this;
+    } // setCategoryId()
+
+    /**
+     * Set the value of [subcategory_id] column.
+     *
+     * @param int $v new value
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function setSubcategoryId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->subcategory_id !== $v) {
+            $this->subcategory_id = $v;
+            $this->modifiedColumns[ArticleTableMap::COL_SUBCATEGORY_ID] = true;
+        }
+
+        if ($this->asubcategory !== null && $this->asubcategory->getId() !== $v) {
+            $this->asubcategory = null;
+        }
+
+        return $this;
+    } // setSubcategoryId()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -525,6 +635,14 @@ abstract class Article implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->category_id !== -1) {
+                return false;
+            }
+
+            if ($this->subcategory_id !== -1) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -565,6 +683,12 @@ abstract class Article implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ArticleTableMap::translateFieldName('PublicationDate', TableMap::TYPE_PHPNAME, $indexType)];
             $this->publication_date = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ArticleTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->category_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ArticleTableMap::translateFieldName('SubcategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->subcategory_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -573,7 +697,7 @@ abstract class Article implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 5; // 5 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Article'), 0, $e);
@@ -597,6 +721,12 @@ abstract class Article implements ActiveRecordInterface
     {
         if ($this->auser !== null && $this->user_id !== $this->auser->getId()) {
             $this->auser = null;
+        }
+        if ($this->acategory !== null && $this->category_id !== $this->acategory->getId()) {
+            $this->acategory = null;
+        }
+        if ($this->asubcategory !== null && $this->subcategory_id !== $this->asubcategory->getId()) {
+            $this->asubcategory = null;
         }
     } // ensureConsistency
 
@@ -638,6 +768,8 @@ abstract class Article implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->auser = null;
+            $this->acategory = null;
+            $this->asubcategory = null;
         } // if (deep)
     }
 
@@ -749,6 +881,20 @@ abstract class Article implements ActiveRecordInterface
                 $this->setuser($this->auser);
             }
 
+            if ($this->acategory !== null) {
+                if ($this->acategory->isModified() || $this->acategory->isNew()) {
+                    $affectedRows += $this->acategory->save($con);
+                }
+                $this->setcategory($this->acategory);
+            }
+
+            if ($this->asubcategory !== null) {
+                if ($this->asubcategory->isModified() || $this->asubcategory->isNew()) {
+                    $affectedRows += $this->asubcategory->save($con);
+                }
+                $this->setsubcategory($this->asubcategory);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -801,6 +947,12 @@ abstract class Article implements ActiveRecordInterface
         if ($this->isColumnModified(ArticleTableMap::COL_PUBLICATION_DATE)) {
             $modifiedColumns[':p' . $index++]  = 'publication_date';
         }
+        if ($this->isColumnModified(ArticleTableMap::COL_CATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'category_id';
+        }
+        if ($this->isColumnModified(ArticleTableMap::COL_SUBCATEGORY_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'subcategory_id';
+        }
 
         $sql = sprintf(
             'INSERT INTO article (%s) VALUES (%s)',
@@ -826,6 +978,12 @@ abstract class Article implements ActiveRecordInterface
                         break;
                     case 'publication_date':
                         $stmt->bindValue($identifier, $this->publication_date, PDO::PARAM_INT);
+                        break;
+                    case 'category_id':
+                        $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
+                        break;
+                    case 'subcategory_id':
+                        $stmt->bindValue($identifier, $this->subcategory_id, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -904,6 +1062,12 @@ abstract class Article implements ActiveRecordInterface
             case 4:
                 return $this->getPublicationDate();
                 break;
+            case 5:
+                return $this->getCategoryId();
+                break;
+            case 6:
+                return $this->getSubcategoryId();
+                break;
             default:
                 return null;
                 break;
@@ -939,6 +1103,8 @@ abstract class Article implements ActiveRecordInterface
             $keys[2] => $this->getTitle(),
             $keys[3] => $this->getContent(),
             $keys[4] => $this->getPublicationDate(),
+            $keys[5] => $this->getCategoryId(),
+            $keys[6] => $this->getSubcategoryId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -960,6 +1126,36 @@ abstract class Article implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->auser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->acategory) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'category';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'category';
+                        break;
+                    default:
+                        $key = 'category';
+                }
+
+                $result[$key] = $this->acategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->asubcategory) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'category';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'category';
+                        break;
+                    default:
+                        $key = 'subcategory';
+                }
+
+                $result[$key] = $this->asubcategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1010,6 +1206,12 @@ abstract class Article implements ActiveRecordInterface
             case 4:
                 $this->setPublicationDate($value);
                 break;
+            case 5:
+                $this->setCategoryId($value);
+                break;
+            case 6:
+                $this->setSubcategoryId($value);
+                break;
         } // switch()
 
         return $this;
@@ -1050,6 +1252,12 @@ abstract class Article implements ActiveRecordInterface
         }
         if (array_key_exists($keys[4], $arr)) {
             $this->setPublicationDate($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setCategoryId($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setSubcategoryId($arr[$keys[6]]);
         }
     }
 
@@ -1106,6 +1314,12 @@ abstract class Article implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ArticleTableMap::COL_PUBLICATION_DATE)) {
             $criteria->add(ArticleTableMap::COL_PUBLICATION_DATE, $this->publication_date);
+        }
+        if ($this->isColumnModified(ArticleTableMap::COL_CATEGORY_ID)) {
+            $criteria->add(ArticleTableMap::COL_CATEGORY_ID, $this->category_id);
+        }
+        if ($this->isColumnModified(ArticleTableMap::COL_SUBCATEGORY_ID)) {
+            $criteria->add(ArticleTableMap::COL_SUBCATEGORY_ID, $this->subcategory_id);
         }
 
         return $criteria;
@@ -1197,6 +1411,8 @@ abstract class Article implements ActiveRecordInterface
         $copyObj->setTitle($this->getTitle());
         $copyObj->setContent($this->getContent());
         $copyObj->setPublicationDate($this->getPublicationDate());
+        $copyObj->setCategoryId($this->getCategoryId());
+        $copyObj->setSubcategoryId($this->getSubcategoryId());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1279,6 +1495,108 @@ abstract class Article implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param  ChildCategory $v
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setcategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setCategoryId(-1);
+        } else {
+            $this->setCategoryId($v->getId());
+        }
+
+        $this->acategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addArticleRelatedByCategoryId($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getcategory(ConnectionInterface $con = null)
+    {
+        if ($this->acategory === null && ($this->category_id !== null)) {
+            $this->acategory = ChildCategoryQuery::create()->findPk($this->category_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->acategory->addArticlesRelatedByCategoryId($this);
+             */
+        }
+
+        return $this->acategory;
+    }
+
+    /**
+     * Declares an association between this object and a ChildCategory object.
+     *
+     * @param  ChildCategory $v
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setsubcategory(ChildCategory $v = null)
+    {
+        if ($v === null) {
+            $this->setSubcategoryId(-1);
+        } else {
+            $this->setSubcategoryId($v->getId());
+        }
+
+        $this->asubcategory = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildCategory object, it will not be re-added.
+        if ($v !== null) {
+            $v->addArticleRelatedBySubcategoryId($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildCategory object
+     *
+     * @param  ConnectionInterface $con Optional Connection object.
+     * @return ChildCategory The associated ChildCategory object.
+     * @throws PropelException
+     */
+    public function getsubcategory(ConnectionInterface $con = null)
+    {
+        if ($this->asubcategory === null && ($this->subcategory_id !== null)) {
+            $this->asubcategory = ChildCategoryQuery::create()->findPk($this->subcategory_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->asubcategory->addArticlesRelatedBySubcategoryId($this);
+             */
+        }
+
+        return $this->asubcategory;
+    }
+
+    /**
      * Clears the current object, sets all attributes to their default values and removes
      * outgoing references as well as back-references (from other objects to this one. Results probably in a database
      * change of those foreign objects when you call `save` there).
@@ -1288,13 +1606,22 @@ abstract class Article implements ActiveRecordInterface
         if (null !== $this->auser) {
             $this->auser->removeArticle($this);
         }
+        if (null !== $this->acategory) {
+            $this->acategory->removeArticleRelatedByCategoryId($this);
+        }
+        if (null !== $this->asubcategory) {
+            $this->asubcategory->removeArticleRelatedBySubcategoryId($this);
+        }
         $this->id = null;
         $this->user_id = null;
         $this->title = null;
         $this->content = null;
         $this->publication_date = null;
+        $this->category_id = null;
+        $this->subcategory_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1314,6 +1641,8 @@ abstract class Article implements ActiveRecordInterface
         } // if ($deep)
 
         $this->auser = null;
+        $this->acategory = null;
+        $this->asubcategory = null;
     }
 
     /**
@@ -1372,6 +1701,18 @@ abstract class Article implements ActiveRecordInterface
             if (method_exists($this->auser, 'validate')) {
                 if (!$this->auser->validate($validator)) {
                     $failureMap->addAll($this->auser->getValidationFailures());
+                }
+            }
+            // If validate() method exists, the validate-behavior is configured for related object
+            if (method_exists($this->acategory, 'validate')) {
+                if (!$this->acategory->validate($validator)) {
+                    $failureMap->addAll($this->acategory->getValidationFailures());
+                }
+            }
+            // If validate() method exists, the validate-behavior is configured for related object
+            if (method_exists($this->asubcategory, 'validate')) {
+                if (!$this->asubcategory->validate($validator)) {
+                    $failureMap->addAll($this->asubcategory->getValidationFailures());
                 }
             }
 

@@ -20,7 +20,9 @@ class Article extends BaseArticle implements \JsonSerializable {
       'id' => $this->id,
       'user_uid' => $this->getUser()->getUid(),
       'title' => $this->title,
-      'content' => $this->content
+      'content' => $this->content,
+      'category_id' => $this->category_id,
+      'subcategory_id' => $this->subcategory_id
     );
 
     return $json;

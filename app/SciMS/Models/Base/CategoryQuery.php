@@ -46,6 +46,26 @@ use SciMS\Models\Map\CategoryTableMap;
  * @method     ChildCategoryQuery rightJoinWithparentCategory() Adds a RIGHT JOIN clause and with to the query using the parentCategory relation
  * @method     ChildCategoryQuery innerJoinWithparentCategory() Adds a INNER JOIN clause and with to the query using the parentCategory relation
  *
+ * @method     ChildCategoryQuery leftJoinArticleRelatedByCategoryId($relationAlias = null) Adds a LEFT JOIN clause to the query using the ArticleRelatedByCategoryId relation
+ * @method     ChildCategoryQuery rightJoinArticleRelatedByCategoryId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ArticleRelatedByCategoryId relation
+ * @method     ChildCategoryQuery innerJoinArticleRelatedByCategoryId($relationAlias = null) Adds a INNER JOIN clause to the query using the ArticleRelatedByCategoryId relation
+ *
+ * @method     ChildCategoryQuery joinWithArticleRelatedByCategoryId($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ArticleRelatedByCategoryId relation
+ *
+ * @method     ChildCategoryQuery leftJoinWithArticleRelatedByCategoryId() Adds a LEFT JOIN clause and with to the query using the ArticleRelatedByCategoryId relation
+ * @method     ChildCategoryQuery rightJoinWithArticleRelatedByCategoryId() Adds a RIGHT JOIN clause and with to the query using the ArticleRelatedByCategoryId relation
+ * @method     ChildCategoryQuery innerJoinWithArticleRelatedByCategoryId() Adds a INNER JOIN clause and with to the query using the ArticleRelatedByCategoryId relation
+ *
+ * @method     ChildCategoryQuery leftJoinArticleRelatedBySubcategoryId($relationAlias = null) Adds a LEFT JOIN clause to the query using the ArticleRelatedBySubcategoryId relation
+ * @method     ChildCategoryQuery rightJoinArticleRelatedBySubcategoryId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ArticleRelatedBySubcategoryId relation
+ * @method     ChildCategoryQuery innerJoinArticleRelatedBySubcategoryId($relationAlias = null) Adds a INNER JOIN clause to the query using the ArticleRelatedBySubcategoryId relation
+ *
+ * @method     ChildCategoryQuery joinWithArticleRelatedBySubcategoryId($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ArticleRelatedBySubcategoryId relation
+ *
+ * @method     ChildCategoryQuery leftJoinWithArticleRelatedBySubcategoryId() Adds a LEFT JOIN clause and with to the query using the ArticleRelatedBySubcategoryId relation
+ * @method     ChildCategoryQuery rightJoinWithArticleRelatedBySubcategoryId() Adds a RIGHT JOIN clause and with to the query using the ArticleRelatedBySubcategoryId relation
+ * @method     ChildCategoryQuery innerJoinWithArticleRelatedBySubcategoryId() Adds a INNER JOIN clause and with to the query using the ArticleRelatedBySubcategoryId relation
+ *
  * @method     ChildCategoryQuery leftJoinCategoryRelatedById($relationAlias = null) Adds a LEFT JOIN clause to the query using the CategoryRelatedById relation
  * @method     ChildCategoryQuery rightJoinCategoryRelatedById($relationAlias = null) Adds a RIGHT JOIN clause to the query using the CategoryRelatedById relation
  * @method     ChildCategoryQuery innerJoinCategoryRelatedById($relationAlias = null) Adds a INNER JOIN clause to the query using the CategoryRelatedById relation
@@ -56,7 +76,7 @@ use SciMS\Models\Map\CategoryTableMap;
  * @method     ChildCategoryQuery rightJoinWithCategoryRelatedById() Adds a RIGHT JOIN clause and with to the query using the CategoryRelatedById relation
  * @method     ChildCategoryQuery innerJoinWithCategoryRelatedById() Adds a INNER JOIN clause and with to the query using the CategoryRelatedById relation
  *
- * @method     \SciMS\Models\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \SciMS\Models\CategoryQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildCategory findOne(ConnectionInterface $con = null) Return the first ChildCategory matching the query
  * @method     ChildCategory findOneOrCreate(ConnectionInterface $con = null) Return the first ChildCategory matching the query, or a new ChildCategory object populated from the query conditions when no match is found
@@ -448,6 +468,152 @@ abstract class CategoryQuery extends ModelCriteria
         return $this
             ->joinparentCategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'parentCategory', '\SciMS\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\Article object
+     *
+     * @param \SciMS\Models\Article|ObjectCollection $article the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCategoryQuery The current query, for fluid interface
+     */
+    public function filterByArticleRelatedByCategoryId($article, $comparison = null)
+    {
+        if ($article instanceof \SciMS\Models\Article) {
+            return $this
+                ->addUsingAlias(CategoryTableMap::COL_ID, $article->getCategoryId(), $comparison);
+        } elseif ($article instanceof ObjectCollection) {
+            return $this
+                ->useArticleRelatedByCategoryIdQuery()
+                ->filterByPrimaryKeys($article->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByArticleRelatedByCategoryId() only accepts arguments of type \SciMS\Models\Article or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ArticleRelatedByCategoryId relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     */
+    public function joinArticleRelatedByCategoryId($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ArticleRelatedByCategoryId');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ArticleRelatedByCategoryId');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ArticleRelatedByCategoryId relation Article object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\ArticleQuery A secondary query class using the current class as primary query
+     */
+    public function useArticleRelatedByCategoryIdQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinArticleRelatedByCategoryId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ArticleRelatedByCategoryId', '\SciMS\Models\ArticleQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\Article object
+     *
+     * @param \SciMS\Models\Article|ObjectCollection $article the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildCategoryQuery The current query, for fluid interface
+     */
+    public function filterByArticleRelatedBySubcategoryId($article, $comparison = null)
+    {
+        if ($article instanceof \SciMS\Models\Article) {
+            return $this
+                ->addUsingAlias(CategoryTableMap::COL_ID, $article->getSubcategoryId(), $comparison);
+        } elseif ($article instanceof ObjectCollection) {
+            return $this
+                ->useArticleRelatedBySubcategoryIdQuery()
+                ->filterByPrimaryKeys($article->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByArticleRelatedBySubcategoryId() only accepts arguments of type \SciMS\Models\Article or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ArticleRelatedBySubcategoryId relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildCategoryQuery The current query, for fluid interface
+     */
+    public function joinArticleRelatedBySubcategoryId($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ArticleRelatedBySubcategoryId');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ArticleRelatedBySubcategoryId');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ArticleRelatedBySubcategoryId relation Article object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\ArticleQuery A secondary query class using the current class as primary query
+     */
+    public function useArticleRelatedBySubcategoryIdQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinArticleRelatedBySubcategoryId($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ArticleRelatedBySubcategoryId', '\SciMS\Models\ArticleQuery');
     }
 
     /**
