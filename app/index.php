@@ -9,6 +9,9 @@ use SciMS\Middlewares\TokenMiddleware;
 
 $app = new \Slim\App();
 
+// Add CorsMiddleware to app
+$app->add('SciMS\Middlewares\CorsMiddleware');
+
 /***********
  * Article *
  ***********/
