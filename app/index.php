@@ -12,8 +12,6 @@ $app = new \Slim\App();
 $app->group('/article', function() {
   $this->post('', 'SciMS\Controllers\ArticleController:create')
     ->add('SciMS\Middlewares\TokenMiddleware');
-  $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
-    ->add('SciMS\Middlewares\TokenMiddleware');
   $this->get('/{id}', 'SciMS\Controllers\ArticleController:getById');
   $this->delete('/{id}', 'SciMS\Controllers\ArticleController:delete')
     ->add('SciMS\Middlewares\TokenMiddleware');
@@ -22,6 +20,8 @@ $app->group('/article', function() {
 $app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
 
 $app->group('/account', function() {
+  $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
+    ->add('SciMS\Middlewares\TokenMiddleware');
   $this->get('/{uid}', 'SciMS\Controllers\AccountController:get')
     ->add('SciMS\Middlewares\TokenMiddleware');
   $this->post('/create', 'SciMS\Controllers\AccountController:create');
