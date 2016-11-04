@@ -9,6 +9,11 @@ use SciMS\Middlewares\TokenMiddleware;
 
 $app = new \Slim\App();
 
+/***********
+ * Article *
+ ***********/
+$app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
+
 $app->group('/article', function() {
   $this->post('', 'SciMS\Controllers\ArticleController:create')
     ->add('SciMS\Middlewares\TokenMiddleware');
@@ -21,8 +26,9 @@ $app->group('/article', function() {
   });
 });
 
-$app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
-
+/***********
+ * Account *
+ ***********/
 $app->group('/account', function() {
   $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
     ->add('SciMS\Middlewares\TokenMiddleware');
@@ -34,8 +40,21 @@ $app->group('/account', function() {
     ->add('SciMS\Middlewares\TokenMiddleware');
 });
 
+/************
+ * Category *
+ ************/
 $app->get('/categories', 'SciMS\Controllers\CategoryController:getCategories');
-$app->post('/category', 'SciMS\Controllers\CategoryController:addCategory')
-  ->add('SciMS\Middlewares\TokenMiddleware');
+
+$app->group('/category', function() {
+  $this->post('', 'SciMS\Controllers\CategoryController:addCategory')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->group('/{id}', function() {
+    $this->get('', 'SciMS\Controllers\CategoryController:getCategory');
+    $this->delete('', 'SciMS\Controllers\CategoryController:delete')
+      ->add('SciMS\Middlewares\TokenMiddleware');
+    $this->put('', 'SciMS\Controllers\CategoryController:edit')
+      ->add('SciMS\Middlewares\TokenMiddleware');
+  });
+});
 
 $app->run();

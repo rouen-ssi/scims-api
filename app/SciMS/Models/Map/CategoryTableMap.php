@@ -138,7 +138,7 @@ class CategoryTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 32, null);
-        $this->addForeignKey('parent_category_id', 'ParentCategoryId', 'INTEGER', 'category', 'id', false, null, null);
+        $this->addForeignKey('parent_category_id', 'ParentCategoryId', 'INTEGER', 'category', 'id', false, null, -1);
     } // initialize()
 
     /**
@@ -152,14 +152,14 @@ class CategoryTableMap extends TableMap
     0 => ':parent_category_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('CategoryRelatedById', '\\SciMS\\Models\\Category', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':parent_category_id',
     1 => ':id',
   ),
-), null, null, 'CategoriesRelatedById', false);
+), 'CASCADE', null, 'CategoriesRelatedById', false);
     } // buildRelations()
 
     /**
@@ -171,9 +171,18 @@ class CategoryTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('name_notnull' => array ('column' => 'name','validator' => 'NotNull','options' => array ('message' => 'INVALID_NAME',),), ),
+            'validate' => array('name_length' => array ('column' => 'name','validator' => 'NotBlank','options' => array ('message' => 'INVALID_NAME',),), ),
         );
     } // getBehaviors()
+    /**
+     * Method to invalidate the instance pool of all tables related to category     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        CategoryTableMap::clearInstancePool();
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.

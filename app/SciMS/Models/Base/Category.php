@@ -22,7 +22,7 @@ use SciMS\Models\Map\CategoryTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -88,6 +88,7 @@ abstract class Category implements ActiveRecordInterface
     /**
      * The value for the parent_category_id field.
      *
+     * Note: this column has a database default value of: -1
      * @var        int
      */
     protected $parent_category_id;
@@ -135,10 +136,23 @@ abstract class Category implements ActiveRecordInterface
     protected $categoriesRelatedByIdScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->parent_category_id = -1;
+    }
+
+    /**
      * Initializes internal state of SciMS\Models\Base\Category object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -463,6 +477,10 @@ abstract class Category implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->parent_category_id !== -1) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -696,10 +714,9 @@ abstract class Category implements ActiveRecordInterface
 
             if ($this->categoriesRelatedByIdScheduledForDeletion !== null) {
                 if (!$this->categoriesRelatedByIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->categoriesRelatedByIdScheduledForDeletion as $categoryRelatedById) {
-                        // need to save related object because we set the relation to null
-                        $categoryRelatedById->save($con);
-                    }
+                    \SciMS\Models\CategoryQuery::create()
+                        ->filterByPrimaryKeys($this->categoriesRelatedByIdScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->categoriesRelatedByIdScheduledForDeletion = null;
                 }
             }
@@ -1176,7 +1193,7 @@ abstract class Category implements ActiveRecordInterface
     public function setparentCategory(ChildCategory $v = null)
     {
         if ($v === null) {
-            $this->setParentCategoryId(NULL);
+            $this->setParentCategoryId(-1);
         } else {
             $this->setParentCategoryId($v->getId());
         }
@@ -1473,6 +1490,7 @@ abstract class Category implements ActiveRecordInterface
         $this->parent_category_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -1520,7 +1538,7 @@ abstract class Category implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('name', new NotNull(array ('message' => 'INVALID_NAME',)));
+        $metadata->addPropertyConstraint('name', new NotBlank(array ('message' => 'INVALID_NAME',)));
     }
 
     /**
