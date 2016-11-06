@@ -26,7 +26,7 @@ use SciMS\Models\Map\UserTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
@@ -1792,8 +1792,7 @@ abstract class User implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('email', new Email(array ('message' => 'INVALID_EMAIL',)));
-        $metadata->addPropertyConstraint('email', new NotNull(array ('message' => 'INVALID_EMAIL',)));
+        $metadata->addPropertyConstraint('email', new NotBlank(array ('message' => 'INVALID_EMAIL',)));
         $metadata->addPropertyConstraint('email', new Unique(array ('message' => 'EMAIL_ALREADY_EXISTS',)));
         $metadata->addPropertyConstraint('first_name', new NotNull(array ('message' => 'INVALID_FIRST_NAME',)));
         $metadata->addPropertyConstraint('last_name', new NotNull(array ('message' => 'INVALID_LAST_NAME',)));

@@ -32,7 +32,7 @@ class AccountController {
         'errors' => [
           self::USER_NOT_FOUND
         ]
-      ]);
+      ], 400);
     }
 
     // Returns the user's informations
@@ -77,6 +77,34 @@ class AccountController {
   }
 
   /**
+   * Update the user's email given by its token.
+   * Returns an http 200 status or a JSON containing errors.
+   */
+  public function updateEmail(ServerRequestInterface $request, ResponseInterface $response) {
+    // Retreives the user given by TokenMiddleware
+    $user = $request->getAttribute('user');
+
+    // Retreives the parameters
+    $email = $request->getParsedBodyParam('email', NULL);
+
+    // Updates the user's email and validate
+    $user->setEmail(trim($email));
+    if (!$user->validate()) {
+      $errors = [];
+      foreach ($user->getValidationFailures() as $failure) {
+        $errors[] = $failure->getMessage();
+        return $response->withJson([
+          'errors' => $errors
+        ], 400);
+      }
+    }
+    $user->save();
+
+    // Returns an http 200 status
+    return $response->withStatus(200);
+  }
+
+  /**
    * Updates the user's information given by its token.
    * @param  ServerRequestInterface $request  a PSR-7 Request object.
    * @param  ResponseInterface      $response a PSR-7 Response object.
@@ -98,7 +126,6 @@ class AccountController {
       foreach ($user->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
       }
-
       return $response->withJson([
         'errors' => $errors
       ], 400);
@@ -130,7 +157,6 @@ class AccountController {
       foreach ($user->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
       }
-
       return $response->withJson(array(
         'errors' => $errors
       ), 400);

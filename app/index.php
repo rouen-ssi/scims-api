@@ -3,10 +3,6 @@
 require '../vendor/autoload.php';
 include '../config/config.php';
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
-use SciMS\Middlewares\TokenMiddleware;
-
 $app = new \Slim\App();
 
 // Add CorsMiddleware to app
@@ -34,6 +30,8 @@ $app->group('/article', function() {
  ***********/
 $app->group('/account', function() {
   $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->put('/email', 'SciMS\Controllers\AccountController:updateEmail')
     ->add('SciMS\Middlewares\TokenMiddleware');
   $this->get('/{uid}', 'SciMS\Controllers\AccountController:get')
     ->add('SciMS\Middlewares\TokenMiddleware');

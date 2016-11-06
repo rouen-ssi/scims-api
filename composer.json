@@ -22,7 +22,7 @@
         "./propel model:build",
         "./propel diff",
         "./propel migrate",
-        "@composer dump-autoload"
+        "php composer.phar dump-autoload"
       ],
       "start": [
         "php -S localhost:8080 -t app/"

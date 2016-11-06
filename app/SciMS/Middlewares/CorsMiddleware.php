@@ -1,6 +1,9 @@
 <?php
 
-namespace 'SciMS\Middlewares\CorsMiddleware';
+namespace SciMS\Middlewares;
+
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Middlewares which add CORS headers to the HTTP response.
