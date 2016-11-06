@@ -59,7 +59,7 @@ class UserTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class UserTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -95,6 +95,11 @@ class UserTableMap extends TableMap
      * the column name for the last_name field
      */
     const COL_LAST_NAME = 'user.last_name';
+
+    /**
+     * the column name for the biography field
+     */
+    const COL_BIOGRAPHY = 'user.biography';
 
     /**
      * the column name for the password field
@@ -123,11 +128,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Uid', 'Email', 'FirstName', 'LastName', 'Password', 'Token', 'TokenExpiration', ),
-        self::TYPE_CAMELNAME     => array('id', 'uid', 'email', 'firstName', 'lastName', 'password', 'token', 'tokenExpiration', ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_UID, UserTableMap::COL_EMAIL, UserTableMap::COL_FIRST_NAME, UserTableMap::COL_LAST_NAME, UserTableMap::COL_PASSWORD, UserTableMap::COL_TOKEN, UserTableMap::COL_TOKEN_EXPIRATION, ),
-        self::TYPE_FIELDNAME     => array('id', 'uid', 'email', 'first_name', 'last_name', 'password', 'token', 'token_expiration', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id', 'Uid', 'Email', 'FirstName', 'LastName', 'Biography', 'Password', 'Token', 'TokenExpiration', ),
+        self::TYPE_CAMELNAME     => array('id', 'uid', 'email', 'firstName', 'lastName', 'biography', 'password', 'token', 'tokenExpiration', ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID, UserTableMap::COL_UID, UserTableMap::COL_EMAIL, UserTableMap::COL_FIRST_NAME, UserTableMap::COL_LAST_NAME, UserTableMap::COL_BIOGRAPHY, UserTableMap::COL_PASSWORD, UserTableMap::COL_TOKEN, UserTableMap::COL_TOKEN_EXPIRATION, ),
+        self::TYPE_FIELDNAME     => array('id', 'uid', 'email', 'first_name', 'last_name', 'biography', 'password', 'token', 'token_expiration', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class UserTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Uid' => 1, 'Email' => 2, 'FirstName' => 3, 'LastName' => 4, 'Password' => 5, 'Token' => 6, 'TokenExpiration' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'firstName' => 3, 'lastName' => 4, 'password' => 5, 'token' => 6, 'tokenExpiration' => 7, ),
-        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_UID => 1, UserTableMap::COL_EMAIL => 2, UserTableMap::COL_FIRST_NAME => 3, UserTableMap::COL_LAST_NAME => 4, UserTableMap::COL_PASSWORD => 5, UserTableMap::COL_TOKEN => 6, UserTableMap::COL_TOKEN_EXPIRATION => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'first_name' => 3, 'last_name' => 4, 'password' => 5, 'token' => 6, 'token_expiration' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Uid' => 1, 'Email' => 2, 'FirstName' => 3, 'LastName' => 4, 'Biography' => 5, 'Password' => 6, 'Token' => 7, 'TokenExpiration' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'firstName' => 3, 'lastName' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'tokenExpiration' => 8, ),
+        self::TYPE_COLNAME       => array(UserTableMap::COL_ID => 0, UserTableMap::COL_UID => 1, UserTableMap::COL_EMAIL => 2, UserTableMap::COL_FIRST_NAME => 3, UserTableMap::COL_LAST_NAME => 4, UserTableMap::COL_BIOGRAPHY => 5, UserTableMap::COL_PASSWORD => 6, UserTableMap::COL_TOKEN => 7, UserTableMap::COL_TOKEN_EXPIRATION => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'first_name' => 3, 'last_name' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'token_expiration' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -166,6 +171,7 @@ class UserTableMap extends TableMap
         $this->addPrimaryKey('email', 'Email', 'VARCHAR', true, 254, null);
         $this->addColumn('first_name', 'FirstName', 'VARCHAR', true, 128, null);
         $this->addColumn('last_name', 'LastName', 'VARCHAR', true, 128, null);
+        $this->addColumn('biography', 'Biography', 'LONGVARCHAR', false, null, null);
         $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
         $this->addColumn('token', 'Token', 'VARCHAR', false, 255, null);
         $this->addColumn('token_expiration', 'TokenExpiration', 'INTEGER', false, 8, null);
@@ -406,6 +412,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn(UserTableMap::COL_EMAIL);
             $criteria->addSelectColumn(UserTableMap::COL_FIRST_NAME);
             $criteria->addSelectColumn(UserTableMap::COL_LAST_NAME);
+            $criteria->addSelectColumn(UserTableMap::COL_BIOGRAPHY);
             $criteria->addSelectColumn(UserTableMap::COL_PASSWORD);
             $criteria->addSelectColumn(UserTableMap::COL_TOKEN);
             $criteria->addSelectColumn(UserTableMap::COL_TOKEN_EXPIRATION);
@@ -415,6 +422,7 @@ class UserTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.email');
             $criteria->addSelectColumn($alias . '.first_name');
             $criteria->addSelectColumn($alias . '.last_name');
+            $criteria->addSelectColumn($alias . '.biography');
             $criteria->addSelectColumn($alias . '.password');
             $criteria->addSelectColumn($alias . '.token');
             $criteria->addSelectColumn($alias . '.token_expiration');

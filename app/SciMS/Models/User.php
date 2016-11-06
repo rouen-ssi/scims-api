@@ -21,7 +21,8 @@ class User extends BaseUser implements \JsonSerializable {
       'uid' => $this->uid,
       'email' => $this->email,
       'last_name' => $this->last_name,
-      'first_name' => $this->first_name
+      'first_name' => $this->first_name,
+      'biography' => $this->biography
     );
 
     return $json;

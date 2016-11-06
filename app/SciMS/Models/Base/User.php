@@ -112,6 +112,13 @@ abstract class User implements ActiveRecordInterface
     protected $last_name;
 
     /**
+     * The value for the biography field.
+     *
+     * @var        string
+     */
+    protected $biography;
+
+    /**
      * The value for the password field.
      *
      * @var        string
@@ -445,6 +452,16 @@ abstract class User implements ActiveRecordInterface
     }
 
     /**
+     * Get the [biography] column value.
+     *
+     * @return string
+     */
+    public function getBiography()
+    {
+        return $this->biography;
+    }
+
+    /**
      * Get the [password] column value.
      *
      * @return string
@@ -575,6 +592,26 @@ abstract class User implements ActiveRecordInterface
     } // setLastName()
 
     /**
+     * Set the value of [biography] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setBiography($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->biography !== $v) {
+            $this->biography = $v;
+            $this->modifiedColumns[UserTableMap::COL_BIOGRAPHY] = true;
+        }
+
+        return $this;
+    } // setBiography()
+
+    /**
      * Set the value of [password] column.
      *
      * @param string $v new value
@@ -685,13 +722,16 @@ abstract class User implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('LastName', TableMap::TYPE_PHPNAME, $indexType)];
             $this->last_name = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Biography', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->biography = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
             $this->password = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('Token', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('Token', TableMap::TYPE_PHPNAME, $indexType)];
             $this->token = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('TokenExpiration', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('TokenExpiration', TableMap::TYPE_PHPNAME, $indexType)];
             $this->token_expiration = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -701,7 +741,7 @@ abstract class User implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = UserTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = UserTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\User'), 0, $e);
@@ -932,6 +972,9 @@ abstract class User implements ActiveRecordInterface
         if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
             $modifiedColumns[':p' . $index++]  = 'last_name';
         }
+        if ($this->isColumnModified(UserTableMap::COL_BIOGRAPHY)) {
+            $modifiedColumns[':p' . $index++]  = 'biography';
+        }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $modifiedColumns[':p' . $index++]  = 'password';
         }
@@ -966,6 +1009,9 @@ abstract class User implements ActiveRecordInterface
                         break;
                     case 'last_name':
                         $stmt->bindValue($identifier, $this->last_name, PDO::PARAM_STR);
+                        break;
+                    case 'biography':
+                        $stmt->bindValue($identifier, $this->biography, PDO::PARAM_STR);
                         break;
                     case 'password':
                         $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
@@ -1054,12 +1100,15 @@ abstract class User implements ActiveRecordInterface
                 return $this->getLastName();
                 break;
             case 5:
-                return $this->getPassword();
+                return $this->getBiography();
                 break;
             case 6:
-                return $this->getToken();
+                return $this->getPassword();
                 break;
             case 7:
+                return $this->getToken();
+                break;
+            case 8:
                 return $this->getTokenExpiration();
                 break;
             default:
@@ -1097,9 +1146,10 @@ abstract class User implements ActiveRecordInterface
             $keys[2] => $this->getEmail(),
             $keys[3] => $this->getFirstName(),
             $keys[4] => $this->getLastName(),
-            $keys[5] => $this->getPassword(),
-            $keys[6] => $this->getToken(),
-            $keys[7] => $this->getTokenExpiration(),
+            $keys[5] => $this->getBiography(),
+            $keys[6] => $this->getPassword(),
+            $keys[7] => $this->getToken(),
+            $keys[8] => $this->getTokenExpiration(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1172,12 +1222,15 @@ abstract class User implements ActiveRecordInterface
                 $this->setLastName($value);
                 break;
             case 5:
-                $this->setPassword($value);
+                $this->setBiography($value);
                 break;
             case 6:
-                $this->setToken($value);
+                $this->setPassword($value);
                 break;
             case 7:
+                $this->setToken($value);
+                break;
+            case 8:
                 $this->setTokenExpiration($value);
                 break;
         } // switch()
@@ -1222,13 +1275,16 @@ abstract class User implements ActiveRecordInterface
             $this->setLastName($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setPassword($arr[$keys[5]]);
+            $this->setBiography($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setToken($arr[$keys[6]]);
+            $this->setPassword($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setTokenExpiration($arr[$keys[7]]);
+            $this->setToken($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setTokenExpiration($arr[$keys[8]]);
         }
     }
 
@@ -1285,6 +1341,9 @@ abstract class User implements ActiveRecordInterface
         }
         if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
             $criteria->add(UserTableMap::COL_LAST_NAME, $this->last_name);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_BIOGRAPHY)) {
+            $criteria->add(UserTableMap::COL_BIOGRAPHY, $this->biography);
         }
         if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
             $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
@@ -1393,6 +1452,7 @@ abstract class User implements ActiveRecordInterface
         $copyObj->setEmail($this->getEmail());
         $copyObj->setFirstName($this->getFirstName());
         $copyObj->setLastName($this->getLastName());
+        $copyObj->setBiography($this->getBiography());
         $copyObj->setPassword($this->getPassword());
         $copyObj->setToken($this->getToken());
         $copyObj->setTokenExpiration($this->getTokenExpiration());
@@ -1741,6 +1801,7 @@ abstract class User implements ActiveRecordInterface
         $this->email = null;
         $this->first_name = null;
         $this->last_name = null;
+        $this->biography = null;
         $this->password = null;
         $this->token = null;
         $this->token_expiration = null;

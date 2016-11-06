@@ -25,6 +25,7 @@ use SciMS\Models\Map\UserTableMap;
  * @method     ChildUserQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method     ChildUserQuery orderByFirstName($order = Criteria::ASC) Order by the first_name column
  * @method     ChildUserQuery orderByLastName($order = Criteria::ASC) Order by the last_name column
+ * @method     ChildUserQuery orderByBiography($order = Criteria::ASC) Order by the biography column
  * @method     ChildUserQuery orderByPassword($order = Criteria::ASC) Order by the password column
  * @method     ChildUserQuery orderByToken($order = Criteria::ASC) Order by the token column
  * @method     ChildUserQuery orderByTokenExpiration($order = Criteria::ASC) Order by the token_expiration column
@@ -34,6 +35,7 @@ use SciMS\Models\Map\UserTableMap;
  * @method     ChildUserQuery groupByEmail() Group by the email column
  * @method     ChildUserQuery groupByFirstName() Group by the first_name column
  * @method     ChildUserQuery groupByLastName() Group by the last_name column
+ * @method     ChildUserQuery groupByBiography() Group by the biography column
  * @method     ChildUserQuery groupByPassword() Group by the password column
  * @method     ChildUserQuery groupByToken() Group by the token column
  * @method     ChildUserQuery groupByTokenExpiration() Group by the token_expiration column
@@ -66,6 +68,7 @@ use SciMS\Models\Map\UserTableMap;
  * @method     ChildUser findOneByEmail(string $email) Return the first ChildUser filtered by the email column
  * @method     ChildUser findOneByFirstName(string $first_name) Return the first ChildUser filtered by the first_name column
  * @method     ChildUser findOneByLastName(string $last_name) Return the first ChildUser filtered by the last_name column
+ * @method     ChildUser findOneByBiography(string $biography) Return the first ChildUser filtered by the biography column
  * @method     ChildUser findOneByPassword(string $password) Return the first ChildUser filtered by the password column
  * @method     ChildUser findOneByToken(string $token) Return the first ChildUser filtered by the token column
  * @method     ChildUser findOneByTokenExpiration(int $token_expiration) Return the first ChildUser filtered by the token_expiration column *
@@ -78,6 +81,7 @@ use SciMS\Models\Map\UserTableMap;
  * @method     ChildUser requireOneByEmail(string $email) Return the first ChildUser filtered by the email column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByFirstName(string $first_name) Return the first ChildUser filtered by the first_name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByLastName(string $last_name) Return the first ChildUser filtered by the last_name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildUser requireOneByBiography(string $biography) Return the first ChildUser filtered by the biography column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByPassword(string $password) Return the first ChildUser filtered by the password column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByToken(string $token) Return the first ChildUser filtered by the token column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildUser requireOneByTokenExpiration(int $token_expiration) Return the first ChildUser filtered by the token_expiration column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -88,6 +92,7 @@ use SciMS\Models\Map\UserTableMap;
  * @method     ChildUser[]|ObjectCollection findByEmail(string $email) Return ChildUser objects filtered by the email column
  * @method     ChildUser[]|ObjectCollection findByFirstName(string $first_name) Return ChildUser objects filtered by the first_name column
  * @method     ChildUser[]|ObjectCollection findByLastName(string $last_name) Return ChildUser objects filtered by the last_name column
+ * @method     ChildUser[]|ObjectCollection findByBiography(string $biography) Return ChildUser objects filtered by the biography column
  * @method     ChildUser[]|ObjectCollection findByPassword(string $password) Return ChildUser objects filtered by the password column
  * @method     ChildUser[]|ObjectCollection findByToken(string $token) Return ChildUser objects filtered by the token column
  * @method     ChildUser[]|ObjectCollection findByTokenExpiration(int $token_expiration) Return ChildUser objects filtered by the token_expiration column
@@ -189,7 +194,7 @@ abstract class UserQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, uid, email, first_name, last_name, password, token, token_expiration FROM user WHERE id = :p0 AND email = :p1';
+        $sql = 'SELECT id, uid, email, first_name, last_name, biography, password, token, token_expiration FROM user WHERE id = :p0 AND email = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -430,6 +435,31 @@ abstract class UserQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(UserTableMap::COL_LAST_NAME, $lastName, $comparison);
+    }
+
+    /**
+     * Filter the query on the biography column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByBiography('fooValue');   // WHERE biography = 'fooValue'
+     * $query->filterByBiography('%fooValue%', Criteria::LIKE); // WHERE biography LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $biography The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildUserQuery The current query, for fluid interface
+     */
+    public function filterByBiography($biography = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($biography)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(UserTableMap::COL_BIOGRAPHY, $biography, $comparison);
     }
 
     /**

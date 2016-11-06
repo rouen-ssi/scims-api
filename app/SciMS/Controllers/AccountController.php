@@ -105,22 +105,23 @@ class AccountController {
   }
 
   /**
-   * Updates the user's information given by its token.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
-   * @return ResponseInterface http 200 or a json containing errors if errors.
+   * Endpoint to update user's informations (avatar, biography, lastname, ...).
+   * If an information is not given, it will not be updated.
+   * Returns an http 200 status or a json containing errors.
    */
-  public function changeInformations(ServerRequestInterface $request, ResponseInterface $response) {
-    $body = $request->getParsedBody();
-
-    // Gets the users from TokenMiddleware
+  public function updateInformations(ServerRequestInterface $request, ResponseInterface $response) {
+    // Retreives the user given by its token
     $user = $request->getAttribute('user');
 
-    // Updates the user's informations
-    $user->setEmail($body['email']);
-    $user->setLastName($body['last_name']);
-    $user->setFirstName($body['first_name']);
+    // Retreives the parameters
+    $firstName = trim($request->getParsedBodyParam('first_name', $user->getFirstName()));
+    $lastName = trim($request->getParsedBodyParam('last_name', $user->getLastName()));
+    $biography = trim($request->getParsedBodyParam('biography', $user->getBiography()));
 
+    // Updates and validates the user's informations.
+    $user->setFirstName($firstName);
+    $user->setLastName($lastName);
+    $user->setBiography($biography);
     if (!$user->validate()) {
       $errors = [];
       foreach ($user->getValidationFailures() as $failure) {
@@ -130,9 +131,9 @@ class AccountController {
         'errors' => $errors
       ], 400);
     }
-
     $user->save();
 
+    // Returns an http 200 status
     return $response->withStatus(200);
   }
 

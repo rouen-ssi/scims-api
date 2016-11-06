@@ -29,7 +29,7 @@ $app->group('/article', function() {
  * Account *
  ***********/
 $app->group('/account', function() {
-  $this->put('', 'SciMS\Controllers\AccountController:changeInformations')
+  $this->put('', 'SciMS\Controllers\AccountController:updateInformations')
     ->add('SciMS\Middlewares\TokenMiddleware');
   $this->put('/email', 'SciMS\Controllers\AccountController:updateEmail')
     ->add('SciMS\Middlewares\TokenMiddleware');
