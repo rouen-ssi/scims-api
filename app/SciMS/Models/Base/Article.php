@@ -24,7 +24,7 @@ use SciMS\Models\Map\ArticleTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
-use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -1665,8 +1665,8 @@ abstract class Article implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('title', new NotNull(array ('message' => 'INVALID_TITLE',)));
-        $metadata->addPropertyConstraint('content', new NotNull(array ('message' => 'INVALID_CONTENT',)));
+        $metadata->addPropertyConstraint('title', new NotBlank(array ('message' => 'INVALID_TITLE',)));
+        $metadata->addPropertyConstraint('content', new NotBlank(array ('message' => 'INVALID_CONTENT',)));
     }
 
     /**

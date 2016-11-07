@@ -202,7 +202,7 @@ class ArticleTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('title_invalid' => array ('column' => 'title','validator' => 'NotNull','options' => array ('message' => 'INVALID_TITLE',),), 'content_invalid' => array ('column' => 'content','validator' => 'NotNull','options' => array ('message' => 'INVALID_CONTENT',),), ),
+            'validate' => array('title_invalid' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('message' => 'INVALID_TITLE',),), 'content_invalid' => array ('column' => 'content','validator' => 'NotBlank','options' => array ('message' => 'INVALID_CONTENT',),), ),
         );
     } // getBehaviors()
 

@@ -200,7 +200,7 @@ class UserTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('email_blank' => array ('column' => 'email','validator' => 'NotBlank','options' => array ('message' => 'INVALID_EMAIL',),), 'email_already_exists' => array ('column' => 'email','validator' => 'Unique','options' => array ('message' => 'EMAIL_ALREADY_EXISTS',),), 'first_name' => array ('column' => 'first_name','validator' => 'NotNull','options' => array ('message' => 'INVALID_FIRST_NAME',),), 'last_name' => array ('column' => 'last_name','validator' => 'NotNull','options' => array ('message' => 'INVALID_LAST_NAME',),), 'password' => array ('column' => 'password','validator' => 'NotNull','options' => array ('message' => 'INVALID_PASSWORD',),), ),
+            'validate' => array('email_blank' => array ('column' => 'email','validator' => 'NotBlank','options' => array ('message' => 'INVALID_EMAIL',),), 'email_already_exists' => array ('column' => 'email','validator' => 'Unique','options' => array ('message' => 'EMAIL_ALREADY_EXISTS',),), 'first_name' => array ('column' => 'first_name','validator' => 'NotBlank','options' => array ('message' => 'INVALID_FIRST_NAME',),), 'last_name' => array ('column' => 'last_name','validator' => 'NotBlank','options' => array ('message' => 'INVALID_LAST_NAME',),), 'password' => array ('column' => 'password','validator' => 'NotNull','options' => array ('message' => 'INVALID_PASSWORD',),), ),
         );
     } // getBehaviors()
 

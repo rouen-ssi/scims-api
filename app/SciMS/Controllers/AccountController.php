@@ -11,6 +11,7 @@ class AccountController {
 
   const TOKEN_HOURS = 24;
   const PASSWORD_MIN_LEN = 6;
+  const INVALID_PASSWORD = 'INVALID_PASSWORD';
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
   const USER_NOT_FOUND = 'USER_NOT_FOUND';
@@ -144,14 +145,27 @@ class AccountController {
    * @return a PSR 7 Response object containing the response.
    */
   public function create(ServerRequestInterface $request, ResponseInterface $response) {
-    $body = $request->getParsedBody();
+    // Retreives the parameters
+    $email = $request->getParsedBodyParam('email', '');
+    $firstName = $request->getParsedBodyParam('first_name', '');
+    $lastName = $request->getParsedBodyParam('last_name', '');
+    $password = $request->getParsedBodyParam('password', '');
+
+    // Checks the password length
+    if (strlen($password) < self::PASSWORD_MIN_LEN) {
+      return $response->withJson([
+        'errors' => [
+          self::INVALID_PASSWORD
+        ]
+      ], 400);
+    }
 
     $user = new User();
     $user->setUid(uniqid());
-    $user->setEmail($body['email']);
-    $user->setFirstName($body['first_name']);
-    $user->setLastName($body['last_name']);
-    $user->setPassword(password_hash($body['password'], PASSWORD_DEFAULT));
+    $user->setEmail($email);
+    $user->setFirstName($firstName);
+    $user->setLastName($lastName);
+    $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
     if (!$user->validate()) {
       $errors = [];

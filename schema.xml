@@ -13,8 +13,8 @@
     <behavior name="validate">
       <parameter name="email_blank" value="{column: email, validator: NotBlank, options: {message: INVALID_EMAIL}}" />
       <parameter name="email_already_exists" value="{column: email, validator: Unique, options: {message: EMAIL_ALREADY_EXISTS}}" />
-      <parameter name="first_name" value="{column: first_name, validator: NotNull, options: {message: INVALID_FIRST_NAME}}" />
-      <parameter name="last_name" value="{column: last_name, validator: NotNull, options: {message: INVALID_LAST_NAME}}" />
+      <parameter name="first_name" value="{column: first_name, validator: NotBlank, options: {message: INVALID_FIRST_NAME}}" />
+      <parameter name="last_name" value="{column: last_name, validator: NotBlank, options: {message: INVALID_LAST_NAME}}" />
       <parameter name="password" value="{column: password, validator: NotNull, options: {message: INVALID_PASSWORD}}" />
     </behavior>
   </table>
@@ -37,8 +37,8 @@
       <reference local="subcategory_id" foreign="id" />
     </foreign-key>
     <behavior name="validate">
-      <parameter name="title_invalid" value="{column: title, validator: NotNull, options: {message: INVALID_TITLE}}" />
-      <parameter name="content_invalid" value="{column: content, validator: NotNull, options: {message: INVALID_CONTENT}}" />
+      <parameter name="title_invalid" value="{column: title, validator: NotBlank, options: {message: INVALID_TITLE}}" />
+      <parameter name="content_invalid" value="{column: content, validator: NotBlank, options: {message: INVALID_CONTENT}}" />
     </behavior>
   </table>
 
