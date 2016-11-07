@@ -151,15 +151,6 @@ class AccountController {
     $lastName = $request->getParsedBodyParam('last_name', '');
     $password = $request->getParsedBodyParam('password', '');
 
-    // Checks the password length
-    if (strlen($password) < self::PASSWORD_MIN_LEN) {
-      return $response->withJson([
-        'errors' => [
-          self::INVALID_PASSWORD
-        ]
-      ], 400);
-    }
-
     $user = new User();
     $user->setUid(uniqid());
     $user->setEmail($email);
@@ -175,6 +166,15 @@ class AccountController {
       return $response->withJson(array(
         'errors' => $errors
       ), 400);
+    }
+
+    // Checks the password length
+    if (strlen($password) < self::PASSWORD_MIN_LEN) {
+      return $response->withJson([
+        'errors' => [
+          self::INVALID_PASSWORD
+        ]
+      ], 400);
     }
 
     $user->save();
