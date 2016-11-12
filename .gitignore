@@ -1,5 +1,6 @@
 vendor/
 sql/
 config/config.php
+app/avatars/
 
 *.sqlite

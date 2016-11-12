@@ -58,4 +58,13 @@ $app->group('/category', function() {
   });
 });
 
+/**********
+ * Avatar *
+ **********/
+$app->group('/avatar', function() {
+  $this->get('/{uid}', 'SciMS\Controllers\AvatarController:getByUid');
+  $this->post('', 'SciMS\Controllers\AvatarController:create')
+    ->add('SciMS\Middlewares\TokenMiddleware');
+});
+
 $app->run();
