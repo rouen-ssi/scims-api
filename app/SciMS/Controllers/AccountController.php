@@ -11,6 +11,8 @@ class AccountController {
 
   const TOKEN_HOURS = 24;
   const PASSWORD_MIN_LEN = 6;
+
+  const INVALID_CREDENTIALS = 'INVALID_CREDENTIALS';
   const INVALID_PASSWORD = 'INVALID_PASSWORD';
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
@@ -195,9 +197,11 @@ class AccountController {
     $user = UserQuery::create()->findOneByEmail($body['email']);
 
     if (!$user || !password_verify($body['password'], $user->getPassword())) {
-      return $response->withJson(array(
-        'errors' => array('INVALID_CREDENTIALS')
-      ));
+      return $response->withJson([
+        'errors' => [
+          self::INVALID_CREDENTIALS
+        ]
+      ], 400);
     }
 
     $token = $user->getToken();
