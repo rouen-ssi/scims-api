@@ -6,6 +6,10 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 use SciMS\Models\UserQuery;
+use SciMS\Models\Article;
+use SciMS\Models\ArticleQuery;
+use SciMS\Models\HighlightedArticle;
+use SciMS\Models\HighlightedArticleQuery;
 
 class AccountController {
 
@@ -17,6 +21,7 @@ class AccountController {
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
   const USER_NOT_FOUND = 'USER_NOT_FOUND';
+  const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
 
   /**
    * Get account informations given by its uid.
@@ -135,6 +140,45 @@ class AccountController {
       ], 400);
     }
     $user->save();
+
+    // Returns an http 200 status
+    return $response->withStatus(200);
+  }
+
+  // TODO: doc.
+  public function updateHighlighted(ServerRequestInterface $request, ResponseInterface $response) {
+    // Retreives the user given by its token.
+    $user = $request->getAttribute('user');
+
+    // Retreives the parameters.
+    $articleIds = $request->getParsedBodyParam('highlighted_articles', []);
+
+    // Add highlighted articles.
+    foreach ($articleIds as $articleId) {
+      // Retreives the article by its id.
+      $article = ArticleQuery::create()->findPK($articleId);
+      if (!$article) {
+        return $response->withJson([
+          'errors' => [
+            self::ARTICLE_NOT_FOUND
+          ]
+        ], 400);
+      }
+
+      // Checks if the highlighted articles already exists
+      $highlightedArticlesCount = HighlightedArticleQuery::create()
+        ->filterByUser($user)
+        ->filterByArticle($article)
+        ->count();
+      if ($highlightedArticlesCount > 0) {
+        continue;
+      }
+
+      $highlightedArticle = new HighlightedArticle();
+      $highlightedArticle->setUser($user);
+      $highlightedArticle->setArticle($article);
+      $highlightedArticle->save();
+    }
 
     // Returns an http 200 status
     return $response->withStatus(200);

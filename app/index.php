@@ -39,6 +39,8 @@ $app->group('/account', function() {
   $this->post('/login', 'SciMS\Controllers\AccountController:login');
   $this->put('/password', 'SciMS\Controllers\AccountController:changePassword')
     ->add('SciMS\Middlewares\TokenMiddleware');
+  $this->put('/highlighted', 'SciMS\Controllers\AccountController:updateHighlighted')
+    ->add('SciMS\Middlewares\TokenMiddleware');
 });
 
 /************

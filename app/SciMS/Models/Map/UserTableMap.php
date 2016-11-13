@@ -189,6 +189,13 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'Articles', false);
+        $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':user_id',
+    1 => ':id',
+  ),
+), null, null, 'HighlightedArticles', false);
     } // buildRelations()
 
     /**

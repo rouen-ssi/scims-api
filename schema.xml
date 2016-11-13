@@ -42,6 +42,17 @@
     </behavior>
   </table>
 
+  <table name="highlighted_article" phpName="HighlightedArticle">
+    <column name="user_id" type="integer" required="true" primaryKey="true" />
+    <column name="article_id" type="integer" required="true" primaryKey="true" />
+    <foreign-key foreignTable="user" phpName="user">
+      <reference local="user_id" foreign="id" />
+    </foreign-key>
+    <foreign-key foreignTable="article" phpName="article">
+      <reference local="article_id" foreign="id" />
+    </foreign-key>
+  </table>
+
   <table name="category" phpName="Category">
     <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
     <column name="name" type="varchar" size="32" required="true" />

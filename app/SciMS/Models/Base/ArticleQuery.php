@@ -74,7 +74,17 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWithsubcategory() Adds a RIGHT JOIN clause and with to the query using the subcategory relation
  * @method     ChildArticleQuery innerJoinWithsubcategory() Adds a INNER JOIN clause and with to the query using the subcategory relation
  *
- * @method     \SciMS\Models\UserQuery|\SciMS\Models\CategoryQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     ChildArticleQuery leftJoinHighlightedArticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the HighlightedArticle relation
+ * @method     ChildArticleQuery rightJoinHighlightedArticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the HighlightedArticle relation
+ * @method     ChildArticleQuery innerJoinHighlightedArticle($relationAlias = null) Adds a INNER JOIN clause to the query using the HighlightedArticle relation
+ *
+ * @method     ChildArticleQuery joinWithHighlightedArticle($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the HighlightedArticle relation
+ *
+ * @method     ChildArticleQuery leftJoinWithHighlightedArticle() Adds a LEFT JOIN clause and with to the query using the HighlightedArticle relation
+ * @method     ChildArticleQuery rightJoinWithHighlightedArticle() Adds a RIGHT JOIN clause and with to the query using the HighlightedArticle relation
+ * @method     ChildArticleQuery innerJoinWithHighlightedArticle() Adds a INNER JOIN clause and with to the query using the HighlightedArticle relation
+ *
+ * @method     \SciMS\Models\UserQuery|\SciMS\Models\CategoryQuery|\SciMS\Models\HighlightedArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildArticle findOne(ConnectionInterface $con = null) Return the first ChildArticle matching the query
  * @method     ChildArticle findOneOrCreate(ConnectionInterface $con = null) Return the first ChildArticle matching the query, or a new ChildArticle object populated from the query conditions when no match is found
@@ -784,6 +794,79 @@ abstract class ArticleQuery extends ModelCriteria
         return $this
             ->joinsubcategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'subcategory', '\SciMS\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\HighlightedArticle object
+     *
+     * @param \SciMS\Models\HighlightedArticle|ObjectCollection $highlightedArticle the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterByHighlightedArticle($highlightedArticle, $comparison = null)
+    {
+        if ($highlightedArticle instanceof \SciMS\Models\HighlightedArticle) {
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_ID, $highlightedArticle->getArticleId(), $comparison);
+        } elseif ($highlightedArticle instanceof ObjectCollection) {
+            return $this
+                ->useHighlightedArticleQuery()
+                ->filterByPrimaryKeys($highlightedArticle->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByHighlightedArticle() only accepts arguments of type \SciMS\Models\HighlightedArticle or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the HighlightedArticle relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function joinHighlightedArticle($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('HighlightedArticle');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'HighlightedArticle');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the HighlightedArticle relation HighlightedArticle object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\HighlightedArticleQuery A secondary query class using the current class as primary query
+     */
+    public function useHighlightedArticleQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinHighlightedArticle($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'HighlightedArticle', '\SciMS\Models\HighlightedArticleQuery');
     }
 
     /**
