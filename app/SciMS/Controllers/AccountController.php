@@ -118,13 +118,16 @@ class AccountController {
    * Returns an http 200 status or a json containing errors.
    */
   public function updateInformations(ServerRequestInterface $request, ResponseInterface $response) {
-    // Retreives the user given by its token
+    // Retreives the user given by its token.
     $user = $request->getAttribute('user');
 
-    // Retreives the parameters
+    // Retreives the parameters.
     $firstName = trim($request->getParsedBodyParam('first_name', $user->getFirstName()));
     $lastName = trim($request->getParsedBodyParam('last_name', $user->getLastName()));
     $biography = trim($request->getParsedBodyParam('biography', $user->getBiography()));
+
+    // Updates the user's highlighted articles.
+    $response = $this->updateHighlighted($request, $response);
 
     // Updates and validates the user's informations.
     $user->setFirstName($firstName);
@@ -145,7 +148,6 @@ class AccountController {
     return $response->withStatus(200);
   }
 
-  // TODO: doc.
   public function updateHighlighted(ServerRequestInterface $request, ResponseInterface $response) {
     // Retreives the user given by its token.
     $user = $request->getAttribute('user');
