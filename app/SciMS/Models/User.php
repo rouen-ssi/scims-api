@@ -5,6 +5,8 @@ namespace SciMS\Models;
 use SciMS\Models\Base\User as BaseUser;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery;
+use SciMS\Models\Article;
+use SciMS\Models\ArticleQuery;
 
 /**
  * Skeleton subclass for representing a row from the 'user' table.
@@ -25,13 +27,19 @@ class User extends BaseUser implements \JsonSerializable {
       $highlightedArticleIds[] = $highlightedArticle->getArticleId();
     }
 
+    // Retreives the last posted article.
+    $lastArticle = ArticleQuery::create()
+      ->orderByPublicationDate('desc')
+      ->findOne();
+
     $json = array(
       'uid' => $this->uid,
       'email' => $this->email,
       'last_name' => $this->last_name,
       'first_name' => $this->first_name,
       'biography' => $this->biography,
-      'highlighted_article' => $highlightedArticleIds
+      'highlighted_article' => $highlightedArticleIds,
+      'last_article' => $lastArticle
     );
 
     return $json;
