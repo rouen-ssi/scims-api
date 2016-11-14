@@ -6,6 +6,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\Category;
 use SciMS\Models\CategoryQuery;
+use SciMS\Models\Article;
+use SciMS\Models\ArticleQuery;
 
 class CategoryController {
 
@@ -19,11 +21,11 @@ class CategoryController {
    * @return ResponseInterface a JSON containing all the categories and their subcategories.
    */
   public function getCategories(ServerRequestInterface $request, ResponseInterface $response) {
+    // Retreives all the categories.
     $categories = CategoryQuery::create()->find();
 
     $json = [
-      'categories' => [],
-      'count' => count($categories)
+      'categories' => []
     ];
     foreach ($categories as $category) {
       $json['categories'][] = $category;
