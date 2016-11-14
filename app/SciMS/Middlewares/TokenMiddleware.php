@@ -20,14 +20,14 @@ class TokenMiddleware {
  * @return \Psr\Http\Message\ResponseInterface
  */
   public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next) {
-      $body = $request->getParsedBody();
+      $token = explode(' ', $request->getHeaderLine('Authorization'))[1];
 
-      if (!isset($body['token'])) {
+      if (!$token) {
         return $this->invalidToken($response);
       }
 
       // Retreives the user associated with the given token
-      $user = UserQuery::create()->findOneByToken($body['token']);
+      $user = UserQuery::create()->findOneByToken($token);
       if (!$user) {
         return $this->invalidToken($response);
       }
@@ -49,7 +49,7 @@ class TokenMiddleware {
       "errors" => array(
         'INVALID_TOKEN'
       )
-    ), 400);
+    ), 401);
   }
 
 }
