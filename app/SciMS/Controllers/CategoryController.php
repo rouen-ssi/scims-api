@@ -22,7 +22,8 @@ class CategoryController {
     $categories = CategoryQuery::create()->find();
 
     $json = [
-      'categories' => []
+      'categories' => [],
+      'count' => count($categories)
     ];
     foreach ($categories as $category) {
       $json['categories'][] = $category;
