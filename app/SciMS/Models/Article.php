@@ -22,7 +22,8 @@ class Article extends BaseArticle implements \JsonSerializable {
       'title' => $this->title,
       'content' => $this->content,
       'category_id' => $this->category_id,
-      'subcategory_id' => $this->subcategory_id
+      'subcategory_id' => $this->subcategory_id,
+      'publication_date' => date_timestamp_set(new \DateTime(), $this->publication_date)->format(\DateTime::ISO8601),
     );
 
     return $json;
