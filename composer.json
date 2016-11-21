@@ -3,7 +3,8 @@
     "description": "Un CMS open-source pour les scientifiques",
     "require": {
         "slim/slim": "^3.5",
-        "propel/propel": "~2.0@dev"
+        "propel/propel": "~2.0@dev",
+        "fzaninotto/faker": "^1.6"
     },
     "license": "GPL-3.0",
     "autoload": {
