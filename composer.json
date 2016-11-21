@@ -23,7 +23,8 @@
         "./propel model:build",
         "./propel diff",
         "./propel migrate",
-        "php composer.phar dump-autoload"
+        "php composer.phar dump-autoload",
+        "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "start": [
         "php -S localhost:8080 -t app/"

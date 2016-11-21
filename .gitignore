@@ -6,3 +6,4 @@ app/avatars/
 *.sqlite
 
 .idea/
+.DS_Store
