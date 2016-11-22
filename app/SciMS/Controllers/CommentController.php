@@ -25,8 +25,8 @@ class CommentController {
         $user = $request->getAttribute('user');
 
         // Retrieves all the parameters.
+        $articleId = $request->getAttribute('id', null);
         $parentCommentId = $request->getParsedBodyParam('parent_comment_id', null);
-        $articleId = $request->getParsedBodyParam('article_id', null);
         $content = trim($request->getParsedBodyParam('content', ''));
 
         // Retrieves the Article by its id.
