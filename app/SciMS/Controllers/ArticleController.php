@@ -66,9 +66,9 @@ class ArticleController {
 
     // Retreives the article by its id.
     // Returns an error if the article is not found.
-    $article = ArticleQuery::create()->findPK($args['id']);
+    $article = ArticleQuery::create()->findPk($args['id']);
     if (!$article) {
-      return $reponse->withJson([
+      return $response->withJson([
         'errors' => [
           self::ARTICLE_NOT_FOUND
         ]
@@ -146,16 +146,16 @@ class ArticleController {
    * @param  Request $request  a PSR-7 Request object.
    * @param  Response      $response a PSR-7 Response object.
    * @param  array                  $args     an array containing url arguments.
-   * @return http 200 of ok or 400 if errors.
+   * @return Response an http 200 status or a json containing errors
    */
   public function delete(Request $request, Response $response, array $args) {
     // Retreives the article with its id
-    $article = ArticleQuery::create()->findPK($args['id']);
+    $article = ArticleQuery::create()->findPk($args['id']);
 
     if (!$article) {
       return $response->withJson([
         'errors' => [
-          ARTICLE_NOT_FOUND
+          self::ARTICLE_NOT_FOUND
         ]
       ], 400);
     }

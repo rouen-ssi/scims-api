@@ -6,7 +6,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SciMS\Models\User;
 use SciMS\Models\UserQuery;
-use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery;
@@ -158,7 +157,7 @@ class AccountController {
     // Add highlighted articles.
     foreach ($articleIds as $articleId) {
       // Retreives the article by its id.
-      $article = ArticleQuery::create()->findPK($articleId);
+      $article = ArticleQuery::create()->findPk($articleId);
       if (!$article) {
         return $response->withJson([
           'errors' => [
@@ -190,7 +189,7 @@ class AccountController {
    * Endpoint for create an account
    * @param  Request  $request  a PSR 7 Request object
    * @param  Response       $response a PSR 7 Response object
-   * @return a PSR 7 Response object containing the response.
+   * @return Response PSR 7 Response object containing the response.
    */
   public function create(Request $request, Response $response) {
     // Retreives the parameters
@@ -234,7 +233,7 @@ class AccountController {
    * Endpoint used for user authentification
    * @param  Request $request  a PSR 7 Request object
    * @param  Response      $response a PSR 7 Response object
-   * @return a PSR 7 Response object containing the response.
+   * @return Response PSR 7 Response object containing the response.
    */
   public function login(Request $request, Response $response) {
     $body = $request->getParsedBody();
@@ -277,7 +276,7 @@ class AccountController {
   /**
    * Generate to new token and stores it in the database for the user given
    * @param  User   $user the concerned User.
-   * @return returns the newely generated token encoded in base64.
+   * @return String the newly generated token encoded in base64.
    */
   private function generateAndStoreToken(User $user) {
     $token = base64_encode(openssl_random_pseudo_bytes(64));
