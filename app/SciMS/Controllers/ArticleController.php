@@ -103,27 +103,27 @@ class ArticleController {
   /**
    * Get articles from a specific page, the first page is queried by default.
    * Filter results from a specific category, all categories are queried by default.
-   * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE.
-   *
-   * @param Request $request
-   * @param Response $response
-   * @return Response JSON containing all the articles.
-   */
-  public function getPage(Request $request, Response $response) {
-    $query = ArticleQuery::create('a')
-      ->orderByPublicationDate('DESC')
-    ;
+   * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE. */
+  public function getPage(ServerRequestInterface $request, ResponseInterface $response) {
+    // Get all articles.
+    $query = ArticleQuery::create()->orderByPublicationDate('DESC');
 
-    if ($categoryId = $request->getQueryParam('categoryId')) {
-      $query = $query->where('a.category_id = ?', (int) $categoryId);
+    // If an category id is given, filter.
+    $categoryId = $request->getQueryParam('category_id');
+    if ($categoryId) {
+      $query->filterByCategoryId($categoryId);
     }
 
-    $page = $query->paginate($request->getQueryParam('page', 1), self::ARTICLES_PER_PAGE);
-    $articles = $page->getResults();
+    // Paginates and get results.
+    $articles = $query->paginate($request->getQueryParam('page', 1), self::ARTICLES_PER_PAGE);
+    $json = [
+      'articles' => []
+    ];
+    foreach ($articles as $article) {
+      $json['articles'][] = $article;
+    }
 
-    return $response->withJson([
-      'articles' => $articles->getData(),
-    ], 200);
+    return $response->withJson(json_encode($json), 200);
   }
 
   /**
