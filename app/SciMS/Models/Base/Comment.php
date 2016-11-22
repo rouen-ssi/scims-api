@@ -860,10 +860,9 @@ abstract class Comment implements ActiveRecordInterface
 
             if ($this->commentsRelatedByIdScheduledForDeletion !== null) {
                 if (!$this->commentsRelatedByIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->commentsRelatedByIdScheduledForDeletion as $commentRelatedById) {
-                        // need to save related object because we set the relation to null
-                        $commentRelatedById->save($con);
-                    }
+                    \SciMS\Models\CommentQuery::create()
+                        ->filterByPrimaryKeys($this->commentsRelatedByIdScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->commentsRelatedByIdScheduledForDeletion = null;
                 }
             }

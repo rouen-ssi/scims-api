@@ -72,7 +72,7 @@
         <column name="article_id" type="integer" required="true" />
         <column name="publication_date" type="integer" required="true" />
         <column name="content" type="longvarchar" required="true" />
-        <foreign-key foreignTable="comment" phpName="ParentComment">
+        <foreign-key foreignTable="comment" phpName="ParentComment" onDelete="CASCADE">
             <reference local="parent_comment_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="user" phpName="Author">

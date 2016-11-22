@@ -38,6 +38,7 @@ $app->group('/article', function() {
  ***********/
 $app->group('/comment/{comment_id}', function() {
     $this->put('', 'SciMS\Controllers\CommentController:edit');
+    $this->delete('', 'SciMS\Controllers\CommentController:delete');
 })->add('SciMS\Middlewares\TokenMiddleware');
 
 /***********

@@ -170,7 +170,7 @@ class CommentTableMap extends TableMap
     0 => ':parent_comment_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('Author', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
@@ -191,7 +191,7 @@ class CommentTableMap extends TableMap
     0 => ':parent_comment_id',
     1 => ':id',
   ),
-), null, null, 'CommentsRelatedById', false);
+), 'CASCADE', null, 'CommentsRelatedById', false);
     } // buildRelations()
 
     /**
@@ -206,6 +206,15 @@ class CommentTableMap extends TableMap
             'validate' => array('content_not_blank' => array ('column' => 'content','validator' => 'NotBlank','options' => array ('message' => 'INVALID_CONTENT',),), ),
         );
     } // getBehaviors()
+    /**
+     * Method to invalidate the instance pool of all tables related to comment     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        CommentTableMap::clearInstancePool();
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.

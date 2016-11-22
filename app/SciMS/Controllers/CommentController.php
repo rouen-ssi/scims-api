@@ -118,4 +118,33 @@ class CommentController {
         return $response->withStatus(200);
     }
 
+    public function delete(Request $request, Response $response, array $args)
+    {
+        // Retrieve the user given by TokenMiddleware.
+        $user = $request->getAttribute('user');
+
+        // Retrieves the Comment given by its id.
+        $comment = CommentQuery::create()->findPk($args['comment_id']);
+
+        // Returns an error if the Comment is not found
+        if (!$comment) {
+            return $response->withJson([
+                'errors' => [self::COMMENT_NOT_FOUND]
+            ], 400);
+        }
+
+        // Returns an error if the User is not the author of the Comment.
+        if ($user != $comment->getAuthor()) {
+            return $response->withJson([
+                'errors' => [
+                    self::NOT_AUTHORIZED
+                ]
+            ], 401);
+        }
+
+        // Deletes the Comment and returns an HTTP 200 code.
+        $comment->delete();
+        return $response->withStatus(200);
+    }
+
 }
