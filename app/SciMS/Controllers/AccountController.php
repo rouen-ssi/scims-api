@@ -2,8 +2,8 @@
 
 namespace SciMS\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SciMS\Models\User;
 use SciMS\Models\UserQuery;
 use SciMS\Models\Article;
@@ -25,12 +25,12 @@ class AccountController {
 
   /**
    * Get account informations given by its uid.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  Request $request  a PSR-7 Request object.
+   * @param  Response      $response a PSR-7 Response object.
    * @param  array                  $args     arguments passed in the route url.
-   * @return ResponseInterface a PSR-7 Response object containing a JSON with the account informations.
+   * @return Response a PSR-7 Response object containing a JSON with the account informations.
    */
-  public function get(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function get(Request $request, Response $response, array $args) {
     // Get the user given by its uid
     $user = UserQuery::create()->findOneByUid($args['uid']);
 
@@ -49,11 +49,11 @@ class AccountController {
 
   /**
    * Changes the user's password given by his token.
-   * @param  ServerRequestInterface $request  a PSR-7 request object.
-   * @param  ResponseInterface      $response a PSR-7 response object
-   * @return ResponseInterface a 200 response code if successful or an array of errors.
+   * @param  Request $request  a PSR-7 request object.
+   * @param  Response      $response a PSR-7 response object
+   * @return Response a 200 response code if successful or an array of errors.
    */
-  public function changePassword(ServerRequestInterface $request, ResponseInterface $response) {
+  public function changePassword(Request $request, Response $response) {
     $body = $request->getParsedBody();
 
     // Gets the users from TokenMiddleware
@@ -88,7 +88,7 @@ class AccountController {
    * Update the user's email given by its token.
    * Returns an http 200 status or a JSON containing errors.
    */
-  public function updateEmail(ServerRequestInterface $request, ResponseInterface $response) {
+  public function updateEmail(Request $request, Response $response) {
     // Retreives the user given by TokenMiddleware
     $user = $request->getAttribute('user');
 
@@ -117,7 +117,7 @@ class AccountController {
    * If an information is not given, it will not be updated.
    * Returns an http 200 status or a json containing errors.
    */
-  public function updateInformations(ServerRequestInterface $request, ResponseInterface $response) {
+  public function updateInformations(Request $request, Response $response) {
     // Retreives the user given by its token.
     $user = $request->getAttribute('user');
 
@@ -148,7 +148,7 @@ class AccountController {
     return $response->withStatus(200);
   }
 
-  public function updateHighlighted(ServerRequestInterface $request, ResponseInterface $response) {
+  public function updateHighlighted(Request $request, Response $response) {
     // Retreives the user given by its token.
     $user = $request->getAttribute('user');
 
@@ -188,11 +188,11 @@ class AccountController {
 
   /**
    * Endpoint for create an account
-   * @param  ServerRequestInterface  $request  a PSR 7 Request object
-   * @param  ResponseInterface       $response a PSR 7 Response object
+   * @param  Request  $request  a PSR 7 Request object
+   * @param  Response       $response a PSR 7 Response object
    * @return a PSR 7 Response object containing the response.
    */
-  public function create(ServerRequestInterface $request, ResponseInterface $response) {
+  public function create(Request $request, Response $response) {
     // Retreives the parameters
     $email = $request->getParsedBodyParam('email', '');
     $firstName = $request->getParsedBodyParam('first_name', '');
@@ -232,11 +232,11 @@ class AccountController {
 
   /**
    * Endpoint used for user authentification
-   * @param  ServerRequestInterface $request  a PSR 7 Request object
-   * @param  ResponseInterface      $response a PSR 7 Response object
+   * @param  Request $request  a PSR 7 Request object
+   * @param  Response      $response a PSR 7 Response object
    * @return a PSR 7 Response object containing the response.
    */
-  public function login(ServerRequestInterface $request, ResponseInterface $response) {
+  public function login(Request $request, Response $response) {
     $body = $request->getParsedBody();
 
     // Verifies email address and password

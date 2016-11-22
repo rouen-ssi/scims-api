@@ -2,8 +2,8 @@
 
 namespace SciMS\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SciMS\Models\Category;
 use SciMS\Models\CategoryQuery;
 use SciMS\Models\Article;
@@ -16,11 +16,11 @@ class CategoryController {
 
   /**
    * Endpoint to get all categories and their subcategories.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
-   * @return ResponseInterface a JSON containing all the categories and their subcategories.
+   * @param  Request $request  a PSR-7 Request object.
+   * @param  Response      $response a PSR-7 Response object.
+   * @return Response a JSON containing all the categories and their subcategories.
    */
-  public function getCategories(ServerRequestInterface $request, ResponseInterface $response) {
+  public function getCategories(Request $request, Response $response) {
     // Retreives all the categories.
     $categories = CategoryQuery::create()->find();
 
@@ -38,7 +38,7 @@ class CategoryController {
    * Endpoint to get informations about a category given by its id.
    * Returns an error if the category is not found.
    */
-  public function getCategory(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function getCategory(Request $request, Response $response, array $args) {
     // Retreives the category given by its id or returns an error if the category is not found.
     $category = CategoryQuery::create()->findPK($args['id']);
     if (!$category) {
@@ -55,11 +55,11 @@ class CategoryController {
 
   /**
    * Endpoint to add a category.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
-   * @return ResponseInterface a JSON containing all the categories and their subcategories.
+   * @param  Request $request  a PSR-7 Request object.
+   * @param  Response      $response a PSR-7 Response object.
+   * @return Response a JSON containing all the categories and their subcategories.
    */
-  public function addCategory(ServerRequestInterface $request, ResponseInterface $response) {
+  public function addCategory(Request $request, Response $response) {
     $name = $request->getParsedBodyParam('name');
     $parentCategoryId = $request->getParsedBodyParam('parent_category_id', NULL);
 
@@ -97,7 +97,7 @@ class CategoryController {
    * Endpoint to delete a category given by its id.
    * Returns an HTTP 200 status or a JSON containing errors.
    */
-  public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function delete(Request $request, Response $response, array $args) {
     // Gets the category id from the url.
     $categoryId = $args['id'];
 
@@ -122,7 +122,7 @@ class CategoryController {
    * Edit a category given by its id.
    * Returns an http 200 status or a JSON containg errors.
    */
-  public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function edit(Request $request, Response $response, array $args) {
     // Retreives the category id from the url.
     $categoryId = $args['id'];
 

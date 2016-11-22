@@ -2,8 +2,6 @@
 
 namespace SciMS\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
@@ -19,7 +17,7 @@ class ArticleController {
    * Endpoint to create an article.
    * Returns the newly created article id or errors.
    */
-  public function create(ServerRequestInterface $request, ResponseInterface $response) {
+  public function create(Request $request, Response $response) {
     // Retreives the parameters.
     $title = $request->getParsedBodyParam('title', '');
     $content = $request->getParsedBodyParam('content', '');
@@ -59,7 +57,7 @@ class ArticleController {
    * Endpoint to edit an article given by its id.
    * Returns an http 200 status if success or errors.
    */
-  public function edit(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function edit(Request $request, Response $response, array $args) {
     // Retreives all the parameters.
     $articleTitle = $request->getParsedBodyParam('title', '');
     $articleContent = $request->getParsedBodyParam('content', '');
@@ -104,7 +102,7 @@ class ArticleController {
    * Get articles from a specific page, the first page is queried by default.
    * Filter results from a specific category, all categories are queried by default.
    * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE. */
-  public function getPage(ServerRequestInterface $request, ResponseInterface $response) {
+  public function getPage(Request $request, Response $response) {
     // Get all articles.
     $query = ArticleQuery::create()->orderByPublicationDate('DESC');
 
@@ -122,12 +120,12 @@ class ArticleController {
 
   /**
    * Returns an article given by its id.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  Request $request  a PSR-7 Request object.
+   * @param  Response      $response a PSR-7 Response object.
    * @param  array                  $args     arguments in url.
-   * @return ResponseInterface a JSON containing the article informations.
+   * @return Response a JSON containing the article informations.
    */
-  public function getById(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function getById(Request $request, Response $response, array $args) {
     // Get the article given by its id
     $article = ArticleQuery::create()->findOneById($args['id']);
 
@@ -145,12 +143,12 @@ class ArticleController {
 
   /**
    * Endpoint to delete an article given by its id.
-   * @param  ServerRequestInterface $request  a PSR-7 Request object.
-   * @param  ResponseInterface      $response a PSR-7 Response object.
+   * @param  Request $request  a PSR-7 Request object.
+   * @param  Response      $response a PSR-7 Response object.
    * @param  array                  $args     an array containing url arguments.
    * @return http 200 of ok or 400 if errors.
    */
-  public function delete(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function delete(Request $request, Response $response, array $args) {
     // Retreives the article with its id
     $article = ArticleQuery::create()->findPK($args['id']);
 

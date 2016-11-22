@@ -2,8 +2,8 @@
 
 namespace SciMS\Controllers;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class AvatarController {
 
@@ -17,7 +17,7 @@ class AvatarController {
     'image/bmp'
   ];
 
-  public function getByUid(ServerRequestInterface $request, ResponseInterface $response, array $args) {
+  public function getByUid(Request $request, Response $response, array $args) {
     $filename = './avatars/' . $args['uid'];
 
     // Checks if the file exists
@@ -51,7 +51,7 @@ class AvatarController {
     return $response;
   }
 
-  public function create(ServerRequestInterface $request, ResponseInterface $response) {
+  public function create(Request $request, Response $response) {
     // Retreives the user given by TokenMiddleware
     $user = $request->getAttribute('user');
 
