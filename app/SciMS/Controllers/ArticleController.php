@@ -116,14 +116,8 @@ class ArticleController {
 
     // Paginates and get results.
     $articles = $query->paginate($request->getQueryParam('page', 1), self::ARTICLES_PER_PAGE);
-    $json = [
-      'articles' => []
-    ];
-    foreach ($articles as $article) {
-      $json['articles'][] = $article;
-    }
 
-    return $response->withJson(json_encode($json), 200);
+    return $response->withJson(['articles' => $articles->getData()], 200);
   }
 
   /**
