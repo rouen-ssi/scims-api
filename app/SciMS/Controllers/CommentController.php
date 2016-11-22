@@ -12,9 +12,11 @@ class CommentController {
 
     const INVALID_ARTICLE = 'INVALID_ARTICLE';
     const INVALID_PARENT_COMMENT = 'INVALID_PARENT_COMMENT';
+    const NOT_AUTHORIZED = 'NOT_AUTHORIZED';
 
     /**
-     * @param Request $request a JSON containing the comment article id, the parent comment id and the content.
+     * @param Request $request a JSON containing the parent comment id and content.
+     * The comment article id is given in the URL.
      * @param Response $response
      * @return Response a JSON containing the newly created comment id or an array of errors if any.
      */
@@ -75,4 +77,36 @@ class CommentController {
         ], 200);
     }
 
+    public function edit(Request $request, Response $response, array $args) {
+        // Retrieve the user given by TokenMiddleware.
+        $user = $request->getAttribute('user');
+
+        // Retrieves the Comment given by its id.
+        $comment = CommentQuery::create()->findPk($args['comment_id']);
+
+        // Returns an error if the User is not the author of the Comment.
+        if ($user != $comment->getAuthor()) {
+            return $response->withJson([
+                'errors' => [
+                    self::NOT_AUTHORIZED
+                ]
+            ], 401);
+        }
+
+        // Updates & validates the Comment given by its id.
+        $comment->setContent(trim($request->getParsedBodyParam('content', '')));
+        if (!$comment->validate()) {
+            $errors = [];
+            foreach ($comment->getValidationFailures() as $failure) {
+                $errors[] = $failure->getMessage();
+            }
+            return $response->withJson([
+                'errors' => $errors
+            ], 400);
+        }
+        $comment->save();
+
+        // Returns an HTTP 200 code.
+        return $response->withStatus(200);
+    }
 }

@@ -34,6 +34,13 @@ $app->group('/article', function() {
 });
 
 /***********
+ * Comment *
+ ***********/
+$app->group('/comment/{comment_id}', function() {
+    $this->put('', 'SciMS\Controllers\CommentController:edit');
+})->add('SciMS\Middlewares\TokenMiddleware');
+
+/***********
  * Account *
  ***********/
 $app->group('/account', function() {
