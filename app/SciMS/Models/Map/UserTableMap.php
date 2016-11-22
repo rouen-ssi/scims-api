@@ -196,6 +196,13 @@ class UserTableMap extends TableMap
     1 => ':id',
   ),
 ), null, null, 'HighlightedArticles', false);
+        $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':author_id',
+    1 => ':id',
+  ),
+), null, null, 'Comments', false);
     } // buildRelations()
 
     /**

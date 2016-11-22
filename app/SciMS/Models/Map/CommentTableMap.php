@@ -11,12 +11,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Map\TableMapTrait;
-use SciMS\Models\Article;
-use SciMS\Models\ArticleQuery;
+use SciMS\Models\Comment;
+use SciMS\Models\CommentQuery;
 
 
 /**
- * This class defines the structure of the 'article' table.
+ * This class defines the structure of the 'comment' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use SciMS\Models\ArticleQuery;
  * (i.e. if it's a text column type).
  *
  */
-class ArticleTableMap extends TableMap
+class CommentTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class ArticleTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'SciMS.Models.Map.ArticleTableMap';
+    const CLASS_NAME = 'SciMS.Models.Map.CommentTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class ArticleTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'article';
+    const TABLE_NAME = 'comment';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\SciMS\\Models\\Article';
+    const OM_CLASS = '\\SciMS\\Models\\Comment';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'SciMS.Models.Article';
+    const CLASS_DEFAULT = 'SciMS.Models.Comment';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 6;
 
     /**
      * The number of lazy-loaded columns
@@ -69,42 +69,37 @@ class ArticleTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 6;
 
     /**
      * the column name for the id field
      */
-    const COL_ID = 'article.id';
+    const COL_ID = 'comment.id';
 
     /**
-     * the column name for the user_id field
+     * the column name for the parent_comment_id field
      */
-    const COL_USER_ID = 'article.user_id';
+    const COL_PARENT_COMMENT_ID = 'comment.parent_comment_id';
 
     /**
-     * the column name for the title field
+     * the column name for the author_id field
      */
-    const COL_TITLE = 'article.title';
+    const COL_AUTHOR_ID = 'comment.author_id';
 
     /**
-     * the column name for the content field
+     * the column name for the article_id field
      */
-    const COL_CONTENT = 'article.content';
+    const COL_ARTICLE_ID = 'comment.article_id';
 
     /**
      * the column name for the publication_date field
      */
-    const COL_PUBLICATION_DATE = 'article.publication_date';
+    const COL_PUBLICATION_DATE = 'comment.publication_date';
 
     /**
-     * the column name for the category_id field
+     * the column name for the content field
      */
-    const COL_CATEGORY_ID = 'article.category_id';
-
-    /**
-     * the column name for the subcategory_id field
-     */
-    const COL_SUBCATEGORY_ID = 'article.subcategory_id';
+    const COL_CONTENT = 'comment.content';
 
     /**
      * The default string format for model objects of the related table
@@ -118,11 +113,11 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserId', 'Title', 'Content', 'PublicationDate', 'CategoryId', 'SubcategoryId', ),
-        self::TYPE_CAMELNAME     => array('id', 'userId', 'title', 'content', 'publicationDate', 'categoryId', 'subcategoryId', ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID, ArticleTableMap::COL_USER_ID, ArticleTableMap::COL_TITLE, ArticleTableMap::COL_CONTENT, ArticleTableMap::COL_PUBLICATION_DATE, ArticleTableMap::COL_CATEGORY_ID, ArticleTableMap::COL_SUBCATEGORY_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'title', 'content', 'publication_date', 'category_id', 'subcategory_id', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'ParentCommentId', 'AuthorId', 'ArticleId', 'PublicationDate', 'Content', ),
+        self::TYPE_CAMELNAME     => array('id', 'parentCommentId', 'authorId', 'articleId', 'publicationDate', 'content', ),
+        self::TYPE_COLNAME       => array(CommentTableMap::COL_ID, CommentTableMap::COL_PARENT_COMMENT_ID, CommentTableMap::COL_AUTHOR_ID, CommentTableMap::COL_ARTICLE_ID, CommentTableMap::COL_PUBLICATION_DATE, CommentTableMap::COL_CONTENT, ),
+        self::TYPE_FIELDNAME     => array('id', 'parent_comment_id', 'author_id', 'article_id', 'publication_date', 'content', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -132,11 +127,11 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'Title' => 2, 'Content' => 3, 'PublicationDate' => 4, 'CategoryId' => 5, 'SubcategoryId' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userId' => 1, 'title' => 2, 'content' => 3, 'publicationDate' => 4, 'categoryId' => 5, 'subcategoryId' => 6, ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID => 0, ArticleTableMap::COL_USER_ID => 1, ArticleTableMap::COL_TITLE => 2, ArticleTableMap::COL_CONTENT => 3, ArticleTableMap::COL_PUBLICATION_DATE => 4, ArticleTableMap::COL_CATEGORY_ID => 5, ArticleTableMap::COL_SUBCATEGORY_ID => 6, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'title' => 2, 'content' => 3, 'publication_date' => 4, 'category_id' => 5, 'subcategory_id' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ParentCommentId' => 1, 'AuthorId' => 2, 'ArticleId' => 3, 'PublicationDate' => 4, 'Content' => 5, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'parentCommentId' => 1, 'authorId' => 2, 'articleId' => 3, 'publicationDate' => 4, 'content' => 5, ),
+        self::TYPE_COLNAME       => array(CommentTableMap::COL_ID => 0, CommentTableMap::COL_PARENT_COMMENT_ID => 1, CommentTableMap::COL_AUTHOR_ID => 2, CommentTableMap::COL_ARTICLE_ID => 3, CommentTableMap::COL_PUBLICATION_DATE => 4, CommentTableMap::COL_CONTENT => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'parent_comment_id' => 1, 'author_id' => 2, 'article_id' => 3, 'publication_date' => 4, 'content' => 5, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
     /**
@@ -149,20 +144,19 @@ class ArticleTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('article');
-        $this->setPhpName('Article');
+        $this->setName('comment');
+        $this->setPhpName('Comment');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\SciMS\\Models\\Article');
+        $this->setClassName('\\SciMS\\Models\\Comment');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
-        $this->addColumn('title', 'Title', 'VARCHAR', true, 128, null);
-        $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
+        $this->addForeignKey('parent_comment_id', 'ParentCommentId', 'INTEGER', 'comment', 'id', false, null, null);
+        $this->addForeignKey('author_id', 'AuthorId', 'INTEGER', 'user', 'id', true, null, null);
+        $this->addForeignKey('article_id', 'ArticleId', 'INTEGER', 'article', 'id', true, null, null);
         $this->addColumn('publication_date', 'PublicationDate', 'INTEGER', true, null, null);
-        $this->addForeignKey('category_id', 'CategoryId', 'INTEGER', 'category', 'id', false, null, -1);
-        $this->addForeignKey('subcategory_id', 'SubcategoryId', 'INTEGER', 'category', 'id', false, null, -1);
+        $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
     } // initialize()
 
     /**
@@ -170,41 +164,34 @@ class ArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('user', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('ParentComment', '\\SciMS\\Models\\Comment', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':user_id',
+    0 => ':parent_comment_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Author', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':category_id',
+    0 => ':author_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
-  0 =>
-  array (
-    0 => ':subcategory_id',
-    1 => ':id',
-  ),
-), null, null, null, false);
-        $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
+        $this->addRelation('Article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':article_id',
     1 => ':id',
   ),
-), null, null, 'HighlightedArticles', false);
-        $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
+), null, null, null, false);
+        $this->addRelation('CommentRelatedById', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
-    0 => ':article_id',
+    0 => ':parent_comment_id',
     1 => ':id',
   ),
-), null, null, 'Comments', false);
+), null, null, 'CommentsRelatedById', false);
     } // buildRelations()
 
     /**
@@ -216,7 +203,7 @@ class ArticleTableMap extends TableMap
     public function getBehaviors()
     {
         return array(
-            'validate' => array('title_invalid' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('message' => 'INVALID_TITLE',),), 'content_invalid' => array ('column' => 'content','validator' => 'NotBlank','options' => array ('message' => 'INVALID_CONTENT',),), ),
+            'validate' => array('content_not_blank' => array ('column' => 'content','validator' => 'NotBlank','options' => array ('message' => 'INVALID_CONTENT',),), ),
         );
     } // getBehaviors()
 
@@ -277,7 +264,7 @@ class ArticleTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? ArticleTableMap::CLASS_DEFAULT : ArticleTableMap::OM_CLASS;
+        return $withPrefix ? CommentTableMap::CLASS_DEFAULT : CommentTableMap::OM_CLASS;
     }
 
     /**
@@ -291,22 +278,22 @@ class ArticleTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (Article object, last column rank)
+     * @return array           (Comment object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = ArticleTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = ArticleTableMap::getInstanceFromPool($key))) {
+        $key = CommentTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = CommentTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + ArticleTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + CommentTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = ArticleTableMap::OM_CLASS;
-            /** @var Article $obj */
+            $cls = CommentTableMap::OM_CLASS;
+            /** @var Comment $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            ArticleTableMap::addInstanceToPool($obj, $key);
+            CommentTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -329,18 +316,18 @@ class ArticleTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = ArticleTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = ArticleTableMap::getInstanceFromPool($key))) {
+            $key = CommentTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = CommentTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var Article $obj */
+                /** @var Comment $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                ArticleTableMap::addInstanceToPool($obj, $key);
+                CommentTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -361,21 +348,19 @@ class ArticleTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ArticleTableMap::COL_ID);
-            $criteria->addSelectColumn(ArticleTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(ArticleTableMap::COL_TITLE);
-            $criteria->addSelectColumn(ArticleTableMap::COL_CONTENT);
-            $criteria->addSelectColumn(ArticleTableMap::COL_PUBLICATION_DATE);
-            $criteria->addSelectColumn(ArticleTableMap::COL_CATEGORY_ID);
-            $criteria->addSelectColumn(ArticleTableMap::COL_SUBCATEGORY_ID);
+            $criteria->addSelectColumn(CommentTableMap::COL_ID);
+            $criteria->addSelectColumn(CommentTableMap::COL_PARENT_COMMENT_ID);
+            $criteria->addSelectColumn(CommentTableMap::COL_AUTHOR_ID);
+            $criteria->addSelectColumn(CommentTableMap::COL_ARTICLE_ID);
+            $criteria->addSelectColumn(CommentTableMap::COL_PUBLICATION_DATE);
+            $criteria->addSelectColumn(CommentTableMap::COL_CONTENT);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.title');
-            $criteria->addSelectColumn($alias . '.content');
+            $criteria->addSelectColumn($alias . '.parent_comment_id');
+            $criteria->addSelectColumn($alias . '.author_id');
+            $criteria->addSelectColumn($alias . '.article_id');
             $criteria->addSelectColumn($alias . '.publication_date');
-            $criteria->addSelectColumn($alias . '.category_id');
-            $criteria->addSelectColumn($alias . '.subcategory_id');
+            $criteria->addSelectColumn($alias . '.content');
         }
     }
 
@@ -388,7 +373,7 @@ class ArticleTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(ArticleTableMap::DATABASE_NAME)->getTable(ArticleTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(CommentTableMap::DATABASE_NAME)->getTable(CommentTableMap::TABLE_NAME);
     }
 
     /**
@@ -396,16 +381,16 @@ class ArticleTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(ArticleTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(ArticleTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new ArticleTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(CommentTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(CommentTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new CommentTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a Article or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Comment or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or Article object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Comment object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -416,27 +401,27 @@ class ArticleTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ArticleTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \SciMS\Models\Article) { // it's a model object
+        } elseif ($values instanceof \SciMS\Models\Comment) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(ArticleTableMap::DATABASE_NAME);
-            $criteria->add(ArticleTableMap::COL_ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(CommentTableMap::DATABASE_NAME);
+            $criteria->add(CommentTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
-        $query = ArticleQuery::create()->mergeWith($criteria);
+        $query = CommentQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            ArticleTableMap::clearInstancePool();
+            CommentTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                ArticleTableMap::removeInstanceFromPool($singleval);
+                CommentTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -444,20 +429,20 @@ class ArticleTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the article table.
+     * Deletes all rows from the comment table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return ArticleQuery::create()->doDeleteAll($con);
+        return CommentQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a Article or Criteria object.
+     * Performs an INSERT on the database, given a Comment or Criteria object.
      *
-     * @param mixed               $criteria Criteria or Article object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Comment object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -466,22 +451,22 @@ class ArticleTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(ArticleTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(CommentTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from Article object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Comment object
         }
 
-        if ($criteria->containsKey(ArticleTableMap::COL_ID) && $criteria->keyContainsValue(ArticleTableMap::COL_ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.ArticleTableMap::COL_ID.')');
+        if ($criteria->containsKey(CommentTableMap::COL_ID) && $criteria->keyContainsValue(CommentTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.CommentTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = ArticleQuery::create()->mergeWith($criteria);
+        $query = CommentQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -490,7 +475,7 @@ class ArticleTableMap extends TableMap
         });
     }
 
-} // ArticleTableMap
+} // CommentTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-ArticleTableMap::buildTableMap();
+CommentTableMap::buildTableMap();

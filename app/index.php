@@ -58,6 +58,14 @@ $app->group('/category', function() {
   });
 });
 
+/***********
+ * Comment *
+ ***********/
+$app->group('/comment', function() {
+   $this->post('', 'SciMS\Controllers\CommentController:post')
+       ->add('SciMS\Middlewares\TokenMiddleware');
+});
+
 /**********
  * Avatar *
  **********/
