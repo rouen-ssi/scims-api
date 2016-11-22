@@ -27,13 +27,13 @@
     <column name="publication_date" type="integer" required="true" />
     <column name="category_id" type="integer" required="false" default="-1" />
     <column name="subcategory_id" type="integer" required="false" default="-1" />
-    <foreign-key foreignTable="user" phpName="user">
+    <foreign-key foreignTable="user" phpName="User">
       <reference local="user_id" foreign="id" />
     </foreign-key>
-    <foreign-key foreignTable="category" phpName="category" skipSql="true">
+    <foreign-key foreignTable="category" phpName="Category" skipSql="true">
       <reference local="category_id" foreign="id" />
     </foreign-key>
-    <foreign-key foreignTable="category" phpName="subcategory" skipSql="true">
+    <foreign-key foreignTable="category" phpName="Subcategory" skipSql="true">
       <reference local="subcategory_id" foreign="id" />
     </foreign-key>
     <behavior name="validate">
@@ -45,10 +45,10 @@
   <table name="highlighted_article" phpName="HighlightedArticle">
     <column name="user_id" type="integer" required="true" primaryKey="true" />
     <column name="article_id" type="integer" required="true" primaryKey="true" />
-    <foreign-key foreignTable="user" phpName="user">
+    <foreign-key foreignTable="user" phpName="User">
       <reference local="user_id" foreign="id" />
     </foreign-key>
-    <foreign-key foreignTable="article" phpName="article">
+    <foreign-key foreignTable="article" phpName="Article">
       <reference local="article_id" foreign="id" />
     </foreign-key>
   </table>
@@ -57,7 +57,7 @@
     <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
     <column name="name" type="varchar" size="32" required="true" />
     <column name="parent_category_id" type="integer" required="false" default="-1" />
-    <foreign-key foreignTable="category" phpName="parentCategory" onDelete="cascade" skipSql="true">
+    <foreign-key foreignTable="category" phpName="ParentCategory" onDelete="cascade" skipSql="true">
       <reference local="parent_category_id" foreign="id" />
     </foreign-key>
     <behavior name="validate">

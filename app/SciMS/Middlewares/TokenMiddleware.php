@@ -2,54 +2,52 @@
 
 namespace SciMS\Middlewares;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseInterface;
-use SciMS\Models\User;
+use \Slim\Http\Request;
+use \Slim\Http\Response;
 use SciMS\Models\UserQuery;
 
 class TokenMiddleware {
 
-  /**
- * Checks if the token given is valid.
- * If not, returns the INVALID_TOKEN error.
- * If the token is valid, retreives the user infos with the token and gives it to the next middleware.
- * @param  \Psr\Http\Message\ServerRequestInterface $request  PSR7 request
- * @param  \Psr\Http\Message\ResponseInterface      $response PSR7 response
- * @param  callable                                 $next     Next middleware
- *
- * @return \Psr\Http\Message\ResponseInterface
- */
-  public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next) {
-      $token = explode(' ', $request->getHeaderLine('Authorization'))[1];
+    const INVALID_TOKEN = 'INVALID_TOKEN';
 
-      if (!$token) {
-        return $this->invalidToken($response);
-      }
+    /**
+     * Checks if the given token is valid.
+     * @param Request $request
+     * @param Response $response
+     * @param callable $next
+     * @return Response a JSON containing errors if the given token is invalid.
+     */
+    public function __invoke(Request $request, Response $response, callable $next) {
+        $token = explode(' ', $request->getHeaderLine('Authorization'))[1];
 
-      // Retreives the user associated with the given token
-      $user = UserQuery::create()->findOneByToken($token);
-      if (!$user) {
-        return $this->invalidToken($response);
-      }
+        if (!$token) {
+            return $this->invalidToken($response);
+        }
 
-      // Checks the token validity
-      $today = new \DateTime();
-      if ($user->getTokenExpiration() >= $today->getTimestamp()) {
-        return $this->invalidToken($response);
-      }
+        // Retreives the user associated with the given token
+        $user = UserQuery::create()->findOneByToken($token);
+        if (!$user) {
+            return $this->invalidToken($response);
+        }
 
-      // Add user informations to the request
-      $request = $request->withAttribute('user', $user);
+        // Checks the token validity
+        $today = new \DateTime();
+        if ($user->getTokenExpiration() >= $today->getTimestamp()) {
+            return $this->invalidToken($response);
+        }
 
-      return $next($request, $response);
-  }
+        // Add user informations to the request
+        $request = $request->withAttribute('user', $user);
 
-  private function invalidToken(ResponseInterface $response) {
-    return $response->withJson(array(
-      "errors" => array(
-        'INVALID_TOKEN'
-      )
-    ), 401);
-  }
+        return $next($request, $response);
+    }
+
+    private function invalidToken(Response $response) {
+        return $response->withJson(array(
+            "errors" => array(
+                self::INVALID_TOKEN
+            )
+        ), 401);
+    }
 
 }

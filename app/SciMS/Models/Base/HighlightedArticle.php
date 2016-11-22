@@ -80,12 +80,12 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     /**
      * @var        ChildUser
      */
-    protected $auser;
+    protected $aUser;
 
     /**
      * @var        ChildArticle
      */
-    protected $aarticle;
+    protected $aArticle;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -357,8 +357,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             $this->modifiedColumns[HighlightedArticleTableMap::COL_USER_ID] = true;
         }
 
-        if ($this->auser !== null && $this->auser->getId() !== $v) {
-            $this->auser = null;
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
         }
 
         return $this;
@@ -381,8 +381,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             $this->modifiedColumns[HighlightedArticleTableMap::COL_ARTICLE_ID] = true;
         }
 
-        if ($this->aarticle !== null && $this->aarticle->getId() !== $v) {
-            $this->aarticle = null;
+        if ($this->aArticle !== null && $this->aArticle->getId() !== $v) {
+            $this->aArticle = null;
         }
 
         return $this;
@@ -459,11 +459,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->auser !== null && $this->user_id !== $this->auser->getId()) {
-            $this->auser = null;
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
-        if ($this->aarticle !== null && $this->article_id !== $this->aarticle->getId()) {
-            $this->aarticle = null;
+        if ($this->aArticle !== null && $this->article_id !== $this->aArticle->getId()) {
+            $this->aArticle = null;
         }
     } // ensureConsistency
 
@@ -504,8 +504,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->auser = null;
-            $this->aarticle = null;
+            $this->aUser = null;
+            $this->aArticle = null;
         } // if (deep)
     }
 
@@ -610,18 +610,18 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->auser !== null) {
-                if ($this->auser->isModified() || $this->auser->isNew()) {
-                    $affectedRows += $this->auser->save($con);
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
                 }
-                $this->setuser($this->auser);
+                $this->setUser($this->aUser);
             }
 
-            if ($this->aarticle !== null) {
-                if ($this->aarticle->isModified() || $this->aarticle->isNew()) {
-                    $affectedRows += $this->aarticle->save($con);
+            if ($this->aArticle !== null) {
+                if ($this->aArticle->isModified() || $this->aArticle->isNew()) {
+                    $affectedRows += $this->aArticle->save($con);
                 }
-                $this->setarticle($this->aarticle);
+                $this->setArticle($this->aArticle);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -780,7 +780,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->auser) {
+            if (null !== $this->aUser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -790,12 +790,12 @@ abstract class HighlightedArticle implements ActiveRecordInterface
                         $key = 'user';
                         break;
                     default:
-                        $key = 'user';
+                        $key = 'User';
                 }
 
-                $result[$key] = $this->auser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->aarticle) {
+            if (null !== $this->aArticle) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -805,10 +805,10 @@ abstract class HighlightedArticle implements ActiveRecordInterface
                         $key = 'article';
                         break;
                     default:
-                        $key = 'article';
+                        $key = 'Article';
                 }
 
-                $result[$key] = $this->aarticle->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aArticle->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -967,14 +967,14 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         $primaryKeyFKs = [];
 
         //relation highlighted_article_fk_29554a to table user
-        if ($this->auser && $hash = spl_object_hash($this->auser)) {
+        if ($this->aUser && $hash = spl_object_hash($this->aUser)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
         }
 
         //relation highlighted_article_fk_3610e9 to table article
-        if ($this->aarticle && $hash = spl_object_hash($this->aarticle)) {
+        if ($this->aArticle && $hash = spl_object_hash($this->aArticle)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
@@ -1073,7 +1073,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      * @return $this|\SciMS\Models\HighlightedArticle The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setuser(ChildUser $v = null)
+    public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
             $this->setUserId(NULL);
@@ -1081,7 +1081,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             $this->setUserId($v->getId());
         }
 
-        $this->auser = $v;
+        $this->aUser = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildUser object, it will not be re-added.
@@ -1101,10 +1101,10 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      * @return ChildUser The associated ChildUser object.
      * @throws PropelException
      */
-    public function getuser(ConnectionInterface $con = null)
+    public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->auser === null && ($this->user_id !== null)) {
-            $this->auser = ChildUserQuery::create()
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()
                 ->filterByHighlightedArticle($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1112,11 +1112,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->auser->addHighlightedArticles($this);
+                $this->aUser->addHighlightedArticles($this);
              */
         }
 
-        return $this->auser;
+        return $this->aUser;
     }
 
     /**
@@ -1126,7 +1126,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      * @return $this|\SciMS\Models\HighlightedArticle The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setarticle(ChildArticle $v = null)
+    public function setArticle(ChildArticle $v = null)
     {
         if ($v === null) {
             $this->setArticleId(NULL);
@@ -1134,7 +1134,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             $this->setArticleId($v->getId());
         }
 
-        $this->aarticle = $v;
+        $this->aArticle = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildArticle object, it will not be re-added.
@@ -1154,20 +1154,20 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      * @return ChildArticle The associated ChildArticle object.
      * @throws PropelException
      */
-    public function getarticle(ConnectionInterface $con = null)
+    public function getArticle(ConnectionInterface $con = null)
     {
-        if ($this->aarticle === null && ($this->article_id !== null)) {
-            $this->aarticle = ChildArticleQuery::create()->findPk($this->article_id, $con);
+        if ($this->aArticle === null && ($this->article_id !== null)) {
+            $this->aArticle = ChildArticleQuery::create()->findPk($this->article_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aarticle->addHighlightedArticles($this);
+                $this->aArticle->addHighlightedArticles($this);
              */
         }
 
-        return $this->aarticle;
+        return $this->aArticle;
     }
 
     /**
@@ -1177,11 +1177,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->auser) {
-            $this->auser->removeHighlightedArticle($this);
+        if (null !== $this->aUser) {
+            $this->aUser->removeHighlightedArticle($this);
         }
-        if (null !== $this->aarticle) {
-            $this->aarticle->removeHighlightedArticle($this);
+        if (null !== $this->aArticle) {
+            $this->aArticle->removeHighlightedArticle($this);
         }
         $this->user_id = null;
         $this->article_id = null;
@@ -1205,8 +1205,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->auser = null;
-        $this->aarticle = null;
+        $this->aUser = null;
+        $this->aArticle = null;
     }
 
     /**

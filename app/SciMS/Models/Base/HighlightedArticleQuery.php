@@ -34,25 +34,25 @@ use SciMS\Models\Map\HighlightedArticleTableMap;
  * @method     ChildHighlightedArticleQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildHighlightedArticleQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildHighlightedArticleQuery leftJoinuser($relationAlias = null) Adds a LEFT JOIN clause to the query using the user relation
- * @method     ChildHighlightedArticleQuery rightJoinuser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the user relation
- * @method     ChildHighlightedArticleQuery innerJoinuser($relationAlias = null) Adds a INNER JOIN clause to the query using the user relation
+ * @method     ChildHighlightedArticleQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildHighlightedArticleQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildHighlightedArticleQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     ChildHighlightedArticleQuery joinWithuser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the user relation
+ * @method     ChildHighlightedArticleQuery joinWithUser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the User relation
  *
- * @method     ChildHighlightedArticleQuery leftJoinWithuser() Adds a LEFT JOIN clause and with to the query using the user relation
- * @method     ChildHighlightedArticleQuery rightJoinWithuser() Adds a RIGHT JOIN clause and with to the query using the user relation
- * @method     ChildHighlightedArticleQuery innerJoinWithuser() Adds a INNER JOIN clause and with to the query using the user relation
+ * @method     ChildHighlightedArticleQuery leftJoinWithUser() Adds a LEFT JOIN clause and with to the query using the User relation
+ * @method     ChildHighlightedArticleQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
+ * @method     ChildHighlightedArticleQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
  *
- * @method     ChildHighlightedArticleQuery leftJoinarticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the article relation
- * @method     ChildHighlightedArticleQuery rightJoinarticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the article relation
- * @method     ChildHighlightedArticleQuery innerJoinarticle($relationAlias = null) Adds a INNER JOIN clause to the query using the article relation
+ * @method     ChildHighlightedArticleQuery leftJoinArticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the Article relation
+ * @method     ChildHighlightedArticleQuery rightJoinArticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Article relation
+ * @method     ChildHighlightedArticleQuery innerJoinArticle($relationAlias = null) Adds a INNER JOIN clause to the query using the Article relation
  *
- * @method     ChildHighlightedArticleQuery joinWitharticle($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the article relation
+ * @method     ChildHighlightedArticleQuery joinWithArticle($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Article relation
  *
- * @method     ChildHighlightedArticleQuery leftJoinWitharticle() Adds a LEFT JOIN clause and with to the query using the article relation
- * @method     ChildHighlightedArticleQuery rightJoinWitharticle() Adds a RIGHT JOIN clause and with to the query using the article relation
- * @method     ChildHighlightedArticleQuery innerJoinWitharticle() Adds a INNER JOIN clause and with to the query using the article relation
+ * @method     ChildHighlightedArticleQuery leftJoinWithArticle() Adds a LEFT JOIN clause and with to the query using the Article relation
+ * @method     ChildHighlightedArticleQuery rightJoinWithArticle() Adds a RIGHT JOIN clause and with to the query using the Article relation
+ * @method     ChildHighlightedArticleQuery innerJoinWithArticle() Adds a INNER JOIN clause and with to the query using the Article relation
  *
  * @method     \SciMS\Models\UserQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
@@ -281,7 +281,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
      * </code>
      *
-     * @see       filterByuser()
+     * @see       filterByUser()
      *
      * @param     mixed $userId The value to use as filter.
      *              Use scalar values for equality.
@@ -324,7 +324,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      * $query->filterByArticleId(array('min' => 12)); // WHERE article_id > 12
      * </code>
      *
-     * @see       filterByarticle()
+     * @see       filterByArticle()
      *
      * @param     mixed $articleId The value to use as filter.
      *              Use scalar values for equality.
@@ -367,7 +367,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *
      * @return ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function filterByuser($user, $comparison = null)
+    public function filterByUser($user, $comparison = null)
     {
         if ($user instanceof \SciMS\Models\User) {
             return $this
@@ -380,22 +380,22 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $user->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByuser() only accepts arguments of type \SciMS\Models\User or Collection');
+            throw new PropelException('filterByUser() only accepts arguments of type \SciMS\Models\User or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the user relation
+     * Adds a JOIN clause to the query using the User relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function joinuser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('user');
+        $relationMap = $tableMap->getRelation('User');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -410,14 +410,14 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'user');
+            $this->addJoinObject($join, 'User');
         }
 
         return $this;
     }
 
     /**
-     * Use the user relation User object
+     * Use the User relation User object
      *
      * @see useQuery()
      *
@@ -427,11 +427,11 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\UserQuery A secondary query class using the current class as primary query
      */
-    public function useuserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinuser($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'user', '\SciMS\Models\UserQuery');
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\SciMS\Models\UserQuery');
     }
 
     /**
@@ -444,7 +444,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *
      * @return ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function filterByarticle($article, $comparison = null)
+    public function filterByArticle($article, $comparison = null)
     {
         if ($article instanceof \SciMS\Models\Article) {
             return $this
@@ -457,22 +457,22 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(HighlightedArticleTableMap::COL_ARTICLE_ID, $article->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByarticle() only accepts arguments of type \SciMS\Models\Article or Collection');
+            throw new PropelException('filterByArticle() only accepts arguments of type \SciMS\Models\Article or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the article relation
+     * Adds a JOIN clause to the query using the Article relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function joinarticle($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinArticle($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('article');
+        $relationMap = $tableMap->getRelation('Article');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -487,14 +487,14 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'article');
+            $this->addJoinObject($join, 'Article');
         }
 
         return $this;
     }
 
     /**
-     * Use the article relation Article object
+     * Use the Article relation Article object
      *
      * @see useQuery()
      *
@@ -504,11 +504,11 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\ArticleQuery A secondary query class using the current class as primary query
      */
-    public function usearticleQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useArticleQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinarticle($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'article', '\SciMS\Models\ArticleQuery');
+            ->joinArticle($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Article', '\SciMS\Models\ArticleQuery');
     }
 
     /**

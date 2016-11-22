@@ -170,21 +170,21 @@ class ArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('user', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('User', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':user_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':category_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':subcategory_id',

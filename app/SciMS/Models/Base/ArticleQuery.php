@@ -44,35 +44,35 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildArticleQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildArticleQuery leftJoinuser($relationAlias = null) Adds a LEFT JOIN clause to the query using the user relation
- * @method     ChildArticleQuery rightJoinuser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the user relation
- * @method     ChildArticleQuery innerJoinuser($relationAlias = null) Adds a INNER JOIN clause to the query using the user relation
+ * @method     ChildArticleQuery leftJoinUser($relationAlias = null) Adds a LEFT JOIN clause to the query using the User relation
+ * @method     ChildArticleQuery rightJoinUser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the User relation
+ * @method     ChildArticleQuery innerJoinUser($relationAlias = null) Adds a INNER JOIN clause to the query using the User relation
  *
- * @method     ChildArticleQuery joinWithuser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the user relation
+ * @method     ChildArticleQuery joinWithUser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the User relation
  *
- * @method     ChildArticleQuery leftJoinWithuser() Adds a LEFT JOIN clause and with to the query using the user relation
- * @method     ChildArticleQuery rightJoinWithuser() Adds a RIGHT JOIN clause and with to the query using the user relation
- * @method     ChildArticleQuery innerJoinWithuser() Adds a INNER JOIN clause and with to the query using the user relation
+ * @method     ChildArticleQuery leftJoinWithUser() Adds a LEFT JOIN clause and with to the query using the User relation
+ * @method     ChildArticleQuery rightJoinWithUser() Adds a RIGHT JOIN clause and with to the query using the User relation
+ * @method     ChildArticleQuery innerJoinWithUser() Adds a INNER JOIN clause and with to the query using the User relation
  *
- * @method     ChildArticleQuery leftJoincategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the category relation
- * @method     ChildArticleQuery rightJoincategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the category relation
- * @method     ChildArticleQuery innerJoincategory($relationAlias = null) Adds a INNER JOIN clause to the query using the category relation
+ * @method     ChildArticleQuery leftJoinCategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the Category relation
+ * @method     ChildArticleQuery rightJoinCategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Category relation
+ * @method     ChildArticleQuery innerJoinCategory($relationAlias = null) Adds a INNER JOIN clause to the query using the Category relation
  *
- * @method     ChildArticleQuery joinWithcategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the category relation
+ * @method     ChildArticleQuery joinWithCategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Category relation
  *
- * @method     ChildArticleQuery leftJoinWithcategory() Adds a LEFT JOIN clause and with to the query using the category relation
- * @method     ChildArticleQuery rightJoinWithcategory() Adds a RIGHT JOIN clause and with to the query using the category relation
- * @method     ChildArticleQuery innerJoinWithcategory() Adds a INNER JOIN clause and with to the query using the category relation
+ * @method     ChildArticleQuery leftJoinWithCategory() Adds a LEFT JOIN clause and with to the query using the Category relation
+ * @method     ChildArticleQuery rightJoinWithCategory() Adds a RIGHT JOIN clause and with to the query using the Category relation
+ * @method     ChildArticleQuery innerJoinWithCategory() Adds a INNER JOIN clause and with to the query using the Category relation
  *
- * @method     ChildArticleQuery leftJoinsubcategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the subcategory relation
- * @method     ChildArticleQuery rightJoinsubcategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the subcategory relation
- * @method     ChildArticleQuery innerJoinsubcategory($relationAlias = null) Adds a INNER JOIN clause to the query using the subcategory relation
+ * @method     ChildArticleQuery leftJoinSubcategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the Subcategory relation
+ * @method     ChildArticleQuery rightJoinSubcategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Subcategory relation
+ * @method     ChildArticleQuery innerJoinSubcategory($relationAlias = null) Adds a INNER JOIN clause to the query using the Subcategory relation
  *
- * @method     ChildArticleQuery joinWithsubcategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the subcategory relation
+ * @method     ChildArticleQuery joinWithSubcategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Subcategory relation
  *
- * @method     ChildArticleQuery leftJoinWithsubcategory() Adds a LEFT JOIN clause and with to the query using the subcategory relation
- * @method     ChildArticleQuery rightJoinWithsubcategory() Adds a RIGHT JOIN clause and with to the query using the subcategory relation
- * @method     ChildArticleQuery innerJoinWithsubcategory() Adds a INNER JOIN clause and with to the query using the subcategory relation
+ * @method     ChildArticleQuery leftJoinWithSubcategory() Adds a LEFT JOIN clause and with to the query using the Subcategory relation
+ * @method     ChildArticleQuery rightJoinWithSubcategory() Adds a RIGHT JOIN clause and with to the query using the Subcategory relation
+ * @method     ChildArticleQuery innerJoinWithSubcategory() Adds a INNER JOIN clause and with to the query using the Subcategory relation
  *
  * @method     ChildArticleQuery leftJoinHighlightedArticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the HighlightedArticle relation
  * @method     ChildArticleQuery rightJoinHighlightedArticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the HighlightedArticle relation
@@ -355,7 +355,7 @@ abstract class ArticleQuery extends ModelCriteria
      * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
      * </code>
      *
-     * @see       filterByuser()
+     * @see       filterByUser()
      *
      * @param     mixed $userId The value to use as filter.
      *              Use scalar values for equality.
@@ -489,7 +489,7 @@ abstract class ArticleQuery extends ModelCriteria
      * $query->filterByCategoryId(array('min' => 12)); // WHERE category_id > 12
      * </code>
      *
-     * @see       filterBycategory()
+     * @see       filterByCategory()
      *
      * @param     mixed $categoryId The value to use as filter.
      *              Use scalar values for equality.
@@ -532,7 +532,7 @@ abstract class ArticleQuery extends ModelCriteria
      * $query->filterBySubcategoryId(array('min' => 12)); // WHERE subcategory_id > 12
      * </code>
      *
-     * @see       filterBysubcategory()
+     * @see       filterBySubcategory()
      *
      * @param     mixed $subcategoryId The value to use as filter.
      *              Use scalar values for equality.
@@ -575,7 +575,7 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return ChildArticleQuery The current query, for fluid interface
      */
-    public function filterByuser($user, $comparison = null)
+    public function filterByUser($user, $comparison = null)
     {
         if ($user instanceof \SciMS\Models\User) {
             return $this
@@ -588,22 +588,22 @@ abstract class ArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ArticleTableMap::COL_USER_ID, $user->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByuser() only accepts arguments of type \SciMS\Models\User or Collection');
+            throw new PropelException('filterByUser() only accepts arguments of type \SciMS\Models\User or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the user relation
+     * Adds a JOIN clause to the query using the User relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildArticleQuery The current query, for fluid interface
      */
-    public function joinuser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinUser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('user');
+        $relationMap = $tableMap->getRelation('User');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -618,14 +618,14 @@ abstract class ArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'user');
+            $this->addJoinObject($join, 'User');
         }
 
         return $this;
     }
 
     /**
-     * Use the user relation User object
+     * Use the User relation User object
      *
      * @see useQuery()
      *
@@ -635,11 +635,11 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\UserQuery A secondary query class using the current class as primary query
      */
-    public function useuserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useUserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinuser($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'user', '\SciMS\Models\UserQuery');
+            ->joinUser($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'User', '\SciMS\Models\UserQuery');
     }
 
     /**
@@ -652,7 +652,7 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return ChildArticleQuery The current query, for fluid interface
      */
-    public function filterBycategory($category, $comparison = null)
+    public function filterByCategory($category, $comparison = null)
     {
         if ($category instanceof \SciMS\Models\Category) {
             return $this
@@ -665,22 +665,22 @@ abstract class ArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ArticleTableMap::COL_CATEGORY_ID, $category->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterBycategory() only accepts arguments of type \SciMS\Models\Category or Collection');
+            throw new PropelException('filterByCategory() only accepts arguments of type \SciMS\Models\Category or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the category relation
+     * Adds a JOIN clause to the query using the Category relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildArticleQuery The current query, for fluid interface
      */
-    public function joincategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinCategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('category');
+        $relationMap = $tableMap->getRelation('Category');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -695,14 +695,14 @@ abstract class ArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'category');
+            $this->addJoinObject($join, 'Category');
         }
 
         return $this;
     }
 
     /**
-     * Use the category relation Category object
+     * Use the Category relation Category object
      *
      * @see useQuery()
      *
@@ -712,11 +712,11 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\CategoryQuery A secondary query class using the current class as primary query
      */
-    public function usecategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useCategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joincategory($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'category', '\SciMS\Models\CategoryQuery');
+            ->joinCategory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Category', '\SciMS\Models\CategoryQuery');
     }
 
     /**
@@ -729,7 +729,7 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return ChildArticleQuery The current query, for fluid interface
      */
-    public function filterBysubcategory($category, $comparison = null)
+    public function filterBySubcategory($category, $comparison = null)
     {
         if ($category instanceof \SciMS\Models\Category) {
             return $this
@@ -742,22 +742,22 @@ abstract class ArticleQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(ArticleTableMap::COL_SUBCATEGORY_ID, $category->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterBysubcategory() only accepts arguments of type \SciMS\Models\Category or Collection');
+            throw new PropelException('filterBySubcategory() only accepts arguments of type \SciMS\Models\Category or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the subcategory relation
+     * Adds a JOIN clause to the query using the Subcategory relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildArticleQuery The current query, for fluid interface
      */
-    public function joinsubcategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinSubcategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('subcategory');
+        $relationMap = $tableMap->getRelation('Subcategory');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -772,14 +772,14 @@ abstract class ArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'subcategory');
+            $this->addJoinObject($join, 'Subcategory');
         }
 
         return $this;
     }
 
     /**
-     * Use the subcategory relation Category object
+     * Use the Subcategory relation Category object
      *
      * @see useQuery()
      *
@@ -789,11 +789,11 @@ abstract class ArticleQuery extends ModelCriteria
      *
      * @return \SciMS\Models\CategoryQuery A secondary query class using the current class as primary query
      */
-    public function usesubcategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useSubcategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joinsubcategory($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'subcategory', '\SciMS\Models\CategoryQuery');
+            ->joinSubcategory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Subcategory', '\SciMS\Models\CategoryQuery');
     }
 
     /**

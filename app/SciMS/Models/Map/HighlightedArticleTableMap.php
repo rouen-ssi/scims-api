@@ -140,14 +140,14 @@ class HighlightedArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('user', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('User', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':user_id',
     1 => ':id',
   ),
 ), null, null, null, false);
-        $this->addRelation('article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':article_id',

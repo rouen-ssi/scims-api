@@ -132,17 +132,17 @@ abstract class Article implements ActiveRecordInterface
     /**
      * @var        ChildUser
      */
-    protected $auser;
+    protected $aUser;
 
     /**
      * @var        ChildCategory
      */
-    protected $acategory;
+    protected $aCategory;
 
     /**
      * @var        ChildCategory
      */
-    protected $asubcategory;
+    protected $aSubcategory;
 
     /**
      * @var        ObjectCollection|ChildHighlightedArticle[] Collection to store aggregation of ChildHighlightedArticle objects.
@@ -527,8 +527,8 @@ abstract class Article implements ActiveRecordInterface
             $this->modifiedColumns[ArticleTableMap::COL_USER_ID] = true;
         }
 
-        if ($this->auser !== null && $this->auser->getId() !== $v) {
-            $this->auser = null;
+        if ($this->aUser !== null && $this->aUser->getId() !== $v) {
+            $this->aUser = null;
         }
 
         return $this;
@@ -611,8 +611,8 @@ abstract class Article implements ActiveRecordInterface
             $this->modifiedColumns[ArticleTableMap::COL_CATEGORY_ID] = true;
         }
 
-        if ($this->acategory !== null && $this->acategory->getId() !== $v) {
-            $this->acategory = null;
+        if ($this->aCategory !== null && $this->aCategory->getId() !== $v) {
+            $this->aCategory = null;
         }
 
         return $this;
@@ -635,8 +635,8 @@ abstract class Article implements ActiveRecordInterface
             $this->modifiedColumns[ArticleTableMap::COL_SUBCATEGORY_ID] = true;
         }
 
-        if ($this->asubcategory !== null && $this->asubcategory->getId() !== $v) {
-            $this->asubcategory = null;
+        if ($this->aSubcategory !== null && $this->aSubcategory->getId() !== $v) {
+            $this->aSubcategory = null;
         }
 
         return $this;
@@ -736,14 +736,14 @@ abstract class Article implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->auser !== null && $this->user_id !== $this->auser->getId()) {
-            $this->auser = null;
+        if ($this->aUser !== null && $this->user_id !== $this->aUser->getId()) {
+            $this->aUser = null;
         }
-        if ($this->acategory !== null && $this->category_id !== $this->acategory->getId()) {
-            $this->acategory = null;
+        if ($this->aCategory !== null && $this->category_id !== $this->aCategory->getId()) {
+            $this->aCategory = null;
         }
-        if ($this->asubcategory !== null && $this->subcategory_id !== $this->asubcategory->getId()) {
-            $this->asubcategory = null;
+        if ($this->aSubcategory !== null && $this->subcategory_id !== $this->aSubcategory->getId()) {
+            $this->aSubcategory = null;
         }
     } // ensureConsistency
 
@@ -784,9 +784,9 @@ abstract class Article implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->auser = null;
-            $this->acategory = null;
-            $this->asubcategory = null;
+            $this->aUser = null;
+            $this->aCategory = null;
+            $this->aSubcategory = null;
             $this->collHighlightedArticles = null;
 
         } // if (deep)
@@ -893,25 +893,25 @@ abstract class Article implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->auser !== null) {
-                if ($this->auser->isModified() || $this->auser->isNew()) {
-                    $affectedRows += $this->auser->save($con);
+            if ($this->aUser !== null) {
+                if ($this->aUser->isModified() || $this->aUser->isNew()) {
+                    $affectedRows += $this->aUser->save($con);
                 }
-                $this->setuser($this->auser);
+                $this->setUser($this->aUser);
             }
 
-            if ($this->acategory !== null) {
-                if ($this->acategory->isModified() || $this->acategory->isNew()) {
-                    $affectedRows += $this->acategory->save($con);
+            if ($this->aCategory !== null) {
+                if ($this->aCategory->isModified() || $this->aCategory->isNew()) {
+                    $affectedRows += $this->aCategory->save($con);
                 }
-                $this->setcategory($this->acategory);
+                $this->setCategory($this->aCategory);
             }
 
-            if ($this->asubcategory !== null) {
-                if ($this->asubcategory->isModified() || $this->asubcategory->isNew()) {
-                    $affectedRows += $this->asubcategory->save($con);
+            if ($this->aSubcategory !== null) {
+                if ($this->aSubcategory->isModified() || $this->aSubcategory->isNew()) {
+                    $affectedRows += $this->aSubcategory->save($con);
                 }
-                $this->setsubcategory($this->asubcategory);
+                $this->setSubcategory($this->aSubcategory);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -1148,7 +1148,7 @@ abstract class Article implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->auser) {
+            if (null !== $this->aUser) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -1158,12 +1158,12 @@ abstract class Article implements ActiveRecordInterface
                         $key = 'user';
                         break;
                     default:
-                        $key = 'user';
+                        $key = 'User';
                 }
 
-                $result[$key] = $this->auser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aUser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->acategory) {
+            if (null !== $this->aCategory) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -1173,12 +1173,12 @@ abstract class Article implements ActiveRecordInterface
                         $key = 'category';
                         break;
                     default:
-                        $key = 'category';
+                        $key = 'Category';
                 }
 
-                $result[$key] = $this->acategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->asubcategory) {
+            if (null !== $this->aSubcategory) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -1188,10 +1188,10 @@ abstract class Article implements ActiveRecordInterface
                         $key = 'category';
                         break;
                     default:
-                        $key = 'subcategory';
+                        $key = 'Subcategory';
                 }
 
-                $result[$key] = $this->asubcategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aSubcategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collHighlightedArticles) {
 
@@ -1513,7 +1513,7 @@ abstract class Article implements ActiveRecordInterface
      * @return $this|\SciMS\Models\Article The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setuser(ChildUser $v = null)
+    public function setUser(ChildUser $v = null)
     {
         if ($v === null) {
             $this->setUserId(NULL);
@@ -1521,7 +1521,7 @@ abstract class Article implements ActiveRecordInterface
             $this->setUserId($v->getId());
         }
 
-        $this->auser = $v;
+        $this->aUser = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildUser object, it will not be re-added.
@@ -1541,10 +1541,10 @@ abstract class Article implements ActiveRecordInterface
      * @return ChildUser The associated ChildUser object.
      * @throws PropelException
      */
-    public function getuser(ConnectionInterface $con = null)
+    public function getUser(ConnectionInterface $con = null)
     {
-        if ($this->auser === null && ($this->user_id !== null)) {
-            $this->auser = ChildUserQuery::create()
+        if ($this->aUser === null && ($this->user_id !== null)) {
+            $this->aUser = ChildUserQuery::create()
                 ->filterByArticle($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1552,11 +1552,11 @@ abstract class Article implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->auser->addArticles($this);
+                $this->aUser->addArticles($this);
              */
         }
 
-        return $this->auser;
+        return $this->aUser;
     }
 
     /**
@@ -1566,7 +1566,7 @@ abstract class Article implements ActiveRecordInterface
      * @return $this|\SciMS\Models\Article The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setcategory(ChildCategory $v = null)
+    public function setCategory(ChildCategory $v = null)
     {
         if ($v === null) {
             $this->setCategoryId(-1);
@@ -1574,7 +1574,7 @@ abstract class Article implements ActiveRecordInterface
             $this->setCategoryId($v->getId());
         }
 
-        $this->acategory = $v;
+        $this->aCategory = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildCategory object, it will not be re-added.
@@ -1594,20 +1594,20 @@ abstract class Article implements ActiveRecordInterface
      * @return ChildCategory The associated ChildCategory object.
      * @throws PropelException
      */
-    public function getcategory(ConnectionInterface $con = null)
+    public function getCategory(ConnectionInterface $con = null)
     {
-        if ($this->acategory === null && ($this->category_id !== null)) {
-            $this->acategory = ChildCategoryQuery::create()->findPk($this->category_id, $con);
+        if ($this->aCategory === null && ($this->category_id !== null)) {
+            $this->aCategory = ChildCategoryQuery::create()->findPk($this->category_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->acategory->addArticlesRelatedByCategoryId($this);
+                $this->aCategory->addArticlesRelatedByCategoryId($this);
              */
         }
 
-        return $this->acategory;
+        return $this->aCategory;
     }
 
     /**
@@ -1617,7 +1617,7 @@ abstract class Article implements ActiveRecordInterface
      * @return $this|\SciMS\Models\Article The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setsubcategory(ChildCategory $v = null)
+    public function setSubcategory(ChildCategory $v = null)
     {
         if ($v === null) {
             $this->setSubcategoryId(-1);
@@ -1625,7 +1625,7 @@ abstract class Article implements ActiveRecordInterface
             $this->setSubcategoryId($v->getId());
         }
 
-        $this->asubcategory = $v;
+        $this->aSubcategory = $v;
 
         // Add binding for other direction of this n:n relationship.
         // If this object has already been added to the ChildCategory object, it will not be re-added.
@@ -1645,20 +1645,20 @@ abstract class Article implements ActiveRecordInterface
      * @return ChildCategory The associated ChildCategory object.
      * @throws PropelException
      */
-    public function getsubcategory(ConnectionInterface $con = null)
+    public function getSubcategory(ConnectionInterface $con = null)
     {
-        if ($this->asubcategory === null && ($this->subcategory_id !== null)) {
-            $this->asubcategory = ChildCategoryQuery::create()->findPk($this->subcategory_id, $con);
+        if ($this->aSubcategory === null && ($this->subcategory_id !== null)) {
+            $this->aSubcategory = ChildCategoryQuery::create()->findPk($this->subcategory_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->asubcategory->addArticlesRelatedBySubcategoryId($this);
+                $this->aSubcategory->addArticlesRelatedBySubcategoryId($this);
              */
         }
 
-        return $this->asubcategory;
+        return $this->aSubcategory;
     }
 
 
@@ -1746,7 +1746,7 @@ abstract class Article implements ActiveRecordInterface
                 $this->initHighlightedArticles();
             } else {
                 $collHighlightedArticles = ChildHighlightedArticleQuery::create(null, $criteria)
-                    ->filterByarticle($this)
+                    ->filterByArticle($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1803,7 +1803,7 @@ abstract class Article implements ActiveRecordInterface
         $this->highlightedArticlesScheduledForDeletion = clone $highlightedArticlesToDelete;
 
         foreach ($highlightedArticlesToDelete as $highlightedArticleRemoved) {
-            $highlightedArticleRemoved->setarticle(null);
+            $highlightedArticleRemoved->setArticle(null);
         }
 
         $this->collHighlightedArticles = null;
@@ -1844,7 +1844,7 @@ abstract class Article implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByarticle($this)
+                ->filterByArticle($this)
                 ->count($con);
         }
 
@@ -1882,7 +1882,7 @@ abstract class Article implements ActiveRecordInterface
     protected function doAddHighlightedArticle(ChildHighlightedArticle $highlightedArticle)
     {
         $this->collHighlightedArticles[]= $highlightedArticle;
-        $highlightedArticle->setarticle($this);
+        $highlightedArticle->setArticle($this);
     }
 
     /**
@@ -1899,7 +1899,7 @@ abstract class Article implements ActiveRecordInterface
                 $this->highlightedArticlesScheduledForDeletion->clear();
             }
             $this->highlightedArticlesScheduledForDeletion[]= clone $highlightedArticle;
-            $highlightedArticle->setarticle(null);
+            $highlightedArticle->setArticle(null);
         }
 
         return $this;
@@ -1922,10 +1922,10 @@ abstract class Article implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildHighlightedArticle[] List of ChildHighlightedArticle objects
      */
-    public function getHighlightedArticlesJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getHighlightedArticlesJoinUser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildHighlightedArticleQuery::create(null, $criteria);
-        $query->joinWith('user', $joinBehavior);
+        $query->joinWith('User', $joinBehavior);
 
         return $this->getHighlightedArticles($query, $con);
     }
@@ -1937,14 +1937,14 @@ abstract class Article implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->auser) {
-            $this->auser->removeArticle($this);
+        if (null !== $this->aUser) {
+            $this->aUser->removeArticle($this);
         }
-        if (null !== $this->acategory) {
-            $this->acategory->removeArticleRelatedByCategoryId($this);
+        if (null !== $this->aCategory) {
+            $this->aCategory->removeArticleRelatedByCategoryId($this);
         }
-        if (null !== $this->asubcategory) {
-            $this->asubcategory->removeArticleRelatedBySubcategoryId($this);
+        if (null !== $this->aSubcategory) {
+            $this->aSubcategory->removeArticleRelatedBySubcategoryId($this);
         }
         $this->id = null;
         $this->user_id = null;
@@ -1980,9 +1980,9 @@ abstract class Article implements ActiveRecordInterface
         } // if ($deep)
 
         $this->collHighlightedArticles = null;
-        $this->auser = null;
-        $this->acategory = null;
-        $this->asubcategory = null;
+        $this->aUser = null;
+        $this->aCategory = null;
+        $this->aSubcategory = null;
     }
 
     /**
@@ -2038,21 +2038,21 @@ abstract class Article implements ActiveRecordInterface
             // foreign key reference.
 
             // If validate() method exists, the validate-behavior is configured for related object
-            if (method_exists($this->auser, 'validate')) {
-                if (!$this->auser->validate($validator)) {
-                    $failureMap->addAll($this->auser->getValidationFailures());
+            if (method_exists($this->aUser, 'validate')) {
+                if (!$this->aUser->validate($validator)) {
+                    $failureMap->addAll($this->aUser->getValidationFailures());
                 }
             }
             // If validate() method exists, the validate-behavior is configured for related object
-            if (method_exists($this->acategory, 'validate')) {
-                if (!$this->acategory->validate($validator)) {
-                    $failureMap->addAll($this->acategory->getValidationFailures());
+            if (method_exists($this->aCategory, 'validate')) {
+                if (!$this->aCategory->validate($validator)) {
+                    $failureMap->addAll($this->aCategory->getValidationFailures());
                 }
             }
             // If validate() method exists, the validate-behavior is configured for related object
-            if (method_exists($this->asubcategory, 'validate')) {
-                if (!$this->asubcategory->validate($validator)) {
-                    $failureMap->addAll($this->asubcategory->getValidationFailures());
+            if (method_exists($this->aSubcategory, 'validate')) {
+                if (!$this->aSubcategory->validate($validator)) {
+                    $failureMap->addAll($this->aSubcategory->getValidationFailures());
                 }
             }
 

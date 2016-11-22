@@ -36,15 +36,15 @@ use SciMS\Models\Map\CategoryTableMap;
  * @method     ChildCategoryQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildCategoryQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildCategoryQuery leftJoinparentCategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the parentCategory relation
- * @method     ChildCategoryQuery rightJoinparentCategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the parentCategory relation
- * @method     ChildCategoryQuery innerJoinparentCategory($relationAlias = null) Adds a INNER JOIN clause to the query using the parentCategory relation
+ * @method     ChildCategoryQuery leftJoinParentCategory($relationAlias = null) Adds a LEFT JOIN clause to the query using the ParentCategory relation
+ * @method     ChildCategoryQuery rightJoinParentCategory($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ParentCategory relation
+ * @method     ChildCategoryQuery innerJoinParentCategory($relationAlias = null) Adds a INNER JOIN clause to the query using the ParentCategory relation
  *
- * @method     ChildCategoryQuery joinWithparentCategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the parentCategory relation
+ * @method     ChildCategoryQuery joinWithParentCategory($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ParentCategory relation
  *
- * @method     ChildCategoryQuery leftJoinWithparentCategory() Adds a LEFT JOIN clause and with to the query using the parentCategory relation
- * @method     ChildCategoryQuery rightJoinWithparentCategory() Adds a RIGHT JOIN clause and with to the query using the parentCategory relation
- * @method     ChildCategoryQuery innerJoinWithparentCategory() Adds a INNER JOIN clause and with to the query using the parentCategory relation
+ * @method     ChildCategoryQuery leftJoinWithParentCategory() Adds a LEFT JOIN clause and with to the query using the ParentCategory relation
+ * @method     ChildCategoryQuery rightJoinWithParentCategory() Adds a RIGHT JOIN clause and with to the query using the ParentCategory relation
+ * @method     ChildCategoryQuery innerJoinWithParentCategory() Adds a INNER JOIN clause and with to the query using the ParentCategory relation
  *
  * @method     ChildCategoryQuery leftJoinArticleRelatedByCategoryId($relationAlias = null) Adds a LEFT JOIN clause to the query using the ArticleRelatedByCategoryId relation
  * @method     ChildCategoryQuery rightJoinArticleRelatedByCategoryId($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ArticleRelatedByCategoryId relation
@@ -360,7 +360,7 @@ abstract class CategoryQuery extends ModelCriteria
      * $query->filterByParentCategoryId(array('min' => 12)); // WHERE parent_category_id > 12
      * </code>
      *
-     * @see       filterByparentCategory()
+     * @see       filterByParentCategory()
      *
      * @param     mixed $parentCategoryId The value to use as filter.
      *              Use scalar values for equality.
@@ -403,7 +403,7 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @return ChildCategoryQuery The current query, for fluid interface
      */
-    public function filterByparentCategory($category, $comparison = null)
+    public function filterByParentCategory($category, $comparison = null)
     {
         if ($category instanceof \SciMS\Models\Category) {
             return $this
@@ -416,22 +416,22 @@ abstract class CategoryQuery extends ModelCriteria
             return $this
                 ->addUsingAlias(CategoryTableMap::COL_PARENT_CATEGORY_ID, $category->toKeyValue('PrimaryKey', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByparentCategory() only accepts arguments of type \SciMS\Models\Category or Collection');
+            throw new PropelException('filterByParentCategory() only accepts arguments of type \SciMS\Models\Category or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the parentCategory relation
+     * Adds a JOIN clause to the query using the ParentCategory relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildCategoryQuery The current query, for fluid interface
      */
-    public function joinparentCategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function joinParentCategory($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('parentCategory');
+        $relationMap = $tableMap->getRelation('ParentCategory');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -446,14 +446,14 @@ abstract class CategoryQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'parentCategory');
+            $this->addJoinObject($join, 'ParentCategory');
         }
 
         return $this;
     }
 
     /**
-     * Use the parentCategory relation Category object
+     * Use the ParentCategory relation Category object
      *
      * @see useQuery()
      *
@@ -463,11 +463,11 @@ abstract class CategoryQuery extends ModelCriteria
      *
      * @return \SciMS\Models\CategoryQuery A secondary query class using the current class as primary query
      */
-    public function useparentCategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    public function useParentCategoryQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
     {
         return $this
-            ->joinparentCategory($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'parentCategory', '\SciMS\Models\CategoryQuery');
+            ->joinParentCategory($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ParentCategory', '\SciMS\Models\CategoryQuery');
     }
 
     /**
