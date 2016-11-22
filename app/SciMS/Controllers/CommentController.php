@@ -13,6 +13,7 @@ class CommentController {
     const INVALID_ARTICLE = 'INVALID_ARTICLE';
     const INVALID_PARENT_COMMENT = 'INVALID_PARENT_COMMENT';
     const NOT_AUTHORIZED = 'NOT_AUTHORIZED';
+    const COMMENT_NOT_FOUND = 'COMMENT_NOT_FOUND';
 
     /**
      * @param Request $request a JSON containing the parent comment id and content.
@@ -84,6 +85,13 @@ class CommentController {
         // Retrieves the Comment given by its id.
         $comment = CommentQuery::create()->findPk($args['comment_id']);
 
+        // Returns an error if the Comment is not found
+        if (!$comment) {
+            return $response->withJson([
+                'errors' => [ self::COMMENT_NOT_FOUND ]
+            ], 400);
+        }
+
         // Returns an error if the User is not the author of the Comment.
         if ($user != $comment->getAuthor()) {
             return $response->withJson([
@@ -109,4 +117,5 @@ class CommentController {
         // Returns an HTTP 200 code.
         return $response->withStatus(200);
     }
+
 }
