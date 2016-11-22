@@ -7,6 +7,8 @@ use Psr\Http\Message\ResponseInterface;
 use SciMS\Models\User;
 use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class ArticleController {
 
@@ -99,28 +101,29 @@ class ArticleController {
   }
 
   /**
-   * Get articles with a specific page.
-   * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE.
-   * @param  ServerRequestInterface $request  a PSR-7 request object.
-   * @param  ResponseInterface      $response a PSR-7 response object.
-   * @return ResponseInterfaace a JSON containing all the articles.
-   */
+   * Get articles from a specific page, the first page is queried by default.
+   * Filter results from a specific category, all categories are queried by default.
+   * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE. */
   public function getPage(ServerRequestInterface $request, ResponseInterface $response) {
-    $page = $request->getQueryParam('page', 1);
+    // Get all articles.
+    $query = ArticleQuery::create()->orderByPublicationDate('DESC');
 
-    $articles = ArticleQuery::create()->paginate($page, self::ARTICLES_PER_PAGE);
+    // If an category id is given, filter.
+    $categoryId = $request->getQueryParam('category_id');
+    if ($categoryId) {
+      $query->filterByCategoryId($categoryId);
+    }
 
+    // Paginates and get results.
+    $articles = $query->paginate($request->getQueryParam('page', 1), self::ARTICLES_PER_PAGE);
     $json = [
       'articles' => []
     ];
-
     foreach ($articles as $article) {
       $json['articles'][] = $article;
     }
 
     return $response->withJson(json_encode($json), 200);
-
-   return $response;
   }
 
   /**

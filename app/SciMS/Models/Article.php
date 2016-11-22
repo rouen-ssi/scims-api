@@ -18,11 +18,17 @@ class Article extends BaseArticle implements \JsonSerializable {
   public function jsonSerialize() {
     $json = array(
       'id' => $this->id,
-      'user_uid' => $this->getUser()->getUid(),
+      'user' => [
+        'uid' => $this->getuser()->getUid(),
+        'email' => $this->getuser()->getEmail(),
+        'last_name' => $this->getuser()->getLastName(),
+        'first_name' => $this->getuser()->getFirstName(),
+      ],
       'title' => $this->title,
       'content' => $this->content,
       'category_id' => $this->category_id,
-      'subcategory_id' => $this->subcategory_id
+      'subcategory_id' => $this->subcategory_id,
+      'publication_date' => date_timestamp_set(new \DateTime(), $this->publication_date)->format(\DateTime::ISO8601),
     );
 
     return $json;
