@@ -265,11 +265,7 @@ class AccountController {
       $token = $this->generateAndStoreToken($user);
     }
 
-    return $response->withJson(array(
-      'first_name' => $user->getFirstName(),
-      'last_name' => $user->getLastName(),
-      'token' => $token
-    ), 200);
+    return $response->withJson($user, 200);
 
   }
 
