@@ -107,15 +107,23 @@ class ArticleController {
     $query = ArticleQuery::create()->orderByPublicationDate('DESC');
 
     // If an category id is given, filter.
-    $categoryId = $request->getQueryParam('category_id');
-    if ($categoryId) {
+    if ($categoryId = $request->getQueryParam('category_id')) {
       $query->filterByCategoryId($categoryId);
     }
 
     // Paginates and get results.
-    $articles = $query->paginate($request->getQueryParam('page', 1), self::ARTICLES_PER_PAGE);
+    $page = $request->getQueryParam('page', 1);
+    $articles = $query->paginate($page, self::ARTICLES_PER_PAGE);
 
-    return $response->withJson(['articles' => $articles->getData()], 200);
+    $nrOfArticles = ArticleQuery::create()->count();
+
+    return $response->withJson([
+      'pagination' => [
+        'current' => $page,
+        'count' => $nrOfArticles / self::ARTICLES_PER_PAGE,
+      ],
+      'articles' => $articles->getData(),
+    ], 200);
   }
 
   /**
