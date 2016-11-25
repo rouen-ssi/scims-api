@@ -14,7 +14,13 @@ use SciMS\Models\Base\Comment as BaseComment;
  * long as it does not already exist in the output directory.
  *
  */
-class Comment extends BaseComment
-{
-
+class Comment extends BaseComment implements \JsonSerializable {
+    public function jsonSerialize() {
+        return [
+            'parent_comment_id' => $this->getParentCommentId(),
+            'user' => $this->getAuthor(),
+            'publication_date' => date_timestamp_set(new \DateTime, $this->getPublicationDate())->format(\DateTime::ISO8601),
+            'content' => $this->getContent(),
+        ];
+    }
 }

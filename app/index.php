@@ -26,6 +26,8 @@ $app->group('/article', function() {
         /********************
          * Article comments *
          ********************/
+        $this->get('/comments', 'SciMS\Controllers\CommentController:index');
+
         $this->group('/comment', function() {
             $this->post('', 'SciMS\Controllers\CommentController:post')
                 ->add('SciMS\Middlewares\TokenMiddleware');

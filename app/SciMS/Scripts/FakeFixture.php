@@ -10,6 +10,7 @@ use Composer\Script\Event;
 use Faker\Factory;
 use SciMS\Models\Article;
 use SciMS\Models\Category;
+use SciMS\Models\Comment;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\User;
 
@@ -59,8 +60,22 @@ class FakeFixture
       $article->setuser($faker->randomElement($users));
       $article->setTitle($faker->sentence($faker->numberBetween(5, 15), false));
       $article->setContent($faker->realText($faker->numberBetween(3000, 10000)));
-      $article->setPublicationDate($faker->dateTimeThisYear->getTimestamp());
+      $articlePublicationDate = $faker->dateTimeThisYear;
+      $article->setPublicationDate($articlePublicationDate->getTimestamp());
       $article->setcategory($faker->randomElement($categories));
+
+      /** @var Comment[] $comments */
+      $comments = [];
+      for ($j = 0; $j < $faker->numberBetween(0, 30); $j++) {
+          $comment = new Comment();
+          $comment->setParentComment($faker->boolean(30) ? $faker->randomElement($comments) : null);
+          $comment->setAuthor($faker->randomElement($users));
+          $comment->setArticle($article);
+          $comment->setPublicationDate($faker->dateTimeBetween($articlePublicationDate)->getTimestamp());
+          $comment->setContent($faker->paragraph(15));
+
+          $comments[] = $comment;
+      }
 
       $article->save();
       $articles[] = $article;
