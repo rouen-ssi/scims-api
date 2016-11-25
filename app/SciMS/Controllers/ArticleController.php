@@ -112,7 +112,7 @@ class ArticleController {
     }
 
     // Paginates and get results.
-    $page = $request->getQueryParam('page', 1);
+    $page = (int) $request->getQueryParam('page', 1);
     $articles = $query->paginate($page, self::ARTICLES_PER_PAGE);
 
     $nrOfArticles = ArticleQuery::create()->count();
