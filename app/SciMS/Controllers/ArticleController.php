@@ -146,7 +146,7 @@ class ArticleController {
       ], 400);
     }
 
-    return $response->withJson(json_encode($article), 200);
+    return $response->withJson(['article' => $article], 200);
   }
 
   /**
