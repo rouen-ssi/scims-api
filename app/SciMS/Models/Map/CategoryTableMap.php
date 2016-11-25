@@ -146,7 +146,7 @@ class CategoryTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('ParentCategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('parentCategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':parent_category_id',

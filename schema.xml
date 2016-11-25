@@ -19,49 +19,70 @@
         </behavior>
     </table>
 
-  <table name="article" phpName="Article">
-    <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-    <column name="user_id" type="integer" required="true" />
-    <column name="title" type="varchar" size="128" required="true" />
-    <column name="content" type="longvarchar" required="true" />
-    <column name="publication_date" type="integer" required="true" />
-    <column name="category_id" type="integer" required="false" default="-1" />
-    <column name="subcategory_id" type="integer" required="false" default="-1" />
-    <foreign-key foreignTable="user" phpName="user">
-      <reference local="user_id" foreign="id" />
-    </foreign-key>
-    <foreign-key foreignTable="category" phpName="category" skipSql="true">
-      <reference local="category_id" foreign="id" />
-    </foreign-key>
-    <foreign-key foreignTable="category" phpName="subcategory" skipSql="true">
-      <reference local="subcategory_id" foreign="id" />
-    </foreign-key>
-    <behavior name="validate">
-      <parameter name="title_invalid" value="{column: title, validator: NotBlank, options: {message: INVALID_TITLE}}" />
-      <parameter name="content_invalid" value="{column: content, validator: NotBlank, options: {message: INVALID_CONTENT}}" />
-    </behavior>
-  </table>
+    <table name="article" phpName="Article">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="user_id" type="integer" required="true" />
+        <column name="title" type="varchar" size="128" required="true" />
+        <column name="content" type="longvarchar" required="true" />
+        <column name="publication_date" type="integer" required="true" />
+        <column name="category_id" type="integer" required="false" default="-1" />
+        <column name="subcategory_id" type="integer" required="false" default="-1" />
+        <foreign-key foreignTable="user" phpName="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="category" phpName="category" skipSql="true">
+            <reference local="category_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="category" phpName="subcategory" skipSql="true">
+            <reference local="subcategory_id" foreign="id" />
+        </foreign-key>
+        <behavior name="validate">
+            <parameter name="title_invalid" value="{column: title, validator: NotBlank, options: {message: INVALID_TITLE}}" />
+            <parameter name="content_invalid" value="{column: content, validator: NotBlank, options: {message: INVALID_CONTENT}}" />
+        </behavior>
+    </table>
 
-  <table name="highlighted_article" phpName="HighlightedArticle">
-    <column name="user_id" type="integer" required="true" primaryKey="true" />
-    <column name="article_id" type="integer" required="true" primaryKey="true" />
-    <foreign-key foreignTable="user" phpName="user">
-      <reference local="user_id" foreign="id" />
-    </foreign-key>
-    <foreign-key foreignTable="article" phpName="article">
-      <reference local="article_id" foreign="id" />
-    </foreign-key>
-  </table>
+    <table name="highlighted_article" phpName="HighlightedArticle">
+        <column name="user_id" type="integer" required="true" primaryKey="true" />
+        <column name="article_id" type="integer" required="true" primaryKey="true" />
+        <foreign-key foreignTable="user" phpName="user">
+            <reference local="user_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="article" phpName="article">
+            <reference local="article_id" foreign="id" />
+        </foreign-key>
+    </table>
 
-  <table name="category" phpName="Category">
-    <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
-    <column name="name" type="varchar" size="32" required="true" />
-    <column name="parent_category_id" type="integer" required="false" default="-1" />
-    <foreign-key foreignTable="category" phpName="parentCategory" onDelete="cascade" skipSql="true">
-      <reference local="parent_category_id" foreign="id" />
-    </foreign-key>
-    <behavior name="validate">
-      <parameter name="name_length" value="{column: name, validator: NotBlank, options: {message: INVALID_NAME}}" />
-    </behavior>
-  </table>
+    <table name="category" phpName="Category">
+        <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
+        <column name="name" type="varchar" size="32" required="true" />
+        <column name="parent_category_id" type="integer" required="false" default="-1" />
+        <foreign-key foreignTable="category" phpName="parentCategory" onDelete="cascade" skipSql="true">
+            <reference local="parent_category_id" foreign="id" />
+        </foreign-key>
+        <behavior name="validate">
+            <parameter name="name_length" value="{column: name, validator: NotBlank, options: {message: INVALID_NAME}}" />
+        </behavior>
+    </table>
+
+    <table name="comment" phpName="Comment">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
+        <column name="parent_comment_id" type="integer" />
+        <column name="author_id" type="integer" required="true" />
+        <column name="article_id" type="integer" required="true" />
+        <column name="publication_date" type="integer" required="true" />
+        <column name="content" type="longvarchar" required="true" />
+        <foreign-key foreignTable="comment" phpName="ParentComment" onDelete="CASCADE">
+            <reference local="parent_comment_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="user" phpName="Author">
+            <reference local="author_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="article" phpName="Article">
+            <reference local="article_id" foreign="id" />
+        </foreign-key>
+        <behavior name="validate">
+            <parameter name="content_not_blank" value="{column: content, validator: NotBlank, options: {message: INVALID_CONTENT}}" />
+        </behavior>
+    </table>
 </database>

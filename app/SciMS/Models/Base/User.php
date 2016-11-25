@@ -1699,7 +1699,7 @@ abstract class User implements ActiveRecordInterface
                 $this->initArticles();
             } else {
                 $collArticles = ChildArticleQuery::create(null, $criteria)
-                    ->filterByUser($this)
+                    ->filterByuser($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1753,7 +1753,7 @@ abstract class User implements ActiveRecordInterface
         $this->articlesScheduledForDeletion = $articlesToDelete;
 
         foreach ($articlesToDelete as $articleRemoved) {
-            $articleRemoved->setUser(null);
+            $articleRemoved->setuser(null);
         }
 
         $this->collArticles = null;
@@ -1794,7 +1794,7 @@ abstract class User implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByUser($this)
+                ->filterByuser($this)
                 ->count($con);
         }
 
@@ -1832,7 +1832,7 @@ abstract class User implements ActiveRecordInterface
     protected function doAddArticle(ChildArticle $article)
     {
         $this->collArticles[]= $article;
-        $article->setUser($this);
+        $article->setuser($this);
     }
 
     /**
@@ -1849,7 +1849,7 @@ abstract class User implements ActiveRecordInterface
                 $this->articlesScheduledForDeletion->clear();
             }
             $this->articlesScheduledForDeletion[]= clone $article;
-            $article->setUser(null);
+            $article->setuser(null);
         }
 
         return $this;
@@ -1872,10 +1872,10 @@ abstract class User implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesJoincategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('Category', $joinBehavior);
+        $query->joinWith('category', $joinBehavior);
 
         return $this->getArticles($query, $con);
     }
@@ -1897,10 +1897,10 @@ abstract class User implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesJoinSubcategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesJoinsubcategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('Subcategory', $joinBehavior);
+        $query->joinWith('subcategory', $joinBehavior);
 
         return $this->getArticles($query, $con);
     }
@@ -1974,7 +1974,7 @@ abstract class User implements ActiveRecordInterface
                 $this->initHighlightedArticles();
             } else {
                 $collHighlightedArticles = ChildHighlightedArticleQuery::create(null, $criteria)
-                    ->filterByUser($this)
+                    ->filterByuser($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -2031,7 +2031,7 @@ abstract class User implements ActiveRecordInterface
         $this->highlightedArticlesScheduledForDeletion = clone $highlightedArticlesToDelete;
 
         foreach ($highlightedArticlesToDelete as $highlightedArticleRemoved) {
-            $highlightedArticleRemoved->setUser(null);
+            $highlightedArticleRemoved->setuser(null);
         }
 
         $this->collHighlightedArticles = null;
@@ -2072,7 +2072,7 @@ abstract class User implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByUser($this)
+                ->filterByuser($this)
                 ->count($con);
         }
 
@@ -2110,7 +2110,7 @@ abstract class User implements ActiveRecordInterface
     protected function doAddHighlightedArticle(ChildHighlightedArticle $highlightedArticle)
     {
         $this->collHighlightedArticles[]= $highlightedArticle;
-        $highlightedArticle->setUser($this);
+        $highlightedArticle->setuser($this);
     }
 
     /**
@@ -2127,7 +2127,7 @@ abstract class User implements ActiveRecordInterface
                 $this->highlightedArticlesScheduledForDeletion->clear();
             }
             $this->highlightedArticlesScheduledForDeletion[]= clone $highlightedArticle;
-            $highlightedArticle->setUser(null);
+            $highlightedArticle->setuser(null);
         }
 
         return $this;
@@ -2150,10 +2150,10 @@ abstract class User implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildHighlightedArticle[] List of ChildHighlightedArticle objects
      */
-    public function getHighlightedArticlesJoinArticle(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getHighlightedArticlesJoinarticle(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildHighlightedArticleQuery::create(null, $criteria);
-        $query->joinWith('Article', $joinBehavior);
+        $query->joinWith('article', $joinBehavior);
 
         return $this->getHighlightedArticles($query, $con);
     }
