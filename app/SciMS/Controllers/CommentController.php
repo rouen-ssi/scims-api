@@ -15,8 +15,6 @@ class CommentController {
     const NOT_AUTHORIZED = 'NOT_AUTHORIZED';
     const COMMENT_NOT_FOUND = 'COMMENT_NOT_FOUND';
 
-    const MAX_COMMENTS_PER_PAGE = 10;
-
     /**
      * Fetch all comments posted on an article. Results are paginated accordingly to query parameter `?page=`.
      *
@@ -26,12 +24,11 @@ class CommentController {
      */
     public function index(Request $request, Response $response) {
         $articleId = (int) $request->getAttribute('id');
-        $page = (int) $request->getQueryParam('page', 1);
 
         $comments = CommentQuery::create()
             ->filterByArticleId($articleId)
-            ->paginate($page, self::MAX_COMMENTS_PER_PAGE)
-            ->getResults()
+            ->orderByPublicationDate('ASC')
+            ->find()
             ;
 
         return $response->withJson([

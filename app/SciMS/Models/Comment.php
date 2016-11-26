@@ -17,6 +17,7 @@ use SciMS\Models\Base\Comment as BaseComment;
 class Comment extends BaseComment implements \JsonSerializable {
     public function jsonSerialize() {
         return [
+            'id' => $this->getId(),
             'parent_comment_id' => $this->getParentCommentId(),
             'user' => $this->getAuthor(),
             'publication_date' => date_timestamp_set(new \DateTime, $this->getPublicationDate())->format(\DateTime::ISO8601),
