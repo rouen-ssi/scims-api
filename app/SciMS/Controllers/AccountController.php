@@ -265,7 +265,9 @@ class AccountController {
       $token = $this->generateAndStoreToken($user);
     }
 
-    return $response->withJson($user, 200);
+    $json = array_merge(['token' => $token], $user->jsonSerialize($user));
+
+    return $response->withJson($json, 200);
 
   }
 
