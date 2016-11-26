@@ -17,7 +17,8 @@
         "@composer dump-autoload"
       ],
       "create-database": [
-        "./propel sql:insert"
+        "./propel sql:insert",
+        "\\SciMS\\Scripts\\ProductionFixture::create"
       ],
       "migrate": [
         "./propel model:build",

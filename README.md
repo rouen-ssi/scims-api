@@ -7,12 +7,12 @@ Ce dépôt est le backend du projet [SciMS](https://github.com/rouenssi-tnp/scim
 Toute l'installation est automatisée grâce à Composer.
 Ce script installera toutes les dépendances et générera les scripts SQL.
 ```
-php composer.phar install
+php composer.phar install --no-dev
 ```
 
 Vous devez maintenant créer la base de données SQLite. Le fichier sera placé dans la racine du projet.
 ```
-php composer.phar create-database
+php composer.phar create-database --no-dev
 ```
 **Attention** Si une base de données existait déjà, toutes ses données seront effacées (voir <a href="#migration">Migration</a>)
 
