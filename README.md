@@ -19,7 +19,7 @@ php composer.phar create-database
 ### Tester l'installation
 Vous devez maintenant tester votre installation. Déplacez-vous dans le dossier `app/` puis exécutez :
 ```
-composer start
+composer run start --timeout=0
 ```
 
 Avec votre navigateur, rendez-vous à l'adresse [http://localhost:8080/test.php](http://localhost:8080). Si aucune erreur ne s'affiche ni dans votre navigateur, ni dans votre console, votre installation fonctionne parfaitement.
