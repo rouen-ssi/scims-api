@@ -22,6 +22,7 @@ use SciMS\Models\Map\ArticleTableMap;
  *
  * @method     ChildArticleQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildArticleQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildArticleQuery orderByIsDraft($order = Criteria::ASC) Order by the is_draft column
  * @method     ChildArticleQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildArticleQuery orderByContent($order = Criteria::ASC) Order by the content column
  * @method     ChildArticleQuery orderByPublicationDate($order = Criteria::ASC) Order by the publication_date column
@@ -30,6 +31,7 @@ use SciMS\Models\Map\ArticleTableMap;
  *
  * @method     ChildArticleQuery groupById() Group by the id column
  * @method     ChildArticleQuery groupByUserId() Group by the user_id column
+ * @method     ChildArticleQuery groupByIsDraft() Group by the is_draft column
  * @method     ChildArticleQuery groupByTitle() Group by the title column
  * @method     ChildArticleQuery groupByContent() Group by the content column
  * @method     ChildArticleQuery groupByPublicationDate() Group by the publication_date column
@@ -101,6 +103,7 @@ use SciMS\Models\Map\ArticleTableMap;
  *
  * @method     ChildArticle findOneById(int $id) Return the first ChildArticle filtered by the id column
  * @method     ChildArticle findOneByUserId(int $user_id) Return the first ChildArticle filtered by the user_id column
+ * @method     ChildArticle findOneByIsDraft(boolean $is_draft) Return the first ChildArticle filtered by the is_draft column
  * @method     ChildArticle findOneByTitle(string $title) Return the first ChildArticle filtered by the title column
  * @method     ChildArticle findOneByContent(string $content) Return the first ChildArticle filtered by the content column
  * @method     ChildArticle findOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column
@@ -112,6 +115,7 @@ use SciMS\Models\Map\ArticleTableMap;
  *
  * @method     ChildArticle requireOneById(int $id) Return the first ChildArticle filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByUserId(int $user_id) Return the first ChildArticle filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildArticle requireOneByIsDraft(boolean $is_draft) Return the first ChildArticle filtered by the is_draft column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByTitle(string $title) Return the first ChildArticle filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByContent(string $content) Return the first ChildArticle filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -121,6 +125,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildArticle objects based on current ModelCriteria
  * @method     ChildArticle[]|ObjectCollection findById(int $id) Return ChildArticle objects filtered by the id column
  * @method     ChildArticle[]|ObjectCollection findByUserId(int $user_id) Return ChildArticle objects filtered by the user_id column
+ * @method     ChildArticle[]|ObjectCollection findByIsDraft(boolean $is_draft) Return ChildArticle objects filtered by the is_draft column
  * @method     ChildArticle[]|ObjectCollection findByTitle(string $title) Return ChildArticle objects filtered by the title column
  * @method     ChildArticle[]|ObjectCollection findByContent(string $content) Return ChildArticle objects filtered by the content column
  * @method     ChildArticle[]|ObjectCollection findByPublicationDate(int $publication_date) Return ChildArticle objects filtered by the publication_date column
@@ -224,7 +229,7 @@ abstract class ArticleQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, user_id, title, content, publication_date, category_id, subcategory_id FROM article WHERE id = :p0';
+        $sql = 'SELECT id, user_id, is_draft, title, content, publication_date, category_id, subcategory_id FROM article WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -396,6 +401,33 @@ abstract class ArticleQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ArticleTableMap::COL_USER_ID, $userId, $comparison);
+    }
+
+    /**
+     * Filter the query on the is_draft column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByIsDraft(true); // WHERE is_draft = true
+     * $query->filterByIsDraft('yes'); // WHERE is_draft = true
+     * </code>
+     *
+     * @param     boolean|string $isDraft The value to use as filter.
+     *              Non-boolean arguments are converted using the following rules:
+     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterByIsDraft($isDraft = null, $comparison = null)
+    {
+        if (is_string($isDraft)) {
+            $isDraft = in_array(strtolower($isDraft), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+        }
+
+        return $this->addUsingAlias(ArticleTableMap::COL_IS_DRAFT, $isDraft, $comparison);
     }
 
     /**

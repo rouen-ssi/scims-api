@@ -96,6 +96,14 @@ abstract class Article implements ActiveRecordInterface
     protected $user_id;
 
     /**
+     * The value for the is_draft field.
+     *
+     * Note: this column has a database default value of: true
+     * @var        boolean
+     */
+    protected $is_draft;
+
+    /**
      * The value for the title field.
      *
      * @var        string
@@ -204,6 +212,7 @@ abstract class Article implements ActiveRecordInterface
      */
     public function applyDefaultValues()
     {
+        $this->is_draft = true;
         $this->category_id = -1;
         $this->subcategory_id = -1;
     }
@@ -456,6 +465,26 @@ abstract class Article implements ActiveRecordInterface
     }
 
     /**
+     * Get the [is_draft] column value.
+     *
+     * @return boolean
+     */
+    public function getIsDraft()
+    {
+        return $this->is_draft;
+    }
+
+    /**
+     * Get the [is_draft] column value.
+     *
+     * @return boolean
+     */
+    public function isDraft()
+    {
+        return $this->getIsDraft();
+    }
+
+    /**
      * Get the [title] column value.
      *
      * @return string
@@ -548,6 +577,34 @@ abstract class Article implements ActiveRecordInterface
 
         return $this;
     } // setUserId()
+
+    /**
+     * Sets the value of the [is_draft] column.
+     * Non-boolean arguments are converted using the following rules:
+     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
+     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
+     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
+     *
+     * @param  boolean|integer|string $v The new value
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function setIsDraft($v)
+    {
+        if ($v !== null) {
+            if (is_string($v)) {
+                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+            } else {
+                $v = (boolean) $v;
+            }
+        }
+
+        if ($this->is_draft !== $v) {
+            $this->is_draft = $v;
+            $this->modifiedColumns[ArticleTableMap::COL_IS_DRAFT] = true;
+        }
+
+        return $this;
+    } // setIsDraft()
 
     /**
      * Set the value of [title] column.
@@ -667,6 +724,10 @@ abstract class Article implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->is_draft !== true) {
+                return false;
+            }
+
             if ($this->category_id !== -1) {
                 return false;
             }
@@ -707,19 +768,22 @@ abstract class Article implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ArticleTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->user_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ArticleTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ArticleTableMap::translateFieldName('IsDraft', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->is_draft = (null !== $col) ? (boolean) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ArticleTableMap::translateFieldName('Title', TableMap::TYPE_PHPNAME, $indexType)];
             $this->title = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ArticleTableMap::translateFieldName('Content', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ArticleTableMap::translateFieldName('Content', TableMap::TYPE_PHPNAME, $indexType)];
             $this->content = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ArticleTableMap::translateFieldName('PublicationDate', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ArticleTableMap::translateFieldName('PublicationDate', TableMap::TYPE_PHPNAME, $indexType)];
             $this->publication_date = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ArticleTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ArticleTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->category_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ArticleTableMap::translateFieldName('SubcategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ArticleTableMap::translateFieldName('SubcategoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->subcategory_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -729,7 +793,7 @@ abstract class Article implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 8; // 8 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Article'), 0, $e);
@@ -1008,6 +1072,9 @@ abstract class Article implements ActiveRecordInterface
         if ($this->isColumnModified(ArticleTableMap::COL_USER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'user_id';
         }
+        if ($this->isColumnModified(ArticleTableMap::COL_IS_DRAFT)) {
+            $modifiedColumns[':p' . $index++]  = 'is_draft';
+        }
         if ($this->isColumnModified(ArticleTableMap::COL_TITLE)) {
             $modifiedColumns[':p' . $index++]  = 'title';
         }
@@ -1039,6 +1106,9 @@ abstract class Article implements ActiveRecordInterface
                         break;
                     case 'user_id':
                         $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                        break;
+                    case 'is_draft':
+                        $stmt->bindValue($identifier, $this->is_draft, PDO::PARAM_BOOL);
                         break;
                     case 'title':
                         $stmt->bindValue($identifier, $this->title, PDO::PARAM_STR);
@@ -1124,18 +1194,21 @@ abstract class Article implements ActiveRecordInterface
                 return $this->getUserId();
                 break;
             case 2:
-                return $this->getTitle();
+                return $this->getIsDraft();
                 break;
             case 3:
-                return $this->getContent();
+                return $this->getTitle();
                 break;
             case 4:
-                return $this->getPublicationDate();
+                return $this->getContent();
                 break;
             case 5:
-                return $this->getCategoryId();
+                return $this->getPublicationDate();
                 break;
             case 6:
+                return $this->getCategoryId();
+                break;
+            case 7:
                 return $this->getSubcategoryId();
                 break;
             default:
@@ -1170,11 +1243,12 @@ abstract class Article implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getUserId(),
-            $keys[2] => $this->getTitle(),
-            $keys[3] => $this->getContent(),
-            $keys[4] => $this->getPublicationDate(),
-            $keys[5] => $this->getCategoryId(),
-            $keys[6] => $this->getSubcategoryId(),
+            $keys[2] => $this->getIsDraft(),
+            $keys[3] => $this->getTitle(),
+            $keys[4] => $this->getContent(),
+            $keys[5] => $this->getPublicationDate(),
+            $keys[6] => $this->getCategoryId(),
+            $keys[7] => $this->getSubcategoryId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1298,18 +1372,21 @@ abstract class Article implements ActiveRecordInterface
                 $this->setUserId($value);
                 break;
             case 2:
-                $this->setTitle($value);
+                $this->setIsDraft($value);
                 break;
             case 3:
-                $this->setContent($value);
+                $this->setTitle($value);
                 break;
             case 4:
-                $this->setPublicationDate($value);
+                $this->setContent($value);
                 break;
             case 5:
-                $this->setCategoryId($value);
+                $this->setPublicationDate($value);
                 break;
             case 6:
+                $this->setCategoryId($value);
+                break;
+            case 7:
                 $this->setSubcategoryId($value);
                 break;
         } // switch()
@@ -1345,19 +1422,22 @@ abstract class Article implements ActiveRecordInterface
             $this->setUserId($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setTitle($arr[$keys[2]]);
+            $this->setIsDraft($arr[$keys[2]]);
         }
         if (array_key_exists($keys[3], $arr)) {
-            $this->setContent($arr[$keys[3]]);
+            $this->setTitle($arr[$keys[3]]);
         }
         if (array_key_exists($keys[4], $arr)) {
-            $this->setPublicationDate($arr[$keys[4]]);
+            $this->setContent($arr[$keys[4]]);
         }
         if (array_key_exists($keys[5], $arr)) {
-            $this->setCategoryId($arr[$keys[5]]);
+            $this->setPublicationDate($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setSubcategoryId($arr[$keys[6]]);
+            $this->setCategoryId($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setSubcategoryId($arr[$keys[7]]);
         }
     }
 
@@ -1405,6 +1485,9 @@ abstract class Article implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ArticleTableMap::COL_USER_ID)) {
             $criteria->add(ArticleTableMap::COL_USER_ID, $this->user_id);
+        }
+        if ($this->isColumnModified(ArticleTableMap::COL_IS_DRAFT)) {
+            $criteria->add(ArticleTableMap::COL_IS_DRAFT, $this->is_draft);
         }
         if ($this->isColumnModified(ArticleTableMap::COL_TITLE)) {
             $criteria->add(ArticleTableMap::COL_TITLE, $this->title);
@@ -1508,6 +1591,7 @@ abstract class Article implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setUserId($this->getUserId());
+        $copyObj->setIsDraft($this->getIsDraft());
         $copyObj->setTitle($this->getTitle());
         $copyObj->setContent($this->getContent());
         $copyObj->setPublicationDate($this->getPublicationDate());
@@ -2281,6 +2365,7 @@ abstract class Article implements ActiveRecordInterface
         }
         $this->id = null;
         $this->user_id = null;
+        $this->is_draft = null;
         $this->title = null;
         $this->content = null;
         $this->publication_date = null;

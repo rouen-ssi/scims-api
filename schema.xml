@@ -22,6 +22,7 @@
     <table name="article" phpName="Article">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="user_id" type="integer" required="true" />
+        <column name="is_draft" type="boolean" required="true" default="true" />
         <column name="title" type="varchar" size="128" required="true" />
         <column name="content" type="longvarchar" required="true" />
         <column name="publication_date" type="integer" required="true" />

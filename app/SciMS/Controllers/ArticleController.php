@@ -19,6 +19,7 @@ class ArticleController {
    */
   public function create(Request $request, Response $response) {
     // Retreives the parameters.
+    $isDraft = $request->getParsedBodyParam('is_draft', true);
     $title = $request->getParsedBodyParam('title', '');
     $content = $request->getParsedBodyParam('content', '');
     $categoryId = $request->getParsedBodyParam('category_id', -1);
@@ -28,6 +29,7 @@ class ArticleController {
     $user = $request->getAttribute('user');
 
     $article = new Article();
+    $article->setIsDraft($isDraft);
     $article->setUserId($user->getId());
     $article->setTitle($title);
     $article->setContent($content);
@@ -59,8 +61,9 @@ class ArticleController {
    */
   public function edit(Request $request, Response $response, array $args) {
     // Retreives all the parameters.
-    $articleTitle = $request->getParsedBodyParam('title', '');
-    $articleContent = $request->getParsedBodyParam('content', '');
+    $isDraft = $request->getParsedBodyParam('is_draft', true);
+    $title = $request->getParsedBodyParam('title', '');
+    $content = $request->getParsedBodyParam('content', '');
     $categoryId = $request->getParsedBodyParam('category_id', '-1');
     $subcategoryId = $request->getParsedBodyParam('content', '');
 
@@ -76,8 +79,9 @@ class ArticleController {
     }
 
     // Updates the article informations.
-    $article->setTitle($articleTitle);
-    $article->setContent($articleContent);
+    $article->setIsDraft($isDraft);
+    $article->setTitle($title);
+    $article->setContent($content);
     $article->setCategoryId($categoryId);
     $article->setSubcategoryId($subcategoryId);
 
@@ -104,7 +108,9 @@ class ArticleController {
    * The number of articles contained in a page is given by the const ARTICLES_PER_PAGE. */
   public function getPage(Request $request, Response $response) {
     // Get all articles.
-    $query = ArticleQuery::create()->orderByPublicationDate('DESC');
+    $query = ArticleQuery::create()
+      ->filterByIsDraft(false)
+      ->orderByPublicationDate('DESC');
 
     // If an category id is given, filter.
     if ($categoryId = $request->getQueryParam('category_id')) {

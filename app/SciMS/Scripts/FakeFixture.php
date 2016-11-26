@@ -57,7 +57,8 @@ class FakeFixture
     $articles = [];
     for ($i = 0; $i < count($users) * 10; $i++) {
       $article = new Article();
-      $article->setuser($faker->randomElement($users));
+      $article->setUser($faker->randomElement($users));
+      $article->setIsDraft($faker->randomElement([true, false]));
       $article->setTitle($faker->sentence($faker->numberBetween(5, 15), false));
       $article->setContent($faker->realText($faker->numberBetween(3000, 10000)));
       $articlePublicationDate = $faker->dateTimeThisYear;

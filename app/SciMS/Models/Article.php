@@ -18,6 +18,7 @@ class Article extends BaseArticle implements \JsonSerializable {
   public function jsonSerialize() {
     $json = array(
       'id' => $this->id,
+      'is_draft' => $this->is_draft,
       'user' => [
         'uid' => $this->getuser()->getUid(),
         'email' => $this->getuser()->getEmail(),
