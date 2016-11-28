@@ -8,7 +8,7 @@
     },
     "license": "GPL-3.0",
     "autoload": {
-      "classmap": ["app/"]
+      "psr-4": { "SciMS\\": "app/" }
     },
     "scripts": {
       "post-install-cmd": [
