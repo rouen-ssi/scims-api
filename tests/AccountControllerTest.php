@@ -2,12 +2,12 @@
 
 require_once 'vendor/autoload.php';
 require_once 'config/config.php';
-require_once 'ControllerTest.php';
+require_once 'ControllerTestCase.php';
 
 use Slim\Http\Response;
 use SciMS\Controllers\AccountController;
 
-class AccountControllerTest extends ControllerTest {
+class AccountControllerTest extends ControllerTestCase {
     public function testSignup() {
         $request = parent::createRequest('POST', '/account/create');
         $response = new Response();

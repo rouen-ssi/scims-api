@@ -8,7 +8,7 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class ControllerTest extends TestCase {
+class ControllerTestCase extends TestCase {
     protected function createRequest($method, $uri) {
         $env = Environment::mock([
             'REQUEST_METHOD' => $method,
