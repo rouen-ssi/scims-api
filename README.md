@@ -14,7 +14,7 @@ composer install --no-dev
 
 Vous devez maintenant créer la base de données SQLite. Le fichier sera placé dans la racine du projet.
 ```
-php composer.phar create-database --no-dev
+composer create-database --no-dev
 ```
 **Attention** Si une base de données existait déjà, toutes ses données seront effacées (voir <a href="#migration">Migration</a>)
 

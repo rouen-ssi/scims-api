@@ -27,7 +27,7 @@
         "vendor/bin/propel migrate",
         "@composer dump-autoload"
       ],
-      "start": [
+      "dev-server": [
         "php -S localhost:8080 -t app/"
       ],
       "test": [
