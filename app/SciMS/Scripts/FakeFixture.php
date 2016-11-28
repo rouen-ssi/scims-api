@@ -55,6 +55,7 @@ class FakeFixture
 
     /** @var Article[] $articles */
     $articles = [];
+
     for ($i = 0; $i < count($users) * 10; $i++) {
       $article = new Article();
       $article->setUser($faker->randomElement($users));
