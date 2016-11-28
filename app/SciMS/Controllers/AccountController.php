@@ -205,22 +205,24 @@ class AccountController {
     $user->setLastName($lastName);
     $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
+    $errors = [];
+
+    // Validates the new User.
     if (!$user->validate()) {
-      $errors = [];
       foreach ($user->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
       }
-      return $response->withJson(array(
-        'errors' => $errors
-      ), 400);
     }
 
     // Checks the password length
     if (strlen($password) < self::PASSWORD_MIN_LEN) {
+      $errors[] = self::INVALID_PASSWORD;
+    }
+
+    // Returns a JSON containing errors if any.
+    if (count($errors) > 0) {
       return $response->withJson([
-        'errors' => [
-          self::INVALID_PASSWORD
-        ]
+        'errors' => $errors
       ], 400);
     }
 
