@@ -6,4 +6,6 @@ php:
   - nightly
 install:
   - composer install
+  - composer create-database
+  - composer migrate
 script: composer test
