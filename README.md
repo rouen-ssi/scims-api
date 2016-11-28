@@ -1,13 +1,15 @@
-# SciMS - Un CMS open-source pour les scientifiques
+# SciMS - Un CMS open-source pour les scientifiques [![Build Status](https://travis-ci.org/rouen-ssi/scims-backend.svg?branch=master)](https://travis-ci.org/rouen-ssi/scims-backend)
 
 Ce dépôt est le backend du projet [SciMS](https://github.com/rouenssi-tnp/scims).
 
 ## Installation
 
+Avant de commencer, installez [Composer](https://getcomposer.org/).
+
 Toute l'installation est automatisée grâce à Composer.
 Ce script installera toutes les dépendances et générera les scripts SQL.
 ```
-php composer.phar install --no-dev
+composer install --no-dev
 ```
 
 Vous devez maintenant créer la base de données SQLite. Le fichier sera placé dans la racine du projet.
@@ -19,7 +21,7 @@ php composer.phar create-database --no-dev
 ### Tester l'installation
 Vous devez maintenant tester votre installation. Déplacez-vous dans le dossier `app/` puis exécutez :
 ```
-composer run start --timeout=0
+composer run dev-server --timeout=0
 ```
 
 Avec votre navigateur, rendez-vous à l'adresse [http://localhost:8080/test.php](http://localhost:8080). Si aucune erreur ne s'affiche ni dans votre navigateur, ni dans votre console, votre installation fonctionne parfaitement.
@@ -30,5 +32,5 @@ Avec votre navigateur, rendez-vous à l'adresse [http://localhost:8080/test.php]
 
 Chaque fois que vous ajoutez des classes PHP ou modifiez le schéma de la base de données, vous devez indiquer à Propel d'effectuer une migration puis d'indiquer à Composer de rafraîchir son cache.
 ```
-php composer.phar migrate
+composer migrate
 ```
