@@ -12,26 +12,26 @@
     },
     "scripts": {
       "post-install-cmd": [
-        "./propel sql:build",
-        "./propel config:convert",
+        "vendor/bin/propel sql:build",
+        "vendor/bin/propel config:convert",
         "@composer dump-autoload"
       ],
       "create-database": [
-        "./propel sql:insert",
-        "\\SciMS\\Scripts\\ProductionFixture::create"
+        "vendor/bin/propel sql:insert",
+        "\\SciMS\\Scripts\\ProductionFixture::create",
+        "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "migrate": [
-        "./propel model:build",
-        "./propel diff",
-        "./propel migrate",
-        "php composer.phar dump-autoload",
-        "\\SciMS\\Scripts\\FakeFixture::onMigrate"
+        "vendor/bin/propel model:build",
+        "vendor/bin/propel diff",
+        "vendor/bin/propel migrate",
+        "@composer dump-autoload"
       ],
       "start": [
         "php -S localhost:8080 -t app/"
       ],
       "test": [
-        "phpunit tests/"
+        "vendor/bin/phpunit tests/"
       ]
     },
     "require-dev": {
