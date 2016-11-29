@@ -17,8 +17,6 @@
         "@composer dump-autoload"
       ],
       "create-database": [
-        "vendor/bin/propel sql:insert",
-        "\\SciMS\\Scripts\\ProductionFixture::create",
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "migrate": [
