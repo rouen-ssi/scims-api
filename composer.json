@@ -29,9 +29,6 @@
       ],
       "dev-server": [
         "php -S localhost:8080 -t app/"
-      ],
-      "test": [
-        "vendor/bin/phpunit tests/"
       ]
     },
     "require-dev": {
