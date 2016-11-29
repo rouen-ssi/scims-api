@@ -59,7 +59,7 @@ class ArticleTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 8;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class ArticleTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 8;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
      * the column name for the id field
@@ -102,6 +102,11 @@ class ArticleTableMap extends TableMap
     const COL_PUBLICATION_DATE = 'article.publication_date';
 
     /**
+     * the column name for the last_modification_date field
+     */
+    const COL_LAST_MODIFICATION_DATE = 'article.last_modification_date';
+
+    /**
      * the column name for the category_id field
      */
     const COL_CATEGORY_ID = 'article.category_id';
@@ -123,11 +128,11 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'AccountId', 'IsDraft', 'Title', 'Content', 'PublicationDate', 'CategoryId', 'SubcategoryId', ),
-        self::TYPE_CAMELNAME     => array('id', 'accountId', 'isDraft', 'title', 'content', 'publicationDate', 'categoryId', 'subcategoryId', ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID, ArticleTableMap::COL_ACCOUNT_ID, ArticleTableMap::COL_IS_DRAFT, ArticleTableMap::COL_TITLE, ArticleTableMap::COL_CONTENT, ArticleTableMap::COL_PUBLICATION_DATE, ArticleTableMap::COL_CATEGORY_ID, ArticleTableMap::COL_SUBCATEGORY_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'account_id', 'is_draft', 'title', 'content', 'publication_date', 'category_id', 'subcategory_id', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id', 'AccountId', 'IsDraft', 'Title', 'Content', 'PublicationDate', 'LastModificationDate', 'CategoryId', 'SubcategoryId', ),
+        self::TYPE_CAMELNAME     => array('id', 'accountId', 'isDraft', 'title', 'content', 'publicationDate', 'lastModificationDate', 'categoryId', 'subcategoryId', ),
+        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID, ArticleTableMap::COL_ACCOUNT_ID, ArticleTableMap::COL_IS_DRAFT, ArticleTableMap::COL_TITLE, ArticleTableMap::COL_CONTENT, ArticleTableMap::COL_PUBLICATION_DATE, ArticleTableMap::COL_LAST_MODIFICATION_DATE, ArticleTableMap::COL_CATEGORY_ID, ArticleTableMap::COL_SUBCATEGORY_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'account_id', 'is_draft', 'title', 'content', 'publication_date', 'last_modification_date', 'category_id', 'subcategory_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -137,11 +142,11 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'AccountId' => 1, 'IsDraft' => 2, 'Title' => 3, 'Content' => 4, 'PublicationDate' => 5, 'CategoryId' => 6, 'SubcategoryId' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'accountId' => 1, 'isDraft' => 2, 'title' => 3, 'content' => 4, 'publicationDate' => 5, 'categoryId' => 6, 'subcategoryId' => 7, ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID => 0, ArticleTableMap::COL_ACCOUNT_ID => 1, ArticleTableMap::COL_IS_DRAFT => 2, ArticleTableMap::COL_TITLE => 3, ArticleTableMap::COL_CONTENT => 4, ArticleTableMap::COL_PUBLICATION_DATE => 5, ArticleTableMap::COL_CATEGORY_ID => 6, ArticleTableMap::COL_SUBCATEGORY_ID => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'account_id' => 1, 'is_draft' => 2, 'title' => 3, 'content' => 4, 'publication_date' => 5, 'category_id' => 6, 'subcategory_id' => 7, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'AccountId' => 1, 'IsDraft' => 2, 'Title' => 3, 'Content' => 4, 'PublicationDate' => 5, 'LastModificationDate' => 6, 'CategoryId' => 7, 'SubcategoryId' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'accountId' => 1, 'isDraft' => 2, 'title' => 3, 'content' => 4, 'publicationDate' => 5, 'lastModificationDate' => 6, 'categoryId' => 7, 'subcategoryId' => 8, ),
+        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID => 0, ArticleTableMap::COL_ACCOUNT_ID => 1, ArticleTableMap::COL_IS_DRAFT => 2, ArticleTableMap::COL_TITLE => 3, ArticleTableMap::COL_CONTENT => 4, ArticleTableMap::COL_PUBLICATION_DATE => 5, ArticleTableMap::COL_LAST_MODIFICATION_DATE => 6, ArticleTableMap::COL_CATEGORY_ID => 7, ArticleTableMap::COL_SUBCATEGORY_ID => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'account_id' => 1, 'is_draft' => 2, 'title' => 3, 'content' => 4, 'publication_date' => 5, 'last_modification_date' => 6, 'category_id' => 7, 'subcategory_id' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -168,6 +173,7 @@ class ArticleTableMap extends TableMap
         $this->addColumn('title', 'Title', 'VARCHAR', true, 128, null);
         $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
         $this->addColumn('publication_date', 'PublicationDate', 'INTEGER', true, null, null);
+        $this->addColumn('last_modification_date', 'LastModificationDate', 'INTEGER', true, null, null);
         $this->addForeignKey('category_id', 'CategoryId', 'INTEGER', 'category', 'id', false, null, -1);
         $this->addForeignKey('subcategory_id', 'SubcategoryId', 'INTEGER', 'category', 'id', false, null, -1);
     } // initialize()
@@ -374,6 +380,7 @@ class ArticleTableMap extends TableMap
             $criteria->addSelectColumn(ArticleTableMap::COL_TITLE);
             $criteria->addSelectColumn(ArticleTableMap::COL_CONTENT);
             $criteria->addSelectColumn(ArticleTableMap::COL_PUBLICATION_DATE);
+            $criteria->addSelectColumn(ArticleTableMap::COL_LAST_MODIFICATION_DATE);
             $criteria->addSelectColumn(ArticleTableMap::COL_CATEGORY_ID);
             $criteria->addSelectColumn(ArticleTableMap::COL_SUBCATEGORY_ID);
         } else {
@@ -383,6 +390,7 @@ class ArticleTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.title');
             $criteria->addSelectColumn($alias . '.content');
             $criteria->addSelectColumn($alias . '.publication_date');
+            $criteria->addSelectColumn($alias . '.last_modification_date');
             $criteria->addSelectColumn($alias . '.category_id');
             $criteria->addSelectColumn($alias . '.subcategory_id');
         }

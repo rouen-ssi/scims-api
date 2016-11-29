@@ -64,6 +64,7 @@ class FakeFixture
       $article->setContent($faker->realText($faker->numberBetween(3000, 10000)));
       $articlePublicationDate = $faker->dateTimeThisYear;
       $article->setPublicationDate($articlePublicationDate->getTimestamp());
+      $article->setLastModificationDate($articlePublicationDate->getTimestamp());
       $article->setcategory($faker->randomElement($categories));
 
       /** @var Comment[] $comments */

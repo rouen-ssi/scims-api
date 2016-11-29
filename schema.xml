@@ -26,6 +26,7 @@
         <column name="title" type="varchar" size="128" required="true" />
         <column name="content" type="longvarchar" required="true" />
         <column name="publication_date" type="integer" required="true" />
+        <column name="last_modification_date" type="integer" required="true" />
         <column name="category_id" type="integer" required="false" default="-1" />
         <column name="subcategory_id" type="integer" required="false" default="-1" />
         <foreign-key foreignTable="account" phpName="account">

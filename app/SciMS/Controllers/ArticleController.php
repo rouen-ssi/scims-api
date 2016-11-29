@@ -34,6 +34,7 @@ class ArticleController {
         $article->setTitle($title);
         $article->setContent($content);
         $article->setPublicationDate(time());
+        $article->setLastModificationDate(time());
         $article->setCategoryId($categoryId);
         $article->setSubcategoryId($subcategoryId);
         $errors = Utils::validate($article);
@@ -77,6 +78,7 @@ class ArticleController {
         $article->setTitle($title);
         $article->setContent($content);
         $article->setCategoryId($categoryId);
+        $article->setLastModificationDate(time());
         $article->setSubcategoryId($subcategoryId);
         $errors = Utils::validate($article);
         if (count($errors) > 0) {

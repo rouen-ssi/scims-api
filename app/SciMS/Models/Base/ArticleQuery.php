@@ -26,6 +26,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery orderByTitle($order = Criteria::ASC) Order by the title column
  * @method     ChildArticleQuery orderByContent($order = Criteria::ASC) Order by the content column
  * @method     ChildArticleQuery orderByPublicationDate($order = Criteria::ASC) Order by the publication_date column
+ * @method     ChildArticleQuery orderByLastModificationDate($order = Criteria::ASC) Order by the last_modification_date column
  * @method     ChildArticleQuery orderByCategoryId($order = Criteria::ASC) Order by the category_id column
  * @method     ChildArticleQuery orderBySubcategoryId($order = Criteria::ASC) Order by the subcategory_id column
  *
@@ -35,6 +36,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery groupByTitle() Group by the title column
  * @method     ChildArticleQuery groupByContent() Group by the content column
  * @method     ChildArticleQuery groupByPublicationDate() Group by the publication_date column
+ * @method     ChildArticleQuery groupByLastModificationDate() Group by the last_modification_date column
  * @method     ChildArticleQuery groupByCategoryId() Group by the category_id column
  * @method     ChildArticleQuery groupBySubcategoryId() Group by the subcategory_id column
  *
@@ -107,6 +109,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle findOneByTitle(string $title) Return the first ChildArticle filtered by the title column
  * @method     ChildArticle findOneByContent(string $content) Return the first ChildArticle filtered by the content column
  * @method     ChildArticle findOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column
+ * @method     ChildArticle findOneByLastModificationDate(int $last_modification_date) Return the first ChildArticle filtered by the last_modification_date column
  * @method     ChildArticle findOneByCategoryId(int $category_id) Return the first ChildArticle filtered by the category_id column
  * @method     ChildArticle findOneBySubcategoryId(int $subcategory_id) Return the first ChildArticle filtered by the subcategory_id column *
 
@@ -119,6 +122,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle requireOneByTitle(string $title) Return the first ChildArticle filtered by the title column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByContent(string $content) Return the first ChildArticle filtered by the content column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByPublicationDate(int $publication_date) Return the first ChildArticle filtered by the publication_date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildArticle requireOneByLastModificationDate(int $last_modification_date) Return the first ChildArticle filtered by the last_modification_date column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneByCategoryId(int $category_id) Return the first ChildArticle filtered by the category_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildArticle requireOneBySubcategoryId(int $subcategory_id) Return the first ChildArticle filtered by the subcategory_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
@@ -129,6 +133,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticle[]|ObjectCollection findByTitle(string $title) Return ChildArticle objects filtered by the title column
  * @method     ChildArticle[]|ObjectCollection findByContent(string $content) Return ChildArticle objects filtered by the content column
  * @method     ChildArticle[]|ObjectCollection findByPublicationDate(int $publication_date) Return ChildArticle objects filtered by the publication_date column
+ * @method     ChildArticle[]|ObjectCollection findByLastModificationDate(int $last_modification_date) Return ChildArticle objects filtered by the last_modification_date column
  * @method     ChildArticle[]|ObjectCollection findByCategoryId(int $category_id) Return ChildArticle objects filtered by the category_id column
  * @method     ChildArticle[]|ObjectCollection findBySubcategoryId(int $subcategory_id) Return ChildArticle objects filtered by the subcategory_id column
  * @method     ChildArticle[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
@@ -229,7 +234,7 @@ abstract class ArticleQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, account_id, is_draft, title, content, publication_date, category_id, subcategory_id FROM article WHERE id = :p0';
+        $sql = 'SELECT id, account_id, is_draft, title, content, publication_date, last_modification_date, category_id, subcategory_id FROM article WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -519,6 +524,47 @@ abstract class ArticleQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(ArticleTableMap::COL_PUBLICATION_DATE, $publicationDate, $comparison);
+    }
+
+    /**
+     * Filter the query on the last_modification_date column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByLastModificationDate(1234); // WHERE last_modification_date = 1234
+     * $query->filterByLastModificationDate(array(12, 34)); // WHERE last_modification_date IN (12, 34)
+     * $query->filterByLastModificationDate(array('min' => 12)); // WHERE last_modification_date > 12
+     * </code>
+     *
+     * @param     mixed $lastModificationDate The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterByLastModificationDate($lastModificationDate = null, $comparison = null)
+    {
+        if (is_array($lastModificationDate)) {
+            $useMinMax = false;
+            if (isset($lastModificationDate['min'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_LAST_MODIFICATION_DATE, $lastModificationDate['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($lastModificationDate['max'])) {
+                $this->addUsingAlias(ArticleTableMap::COL_LAST_MODIFICATION_DATE, $lastModificationDate['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(ArticleTableMap::COL_LAST_MODIFICATION_DATE, $lastModificationDate, $comparison);
     }
 
     /**

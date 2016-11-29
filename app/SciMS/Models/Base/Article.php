@@ -125,6 +125,13 @@ abstract class Article implements ActiveRecordInterface
     protected $publication_date;
 
     /**
+     * The value for the last_modification_date field.
+     *
+     * @var        int
+     */
+    protected $last_modification_date;
+
+    /**
      * The value for the category_id field.
      *
      * Note: this column has a database default value of: -1
@@ -515,6 +522,16 @@ abstract class Article implements ActiveRecordInterface
     }
 
     /**
+     * Get the [last_modification_date] column value.
+     *
+     * @return int
+     */
+    public function getLastModificationDate()
+    {
+        return $this->last_modification_date;
+    }
+
+    /**
      * Get the [category_id] column value.
      *
      * @return int
@@ -667,6 +684,26 @@ abstract class Article implements ActiveRecordInterface
     } // setPublicationDate()
 
     /**
+     * Set the value of [last_modification_date] column.
+     *
+     * @param int $v new value
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function setLastModificationDate($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->last_modification_date !== $v) {
+            $this->last_modification_date = $v;
+            $this->modifiedColumns[ArticleTableMap::COL_LAST_MODIFICATION_DATE] = true;
+        }
+
+        return $this;
+    } // setLastModificationDate()
+
+    /**
      * Set the value of [category_id] column.
      *
      * @param int $v new value
@@ -780,10 +817,13 @@ abstract class Article implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ArticleTableMap::translateFieldName('PublicationDate', TableMap::TYPE_PHPNAME, $indexType)];
             $this->publication_date = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ArticleTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ArticleTableMap::translateFieldName('LastModificationDate', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->last_modification_date = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ArticleTableMap::translateFieldName('CategoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->category_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ArticleTableMap::translateFieldName('SubcategoryId', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ArticleTableMap::translateFieldName('SubcategoryId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->subcategory_id = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
@@ -793,7 +833,7 @@ abstract class Article implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = ArticleTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Article'), 0, $e);
@@ -1093,6 +1133,9 @@ abstract class Article implements ActiveRecordInterface
         if ($this->isColumnModified(ArticleTableMap::COL_PUBLICATION_DATE)) {
             $modifiedColumns[':p' . $index++]  = 'publication_date';
         }
+        if ($this->isColumnModified(ArticleTableMap::COL_LAST_MODIFICATION_DATE)) {
+            $modifiedColumns[':p' . $index++]  = 'last_modification_date';
+        }
         if ($this->isColumnModified(ArticleTableMap::COL_CATEGORY_ID)) {
             $modifiedColumns[':p' . $index++]  = 'category_id';
         }
@@ -1127,6 +1170,9 @@ abstract class Article implements ActiveRecordInterface
                         break;
                     case 'publication_date':
                         $stmt->bindValue($identifier, $this->publication_date, PDO::PARAM_INT);
+                        break;
+                    case 'last_modification_date':
+                        $stmt->bindValue($identifier, $this->last_modification_date, PDO::PARAM_INT);
                         break;
                     case 'category_id':
                         $stmt->bindValue($identifier, $this->category_id, PDO::PARAM_INT);
@@ -1208,9 +1254,12 @@ abstract class Article implements ActiveRecordInterface
                 return $this->getPublicationDate();
                 break;
             case 6:
-                return $this->getCategoryId();
+                return $this->getLastModificationDate();
                 break;
             case 7:
+                return $this->getCategoryId();
+                break;
+            case 8:
                 return $this->getSubcategoryId();
                 break;
             default:
@@ -1249,8 +1298,9 @@ abstract class Article implements ActiveRecordInterface
             $keys[3] => $this->getTitle(),
             $keys[4] => $this->getContent(),
             $keys[5] => $this->getPublicationDate(),
-            $keys[6] => $this->getCategoryId(),
-            $keys[7] => $this->getSubcategoryId(),
+            $keys[6] => $this->getLastModificationDate(),
+            $keys[7] => $this->getCategoryId(),
+            $keys[8] => $this->getSubcategoryId(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1386,9 +1436,12 @@ abstract class Article implements ActiveRecordInterface
                 $this->setPublicationDate($value);
                 break;
             case 6:
-                $this->setCategoryId($value);
+                $this->setLastModificationDate($value);
                 break;
             case 7:
+                $this->setCategoryId($value);
+                break;
+            case 8:
                 $this->setSubcategoryId($value);
                 break;
         } // switch()
@@ -1436,10 +1489,13 @@ abstract class Article implements ActiveRecordInterface
             $this->setPublicationDate($arr[$keys[5]]);
         }
         if (array_key_exists($keys[6], $arr)) {
-            $this->setCategoryId($arr[$keys[6]]);
+            $this->setLastModificationDate($arr[$keys[6]]);
         }
         if (array_key_exists($keys[7], $arr)) {
-            $this->setSubcategoryId($arr[$keys[7]]);
+            $this->setCategoryId($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setSubcategoryId($arr[$keys[8]]);
         }
     }
 
@@ -1499,6 +1555,9 @@ abstract class Article implements ActiveRecordInterface
         }
         if ($this->isColumnModified(ArticleTableMap::COL_PUBLICATION_DATE)) {
             $criteria->add(ArticleTableMap::COL_PUBLICATION_DATE, $this->publication_date);
+        }
+        if ($this->isColumnModified(ArticleTableMap::COL_LAST_MODIFICATION_DATE)) {
+            $criteria->add(ArticleTableMap::COL_LAST_MODIFICATION_DATE, $this->last_modification_date);
         }
         if ($this->isColumnModified(ArticleTableMap::COL_CATEGORY_ID)) {
             $criteria->add(ArticleTableMap::COL_CATEGORY_ID, $this->category_id);
@@ -1597,6 +1656,7 @@ abstract class Article implements ActiveRecordInterface
         $copyObj->setTitle($this->getTitle());
         $copyObj->setContent($this->getContent());
         $copyObj->setPublicationDate($this->getPublicationDate());
+        $copyObj->setLastModificationDate($this->getLastModificationDate());
         $copyObj->setCategoryId($this->getCategoryId());
         $copyObj->setSubcategoryId($this->getSubcategoryId());
 
@@ -2371,6 +2431,7 @@ abstract class Article implements ActiveRecordInterface
         $this->title = null;
         $this->content = null;
         $this->publication_date = null;
+        $this->last_modification_date = null;
         $this->category_id = null;
         $this->subcategory_id = null;
         $this->alreadyInSave = false;

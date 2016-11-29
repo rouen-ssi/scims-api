@@ -30,6 +30,7 @@ class Article extends BaseArticle implements \JsonSerializable {
             'category_id' => $this->category_id,
             'subcategory_id' => $this->subcategory_id,
             'publication_date' => date_timestamp_set(new \DateTime(), $this->publication_date)->format(\DateTime::ISO8601),
+            'last_modification_date' => date_timestamp_set(new \DateTime(), $this->last_modification_date)->format(\DateTime::ISO8601),
             'comments_count' => $this->getComments()->count(),
         );
 
