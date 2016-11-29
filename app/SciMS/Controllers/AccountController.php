@@ -2,6 +2,7 @@
 
 namespace SciMS\Controllers;
 
+use SciMS\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SciMS\Models\Account;
@@ -96,14 +97,11 @@ class AccountController {
 
     // Updates the account's email and validate
     $account->setEmail(trim($email));
-    if (!$account->validate()) {
-      $errors = [];
-      foreach ($account->getValidationFailures() as $failure) {
-        $errors[] = $failure->getMessage();
-        return $response->withJson([
-          'errors' => $errors
-        ], 400);
-      }
+    $errors = Utils::validate($account);
+    if (count($errors) > 0) {
+      return $response->withJson([
+        'errors' => $errors
+      ], 400);
     }
     $account->save();
 
@@ -132,11 +130,8 @@ class AccountController {
     $account->setFirstName($firstName);
     $account->setLastName($lastName);
     $account->setBiography($biography);
-    if (!$account->validate()) {
-      $errors = [];
-      foreach ($account->getValidationFailures() as $failure) {
-        $errors[] = $failure->getMessage();
-      }
+    $errors = Utils::validate($account);
+    if (count($errors) > 0) {
       return $response->withJson([
         'errors' => $errors
       ], 400);
@@ -204,15 +199,7 @@ class AccountController {
     $account->setFirstName($firstName);
     $account->setLastName($lastName);
     $account->setPassword(password_hash($password, PASSWORD_DEFAULT));
-
-    $errors = [];
-
-    // Validates the new account.
-    if (!$account->validate()) {
-      foreach ($account->getValidationFailures() as $failure) {
-        $errors[] = $failure->getMessage();
-      }
-    }
+    $errors = Utils::validate($account);
 
     // Checks the password length
     if (strlen($password) < self::PASSWORD_MIN_LEN) {

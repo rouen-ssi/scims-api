@@ -5,6 +5,7 @@ namespace SciMS\Controllers;
 use SciMS\Models\Account;
 use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
+use SciMS\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -36,18 +37,12 @@ class ArticleController {
     $article->setPublicationDate(time());
     $article->setCategoryId($categoryId);
     $article->setSubcategoryId($subcategoryId);
-
-    if (!$article->validate()) {
-      $errors = [];
-      foreach ($article->getValidationFailures() as $failure) {
-        $errors[] = $failure->getMessage();
-      }
-
-      return $response->withJson(array(
+    $errors = Utils::validate($article);
+    if (count($errors) > 0) {
+      return $response->withJson([
         'errors' => $errors
-      ), 400);
+      ], 400);
     }
-
     $article->save();
 
     return $response->withJson(array(
@@ -84,14 +79,8 @@ class ArticleController {
     $article->setContent($content);
     $article->setCategoryId($categoryId);
     $article->setSubcategoryId($subcategoryId);
-
-    // Validates the new data.
-    // Returns errors if the new data are not valid.
-    if (!$article->validate()) {
-      $errors = [];
-      foreach ($article->getValidationFailures() as $failure) {
-        $errors[] = $failure->getMessage();
-      }
+    $errors = Utils::validate($article);
+    if (count($errors) > 0) {
       return $response->withJson([
         'errors' => $errors
       ], 400);
@@ -99,6 +88,7 @@ class ArticleController {
 
     // Saves the new data and send http 200.
     $article->save();
+
     return $response->withStatus(200);
   }
 
