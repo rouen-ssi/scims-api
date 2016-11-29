@@ -165,6 +165,7 @@ class UserTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\User');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('user_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);

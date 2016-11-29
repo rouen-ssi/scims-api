@@ -16,16 +16,24 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use Propel\Runtime\Validator\Constraints\Unique;
 use SciMS\Models\Article as ChildArticle;
 use SciMS\Models\ArticleQuery as ChildArticleQuery;
-use SciMS\Models\Category as ChildCategory;
-use SciMS\Models\CategoryQuery as ChildCategoryQuery;
+use SciMS\Models\Comment as ChildComment;
+use SciMS\Models\CommentQuery as ChildCommentQuery;
+use SciMS\Models\HighlightedArticle as ChildHighlightedArticle;
+use SciMS\Models\HighlightedArticleQuery as ChildHighlightedArticleQuery;
+use SciMS\Models\User as ChildUser;
+use SciMS\Models\UserQuery as ChildUserQuery;
 use SciMS\Models\Map\ArticleTableMap;
-use SciMS\Models\Map\CategoryTableMap;
+use SciMS\Models\Map\CommentTableMap;
+use SciMS\Models\Map\HighlightedArticleTableMap;
+use SciMS\Models\Map\UserTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Context\ExecutionContextFactory;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Mapping\Factory\LazyLoadingMetadataFactory;
@@ -34,18 +42,18 @@ use Symfony\Component\Validator\Validator\RecursiveValidator;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Base class that represents a row from the 'category' table.
+ * Base class that represents a row from the 'user' table.
  *
  *
  *
  * @package    propel.generator.SciMS.Models.Base
  */
-abstract class Category implements ActiveRecordInterface
+abstract class User implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\SciMS\\Models\\Map\\CategoryTableMap';
+    const TABLE_MAP = '\\SciMS\\Models\\Map\\UserTableMap';
 
 
     /**
@@ -82,42 +90,78 @@ abstract class Category implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the name field.
+     * The value for the uid field.
      *
      * @var        string
      */
-    protected $name;
+    protected $uid;
 
     /**
-     * The value for the parent_category_id field.
+     * The value for the email field.
      *
-     * Note: this column has a database default value of: -1
+     * @var        string
+     */
+    protected $email;
+
+    /**
+     * The value for the first_name field.
+     *
+     * @var        string
+     */
+    protected $first_name;
+
+    /**
+     * The value for the last_name field.
+     *
+     * @var        string
+     */
+    protected $last_name;
+
+    /**
+     * The value for the biography field.
+     *
+     * @var        string
+     */
+    protected $biography;
+
+    /**
+     * The value for the password field.
+     *
+     * @var        string
+     */
+    protected $password;
+
+    /**
+     * The value for the token field.
+     *
+     * @var        string
+     */
+    protected $token;
+
+    /**
+     * The value for the token_expiration field.
+     *
      * @var        int
      */
-    protected $parent_category_id;
-
-    /**
-     * @var        ChildCategory
-     */
-    protected $aparentCategory;
+    protected $token_expiration;
 
     /**
      * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
      */
-    protected $collArticlesRelatedByCategoryId;
-    protected $collArticlesRelatedByCategoryIdPartial;
+    protected $collArticles;
+    protected $collArticlesPartial;
 
     /**
-     * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
+     * @var        ObjectCollection|ChildHighlightedArticle[] Collection to store aggregation of ChildHighlightedArticle objects.
      */
-    protected $collArticlesRelatedBySubcategoryId;
-    protected $collArticlesRelatedBySubcategoryIdPartial;
+    protected $collHighlightedArticles;
+    protected $collHighlightedArticlesPartial;
 
     /**
-     * @var        ObjectCollection|ChildCategory[] Collection to store aggregation of ChildCategory objects.
+     * @var        ObjectCollection|ChildComment[] Collection to store aggregation of ChildComment objects.
      */
-    protected $collCategoriesRelatedById;
-    protected $collCategoriesRelatedByIdPartial;
+    protected $collComments;
+    protected $collCommentsPartial;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -148,38 +192,25 @@ abstract class Category implements ActiveRecordInterface
      * An array of objects scheduled for deletion.
      * @var ObjectCollection|ChildArticle[]
      */
-    protected $articlesRelatedByCategoryIdScheduledForDeletion = null;
+    protected $articlesScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildArticle[]
+     * @var ObjectCollection|ChildHighlightedArticle[]
      */
-    protected $articlesRelatedBySubcategoryIdScheduledForDeletion = null;
+    protected $highlightedArticlesScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
-     * @var ObjectCollection|ChildCategory[]
+     * @var ObjectCollection|ChildComment[]
      */
-    protected $categoriesRelatedByIdScheduledForDeletion = null;
+    protected $commentsScheduledForDeletion = null;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->parent_category_id = -1;
-    }
-
-    /**
-     * Initializes internal state of SciMS\Models\Base\Category object.
-     * @see applyDefaults()
+     * Initializes internal state of SciMS\Models\Base\User object.
      */
     public function __construct()
     {
-        $this->applyDefaultValues();
     }
 
     /**
@@ -271,9 +302,9 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>Category</code> instance.  If
-     * <code>obj</code> is an instance of <code>Category</code>, delegates to
-     * <code>equals(Category)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>User</code> instance.  If
+     * <code>obj</code> is an instance of <code>User</code>, delegates to
+     * <code>equals(User)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -339,7 +370,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return $this|Category The current object, for fluid interface
+     * @return $this|User The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -411,30 +442,90 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Get the [name] column value.
+     * Get the [uid] column value.
      *
      * @return string
      */
-    public function getName()
+    public function getUid()
     {
-        return $this->name;
+        return $this->uid;
     }
 
     /**
-     * Get the [parent_category_id] column value.
+     * Get the [email] column value.
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Get the [first_name] column value.
+     *
+     * @return string
+     */
+    public function getFirstName()
+    {
+        return $this->first_name;
+    }
+
+    /**
+     * Get the [last_name] column value.
+     *
+     * @return string
+     */
+    public function getLastName()
+    {
+        return $this->last_name;
+    }
+
+    /**
+     * Get the [biography] column value.
+     *
+     * @return string
+     */
+    public function getBiography()
+    {
+        return $this->biography;
+    }
+
+    /**
+     * Get the [password] column value.
+     *
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * Get the [token] column value.
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Get the [token_expiration] column value.
      *
      * @return int
      */
-    public function getParentCategoryId()
+    public function getTokenExpiration()
     {
-        return $this->parent_category_id;
+        return $this->token_expiration;
     }
 
     /**
      * Set the value of [id] column.
      *
      * @param int $v new value
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -444,55 +535,171 @@ abstract class Category implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+            $this->modifiedColumns[UserTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [name] column.
+     * Set the value of [uid] column.
      *
      * @param string $v new value
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
-    public function setName($v)
+    public function setUid($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->name !== $v) {
-            $this->name = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_NAME] = true;
+        if ($this->uid !== $v) {
+            $this->uid = $v;
+            $this->modifiedColumns[UserTableMap::COL_UID] = true;
         }
 
         return $this;
-    } // setName()
+    } // setUid()
 
     /**
-     * Set the value of [parent_category_id] column.
+     * Set the value of [email] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setEmail($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->email !== $v) {
+            $this->email = $v;
+            $this->modifiedColumns[UserTableMap::COL_EMAIL] = true;
+        }
+
+        return $this;
+    } // setEmail()
+
+    /**
+     * Set the value of [first_name] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setFirstName($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->first_name !== $v) {
+            $this->first_name = $v;
+            $this->modifiedColumns[UserTableMap::COL_FIRST_NAME] = true;
+        }
+
+        return $this;
+    } // setFirstName()
+
+    /**
+     * Set the value of [last_name] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setLastName($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->last_name !== $v) {
+            $this->last_name = $v;
+            $this->modifiedColumns[UserTableMap::COL_LAST_NAME] = true;
+        }
+
+        return $this;
+    } // setLastName()
+
+    /**
+     * Set the value of [biography] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setBiography($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->biography !== $v) {
+            $this->biography = $v;
+            $this->modifiedColumns[UserTableMap::COL_BIOGRAPHY] = true;
+        }
+
+        return $this;
+    } // setBiography()
+
+    /**
+     * Set the value of [password] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setPassword($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->password !== $v) {
+            $this->password = $v;
+            $this->modifiedColumns[UserTableMap::COL_PASSWORD] = true;
+        }
+
+        return $this;
+    } // setPassword()
+
+    /**
+     * Set the value of [token] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
+     */
+    public function setToken($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->token !== $v) {
+            $this->token = $v;
+            $this->modifiedColumns[UserTableMap::COL_TOKEN] = true;
+        }
+
+        return $this;
+    } // setToken()
+
+    /**
+     * Set the value of [token_expiration] column.
      *
      * @param int $v new value
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
-    public function setParentCategoryId($v)
+    public function setTokenExpiration($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->parent_category_id !== $v) {
-            $this->parent_category_id = $v;
-            $this->modifiedColumns[CategoryTableMap::COL_PARENT_CATEGORY_ID] = true;
-        }
-
-        if ($this->aparentCategory !== null && $this->aparentCategory->getId() !== $v) {
-            $this->aparentCategory = null;
+        if ($this->token_expiration !== $v) {
+            $this->token_expiration = $v;
+            $this->modifiedColumns[UserTableMap::COL_TOKEN_EXPIRATION] = true;
         }
 
         return $this;
-    } // setParentCategoryId()
+    } // setTokenExpiration()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -504,10 +711,6 @@ abstract class Category implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->parent_category_id !== -1) {
-                return false;
-            }
-
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -534,14 +737,32 @@ abstract class Category implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : CategoryTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : UserTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : CategoryTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->name = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : UserTableMap::translateFieldName('Uid', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->uid = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : CategoryTableMap::translateFieldName('ParentCategoryId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->parent_category_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : UserTableMap::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->email = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : UserTableMap::translateFieldName('FirstName', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->first_name = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : UserTableMap::translateFieldName('LastName', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->last_name = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : UserTableMap::translateFieldName('Biography', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->biography = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : UserTableMap::translateFieldName('Password', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->password = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : UserTableMap::translateFieldName('Token', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->token = (null !== $col) ? (string) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : UserTableMap::translateFieldName('TokenExpiration', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->token_expiration = (null !== $col) ? (int) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -550,10 +771,10 @@ abstract class Category implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 3; // 3 = CategoryTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = UserTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Category'), 0, $e);
+            throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\User'), 0, $e);
         }
     }
 
@@ -572,9 +793,6 @@ abstract class Category implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aparentCategory !== null && $this->parent_category_id !== $this->aparentCategory->getId()) {
-            $this->aparentCategory = null;
-        }
     } // ensureConsistency
 
     /**
@@ -598,13 +816,13 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(UserTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildCategoryQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildUserQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -614,12 +832,11 @@ abstract class Category implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aparentCategory = null;
-            $this->collArticlesRelatedByCategoryId = null;
+            $this->collArticles = null;
 
-            $this->collArticlesRelatedBySubcategoryId = null;
+            $this->collHighlightedArticles = null;
 
-            $this->collCategoriesRelatedById = null;
+            $this->collComments = null;
 
         } // if (deep)
     }
@@ -630,8 +847,8 @@ abstract class Category implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see Category::setDeleted()
-     * @see Category::isDeleted()
+     * @see User::setDeleted()
+     * @see User::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -640,11 +857,11 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
         }
 
         $con->transaction(function () use ($con) {
-            $deleteQuery = ChildCategoryQuery::create()
+            $deleteQuery = ChildUserQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -675,7 +892,7 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(CategoryTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(UserTableMap::DATABASE_NAME);
         }
 
         return $con->transaction(function () use ($con) {
@@ -694,7 +911,7 @@ abstract class Category implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                CategoryTableMap::addInstanceToPool($this);
+                UserTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -720,18 +937,6 @@ abstract class Category implements ActiveRecordInterface
         if (!$this->alreadyInSave) {
             $this->alreadyInSave = true;
 
-            // We call the save method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            if ($this->aparentCategory !== null) {
-                if ($this->aparentCategory->isModified() || $this->aparentCategory->isNew()) {
-                    $affectedRows += $this->aparentCategory->save($con);
-                }
-                $this->setparentCategory($this->aparentCategory);
-            }
-
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -743,53 +948,51 @@ abstract class Category implements ActiveRecordInterface
                 $this->resetModified();
             }
 
-            if ($this->articlesRelatedByCategoryIdScheduledForDeletion !== null) {
-                if (!$this->articlesRelatedByCategoryIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->articlesRelatedByCategoryIdScheduledForDeletion as $articleRelatedByCategoryId) {
-                        // need to save related object because we set the relation to null
-                        $articleRelatedByCategoryId->save($con);
-                    }
-                    $this->articlesRelatedByCategoryIdScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collArticlesRelatedByCategoryId !== null) {
-                foreach ($this->collArticlesRelatedByCategoryId as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->articlesRelatedBySubcategoryIdScheduledForDeletion !== null) {
-                if (!$this->articlesRelatedBySubcategoryIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->articlesRelatedBySubcategoryIdScheduledForDeletion as $articleRelatedBySubcategoryId) {
-                        // need to save related object because we set the relation to null
-                        $articleRelatedBySubcategoryId->save($con);
-                    }
-                    $this->articlesRelatedBySubcategoryIdScheduledForDeletion = null;
-                }
-            }
-
-            if ($this->collArticlesRelatedBySubcategoryId !== null) {
-                foreach ($this->collArticlesRelatedBySubcategoryId as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->categoriesRelatedByIdScheduledForDeletion !== null) {
-                if (!$this->categoriesRelatedByIdScheduledForDeletion->isEmpty()) {
-                    \SciMS\Models\CategoryQuery::create()
-                        ->filterByPrimaryKeys($this->categoriesRelatedByIdScheduledForDeletion->getPrimaryKeys(false))
+            if ($this->articlesScheduledForDeletion !== null) {
+                if (!$this->articlesScheduledForDeletion->isEmpty()) {
+                    \SciMS\Models\ArticleQuery::create()
+                        ->filterByPrimaryKeys($this->articlesScheduledForDeletion->getPrimaryKeys(false))
                         ->delete($con);
-                    $this->categoriesRelatedByIdScheduledForDeletion = null;
+                    $this->articlesScheduledForDeletion = null;
                 }
             }
 
-            if ($this->collCategoriesRelatedById !== null) {
-                foreach ($this->collCategoriesRelatedById as $referrerFK) {
+            if ($this->collArticles !== null) {
+                foreach ($this->collArticles as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->highlightedArticlesScheduledForDeletion !== null) {
+                if (!$this->highlightedArticlesScheduledForDeletion->isEmpty()) {
+                    \SciMS\Models\HighlightedArticleQuery::create()
+                        ->filterByPrimaryKeys($this->highlightedArticlesScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->highlightedArticlesScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collHighlightedArticles !== null) {
+                foreach ($this->collHighlightedArticles as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
+            }
+
+            if ($this->commentsScheduledForDeletion !== null) {
+                if (!$this->commentsScheduledForDeletion->isEmpty()) {
+                    \SciMS\Models\CommentQuery::create()
+                        ->filterByPrimaryKeys($this->commentsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->commentsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collComments !== null) {
+                foreach ($this->collComments as $referrerFK) {
                     if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
                         $affectedRows += $referrerFK->save($con);
                     }
@@ -816,24 +1019,51 @@ abstract class Category implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[CategoryTableMap::COL_ID] = true;
+        $this->modifiedColumns[UserTableMap::COL_ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . UserTableMap::COL_ID . ')');
+        }
+        if (null === $this->id) {
+            try {
+                $dataFetcher = $con->query("SELECT nextval('user_id_seq')");
+                $this->id = (int) $dataFetcher->fetchColumn();
+            } catch (Exception $e) {
+                throw new PropelException('Unable to get sequence id.', 0, $e);
+            }
         }
 
+
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
+        if ($this->isColumnModified(UserTableMap::COL_ID)) {
             $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'name';
+        if ($this->isColumnModified(UserTableMap::COL_UID)) {
+            $modifiedColumns[':p' . $index++]  = 'uid';
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_PARENT_CATEGORY_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'parent_category_id';
+        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
+            $modifiedColumns[':p' . $index++]  = 'email';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_FIRST_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'first_name';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'last_name';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_BIOGRAPHY)) {
+            $modifiedColumns[':p' . $index++]  = 'biography';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
+            $modifiedColumns[':p' . $index++]  = 'password';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_TOKEN)) {
+            $modifiedColumns[':p' . $index++]  = 'token';
+        }
+        if ($this->isColumnModified(UserTableMap::COL_TOKEN_EXPIRATION)) {
+            $modifiedColumns[':p' . $index++]  = 'token_expiration';
         }
 
         $sql = sprintf(
-            'INSERT INTO category (%s) VALUES (%s)',
+            'INSERT INTO user (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -845,11 +1075,29 @@ abstract class Category implements ActiveRecordInterface
                     case 'id':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'name':
-                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+                    case 'uid':
+                        $stmt->bindValue($identifier, $this->uid, PDO::PARAM_STR);
                         break;
-                    case 'parent_category_id':
-                        $stmt->bindValue($identifier, $this->parent_category_id, PDO::PARAM_INT);
+                    case 'email':
+                        $stmt->bindValue($identifier, $this->email, PDO::PARAM_STR);
+                        break;
+                    case 'first_name':
+                        $stmt->bindValue($identifier, $this->first_name, PDO::PARAM_STR);
+                        break;
+                    case 'last_name':
+                        $stmt->bindValue($identifier, $this->last_name, PDO::PARAM_STR);
+                        break;
+                    case 'biography':
+                        $stmt->bindValue($identifier, $this->biography, PDO::PARAM_STR);
+                        break;
+                    case 'password':
+                        $stmt->bindValue($identifier, $this->password, PDO::PARAM_STR);
+                        break;
+                    case 'token':
+                        $stmt->bindValue($identifier, $this->token, PDO::PARAM_STR);
+                        break;
+                    case 'token_expiration':
+                        $stmt->bindValue($identifier, $this->token_expiration, PDO::PARAM_INT);
                         break;
                 }
             }
@@ -858,13 +1106,6 @@ abstract class Category implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -897,7 +1138,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -917,10 +1158,28 @@ abstract class Category implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getName();
+                return $this->getUid();
                 break;
             case 2:
-                return $this->getParentCategoryId();
+                return $this->getEmail();
+                break;
+            case 3:
+                return $this->getFirstName();
+                break;
+            case 4:
+                return $this->getLastName();
+                break;
+            case 5:
+                return $this->getBiography();
+                break;
+            case 6:
+                return $this->getPassword();
+                break;
+            case 7:
+                return $this->getToken();
+                break;
+            case 8:
+                return $this->getTokenExpiration();
                 break;
             default:
                 return null;
@@ -946,15 +1205,21 @@ abstract class Category implements ActiveRecordInterface
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
 
-        if (isset($alreadyDumpedObjects['Category'][$this->hashCode()])) {
+        if (isset($alreadyDumpedObjects['User'][$this->hashCode()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['Category'][$this->hashCode()] = true;
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['User'][$this->hashCode()] = true;
+        $keys = UserTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getName(),
-            $keys[2] => $this->getParentCategoryId(),
+            $keys[1] => $this->getUid(),
+            $keys[2] => $this->getEmail(),
+            $keys[3] => $this->getFirstName(),
+            $keys[4] => $this->getLastName(),
+            $keys[5] => $this->getBiography(),
+            $keys[6] => $this->getPassword(),
+            $keys[7] => $this->getToken(),
+            $keys[8] => $this->getTokenExpiration(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -962,22 +1227,7 @@ abstract class Category implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aparentCategory) {
-
-                switch ($keyType) {
-                    case TableMap::TYPE_CAMELNAME:
-                        $key = 'category';
-                        break;
-                    case TableMap::TYPE_FIELDNAME:
-                        $key = 'category';
-                        break;
-                    default:
-                        $key = 'parentCategory';
-                }
-
-                $result[$key] = $this->aparentCategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-            }
-            if (null !== $this->collArticlesRelatedByCategoryId) {
+            if (null !== $this->collArticles) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
@@ -990,37 +1240,37 @@ abstract class Category implements ActiveRecordInterface
                         $key = 'Articles';
                 }
 
-                $result[$key] = $this->collArticlesRelatedByCategoryId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collArticles->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collArticlesRelatedBySubcategoryId) {
+            if (null !== $this->collHighlightedArticles) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'articles';
+                        $key = 'highlightedArticles';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'articles';
+                        $key = 'highlighted_articles';
                         break;
                     default:
-                        $key = 'Articles';
+                        $key = 'HighlightedArticles';
                 }
 
-                $result[$key] = $this->collArticlesRelatedBySubcategoryId->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collHighlightedArticles->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
-            if (null !== $this->collCategoriesRelatedById) {
+            if (null !== $this->collComments) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'categories';
+                        $key = 'comments';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'categories';
+                        $key = 'comments';
                         break;
                     default:
-                        $key = 'Categories';
+                        $key = 'Comments';
                 }
 
-                $result[$key] = $this->collCategoriesRelatedById->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+                $result[$key] = $this->collComments->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
         }
 
@@ -1036,11 +1286,11 @@ abstract class Category implements ActiveRecordInterface
      *                one of the class type constants TableMap::TYPE_PHPNAME, TableMap::TYPE_CAMELNAME
      *                TableMap::TYPE_COLNAME, TableMap::TYPE_FIELDNAME, TableMap::TYPE_NUM.
      *                Defaults to TableMap::TYPE_PHPNAME.
-     * @return $this|\SciMS\Models\Category
+     * @return $this|\SciMS\Models\User
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = CategoryTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = UserTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1051,7 +1301,7 @@ abstract class Category implements ActiveRecordInterface
      *
      * @param  int $pos position in xml schema
      * @param  mixed $value field value
-     * @return $this|\SciMS\Models\Category
+     * @return $this|\SciMS\Models\User
      */
     public function setByPosition($pos, $value)
     {
@@ -1060,10 +1310,28 @@ abstract class Category implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setName($value);
+                $this->setUid($value);
                 break;
             case 2:
-                $this->setParentCategoryId($value);
+                $this->setEmail($value);
+                break;
+            case 3:
+                $this->setFirstName($value);
+                break;
+            case 4:
+                $this->setLastName($value);
+                break;
+            case 5:
+                $this->setBiography($value);
+                break;
+            case 6:
+                $this->setPassword($value);
+                break;
+            case 7:
+                $this->setToken($value);
+                break;
+            case 8:
+                $this->setTokenExpiration($value);
                 break;
         } // switch()
 
@@ -1089,16 +1357,34 @@ abstract class Category implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = CategoryTableMap::getFieldNames($keyType);
+        $keys = UserTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
             $this->setId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
-            $this->setName($arr[$keys[1]]);
+            $this->setUid($arr[$keys[1]]);
         }
         if (array_key_exists($keys[2], $arr)) {
-            $this->setParentCategoryId($arr[$keys[2]]);
+            $this->setEmail($arr[$keys[2]]);
+        }
+        if (array_key_exists($keys[3], $arr)) {
+            $this->setFirstName($arr[$keys[3]]);
+        }
+        if (array_key_exists($keys[4], $arr)) {
+            $this->setLastName($arr[$keys[4]]);
+        }
+        if (array_key_exists($keys[5], $arr)) {
+            $this->setBiography($arr[$keys[5]]);
+        }
+        if (array_key_exists($keys[6], $arr)) {
+            $this->setPassword($arr[$keys[6]]);
+        }
+        if (array_key_exists($keys[7], $arr)) {
+            $this->setToken($arr[$keys[7]]);
+        }
+        if (array_key_exists($keys[8], $arr)) {
+            $this->setTokenExpiration($arr[$keys[8]]);
         }
     }
 
@@ -1119,7 +1405,7 @@ abstract class Category implements ActiveRecordInterface
      * @param string $data The source data to import from
      * @param string $keyType The type of keys the array uses.
      *
-     * @return $this|\SciMS\Models\Category The current object, for fluid interface
+     * @return $this|\SciMS\Models\User The current object, for fluid interface
      */
     public function importFrom($parser, $data, $keyType = TableMap::TYPE_PHPNAME)
     {
@@ -1139,16 +1425,34 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(CategoryTableMap::DATABASE_NAME);
+        $criteria = new Criteria(UserTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
-            $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        if ($this->isColumnModified(UserTableMap::COL_ID)) {
+            $criteria->add(UserTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_NAME)) {
-            $criteria->add(CategoryTableMap::COL_NAME, $this->name);
+        if ($this->isColumnModified(UserTableMap::COL_UID)) {
+            $criteria->add(UserTableMap::COL_UID, $this->uid);
         }
-        if ($this->isColumnModified(CategoryTableMap::COL_PARENT_CATEGORY_ID)) {
-            $criteria->add(CategoryTableMap::COL_PARENT_CATEGORY_ID, $this->parent_category_id);
+        if ($this->isColumnModified(UserTableMap::COL_EMAIL)) {
+            $criteria->add(UserTableMap::COL_EMAIL, $this->email);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_FIRST_NAME)) {
+            $criteria->add(UserTableMap::COL_FIRST_NAME, $this->first_name);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_LAST_NAME)) {
+            $criteria->add(UserTableMap::COL_LAST_NAME, $this->last_name);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_BIOGRAPHY)) {
+            $criteria->add(UserTableMap::COL_BIOGRAPHY, $this->biography);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_PASSWORD)) {
+            $criteria->add(UserTableMap::COL_PASSWORD, $this->password);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_TOKEN)) {
+            $criteria->add(UserTableMap::COL_TOKEN, $this->token);
+        }
+        if ($this->isColumnModified(UserTableMap::COL_TOKEN_EXPIRATION)) {
+            $criteria->add(UserTableMap::COL_TOKEN_EXPIRATION, $this->token_expiration);
         }
 
         return $criteria;
@@ -1166,8 +1470,9 @@ abstract class Category implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = ChildCategoryQuery::create();
-        $criteria->add(CategoryTableMap::COL_ID, $this->id);
+        $criteria = ChildUserQuery::create();
+        $criteria->add(UserTableMap::COL_ID, $this->id);
+        $criteria->add(UserTableMap::COL_EMAIL, $this->email);
 
         return $criteria;
     }
@@ -1180,7 +1485,8 @@ abstract class Category implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getId();
+        $validPk = null !== $this->getId() &&
+            null !== $this->getEmail();
 
         $validPrimaryKeyFKs = 0;
         $primaryKeyFKs = [];
@@ -1195,23 +1501,29 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * Returns the primary key for this object (row).
-     * @return int
+     * Returns the composite primary key for this object.
+     * The array elements will be in same order as specified in XML.
+     * @return array
      */
     public function getPrimaryKey()
     {
-        return $this->getId();
+        $pks = array();
+        $pks[0] = $this->getId();
+        $pks[1] = $this->getEmail();
+
+        return $pks;
     }
 
     /**
-     * Generic method to set the primary key (id column).
+     * Set the [composite] primary key.
      *
-     * @param       int $key Primary key.
+     * @param      array $keys The elements of the composite key (order must match the order in XML file).
      * @return void
      */
-    public function setPrimaryKey($key)
+    public function setPrimaryKey($keys)
     {
-        $this->setId($key);
+        $this->setId($keys[0]);
+        $this->setEmail($keys[1]);
     }
 
     /**
@@ -1220,7 +1532,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return null === $this->getId();
+        return (null === $this->getId()) && (null === $this->getEmail());
     }
 
     /**
@@ -1229,36 +1541,42 @@ abstract class Category implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \SciMS\Models\Category (or compatible) type.
+     * @param      object $copyObj An object of \SciMS\Models\User (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setName($this->getName());
-        $copyObj->setParentCategoryId($this->getParentCategoryId());
+        $copyObj->setUid($this->getUid());
+        $copyObj->setEmail($this->getEmail());
+        $copyObj->setFirstName($this->getFirstName());
+        $copyObj->setLastName($this->getLastName());
+        $copyObj->setBiography($this->getBiography());
+        $copyObj->setPassword($this->getPassword());
+        $copyObj->setToken($this->getToken());
+        $copyObj->setTokenExpiration($this->getTokenExpiration());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
-            foreach ($this->getArticlesRelatedByCategoryId() as $relObj) {
+            foreach ($this->getArticles() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addArticleRelatedByCategoryId($relObj->copy($deepCopy));
+                    $copyObj->addArticle($relObj->copy($deepCopy));
                 }
             }
 
-            foreach ($this->getArticlesRelatedBySubcategoryId() as $relObj) {
+            foreach ($this->getHighlightedArticles() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addArticleRelatedBySubcategoryId($relObj->copy($deepCopy));
+                    $copyObj->addHighlightedArticle($relObj->copy($deepCopy));
                 }
             }
 
-            foreach ($this->getCategoriesRelatedById() as $relObj) {
+            foreach ($this->getComments() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addCategoryRelatedById($relObj->copy($deepCopy));
+                    $copyObj->addComment($relObj->copy($deepCopy));
                 }
             }
 
@@ -1279,7 +1597,7 @@ abstract class Category implements ActiveRecordInterface
      * objects.
      *
      * @param  boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return \SciMS\Models\Category Clone of current object.
+     * @return \SciMS\Models\User Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1290,57 +1608,6 @@ abstract class Category implements ActiveRecordInterface
         $this->copyInto($copyObj, $deepCopy);
 
         return $copyObj;
-    }
-
-    /**
-     * Declares an association between this object and a ChildCategory object.
-     *
-     * @param  ChildCategory $v
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
-     * @throws PropelException
-     */
-    public function setparentCategory(ChildCategory $v = null)
-    {
-        if ($v === null) {
-            $this->setParentCategoryId(-1);
-        } else {
-            $this->setParentCategoryId($v->getId());
-        }
-
-        $this->aparentCategory = $v;
-
-        // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildCategory object, it will not be re-added.
-        if ($v !== null) {
-            $v->addCategoryRelatedById($this);
-        }
-
-
-        return $this;
-    }
-
-
-    /**
-     * Get the associated ChildCategory object
-     *
-     * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildCategory The associated ChildCategory object.
-     * @throws PropelException
-     */
-    public function getparentCategory(ConnectionInterface $con = null)
-    {
-        if ($this->aparentCategory === null && ($this->parent_category_id !== null)) {
-            $this->aparentCategory = ChildCategoryQuery::create()->findPk($this->parent_category_id, $con);
-            /* The following can be used additionally to
-                guarantee the related object contains a reference
-                to this object.  This level of coupling may, however, be
-                undesirable since it could result in an only partially populated collection
-                in the referenced object.
-                $this->aparentCategory->addCategoriesRelatedById($this);
-             */
-        }
-
-        return $this->aparentCategory;
     }
 
 
@@ -1354,43 +1621,43 @@ abstract class Category implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
-        if ('ArticleRelatedByCategoryId' == $relationName) {
-            return $this->initArticlesRelatedByCategoryId();
+        if ('Article' == $relationName) {
+            return $this->initArticles();
         }
-        if ('ArticleRelatedBySubcategoryId' == $relationName) {
-            return $this->initArticlesRelatedBySubcategoryId();
+        if ('HighlightedArticle' == $relationName) {
+            return $this->initHighlightedArticles();
         }
-        if ('CategoryRelatedById' == $relationName) {
-            return $this->initCategoriesRelatedById();
+        if ('Comment' == $relationName) {
+            return $this->initComments();
         }
     }
 
     /**
-     * Clears out the collArticlesRelatedByCategoryId collection
+     * Clears out the collArticles collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addArticlesRelatedByCategoryId()
+     * @see        addArticles()
      */
-    public function clearArticlesRelatedByCategoryId()
+    public function clearArticles()
     {
-        $this->collArticlesRelatedByCategoryId = null; // important to set this to NULL since that means it is uninitialized
+        $this->collArticles = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collArticlesRelatedByCategoryId collection loaded partially.
+     * Reset is the collArticles collection loaded partially.
      */
-    public function resetPartialArticlesRelatedByCategoryId($v = true)
+    public function resetPartialArticles($v = true)
     {
-        $this->collArticlesRelatedByCategoryIdPartial = $v;
+        $this->collArticlesPartial = $v;
     }
 
     /**
-     * Initializes the collArticlesRelatedByCategoryId collection.
+     * Initializes the collArticles collection.
      *
-     * By default this just sets the collArticlesRelatedByCategoryId collection to an empty array (like clearcollArticlesRelatedByCategoryId());
+     * By default this just sets the collArticles collection to an empty array (like clearcollArticles());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1399,16 +1666,16 @@ abstract class Category implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initArticlesRelatedByCategoryId($overrideExisting = true)
+    public function initArticles($overrideExisting = true)
     {
-        if (null !== $this->collArticlesRelatedByCategoryId && !$overrideExisting) {
+        if (null !== $this->collArticles && !$overrideExisting) {
             return;
         }
 
         $collectionClassName = ArticleTableMap::getTableMap()->getCollectionClassName();
 
-        $this->collArticlesRelatedByCategoryId = new $collectionClassName;
-        $this->collArticlesRelatedByCategoryId->setModel('\SciMS\Models\Article');
+        $this->collArticles = new $collectionClassName;
+        $this->collArticles->setModel('\SciMS\Models\Article');
     }
 
     /**
@@ -1417,7 +1684,7 @@ abstract class Category implements ActiveRecordInterface
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
+     * If this ChildUser is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
@@ -1425,48 +1692,48 @@ abstract class Category implements ActiveRecordInterface
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      * @throws PropelException
      */
-    public function getArticlesRelatedByCategoryId(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getArticles(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesRelatedByCategoryIdPartial && !$this->isNew();
-        if (null === $this->collArticlesRelatedByCategoryId || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collArticlesRelatedByCategoryId) {
+        $partial = $this->collArticlesPartial && !$this->isNew();
+        if (null === $this->collArticles || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collArticles) {
                 // return empty collection
-                $this->initArticlesRelatedByCategoryId();
+                $this->initArticles();
             } else {
-                $collArticlesRelatedByCategoryId = ChildArticleQuery::create(null, $criteria)
-                    ->filterBycategory($this)
+                $collArticles = ChildArticleQuery::create(null, $criteria)
+                    ->filterByuser($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collArticlesRelatedByCategoryIdPartial && count($collArticlesRelatedByCategoryId)) {
-                        $this->initArticlesRelatedByCategoryId(false);
+                    if (false !== $this->collArticlesPartial && count($collArticles)) {
+                        $this->initArticles(false);
 
-                        foreach ($collArticlesRelatedByCategoryId as $obj) {
-                            if (false == $this->collArticlesRelatedByCategoryId->contains($obj)) {
-                                $this->collArticlesRelatedByCategoryId->append($obj);
+                        foreach ($collArticles as $obj) {
+                            if (false == $this->collArticles->contains($obj)) {
+                                $this->collArticles->append($obj);
                             }
                         }
 
-                        $this->collArticlesRelatedByCategoryIdPartial = true;
+                        $this->collArticlesPartial = true;
                     }
 
-                    return $collArticlesRelatedByCategoryId;
+                    return $collArticles;
                 }
 
-                if ($partial && $this->collArticlesRelatedByCategoryId) {
-                    foreach ($this->collArticlesRelatedByCategoryId as $obj) {
+                if ($partial && $this->collArticles) {
+                    foreach ($this->collArticles as $obj) {
                         if ($obj->isNew()) {
-                            $collArticlesRelatedByCategoryId[] = $obj;
+                            $collArticles[] = $obj;
                         }
                     }
                 }
 
-                $this->collArticlesRelatedByCategoryId = $collArticlesRelatedByCategoryId;
-                $this->collArticlesRelatedByCategoryIdPartial = false;
+                $this->collArticles = $collArticles;
+                $this->collArticlesPartial = false;
             }
         }
 
-        return $this->collArticlesRelatedByCategoryId;
+        return $this->collArticles;
     }
 
     /**
@@ -1475,29 +1742,29 @@ abstract class Category implements ActiveRecordInterface
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $articlesRelatedByCategoryId A Propel collection.
+     * @param      Collection $articles A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function setArticlesRelatedByCategoryId(Collection $articlesRelatedByCategoryId, ConnectionInterface $con = null)
+    public function setArticles(Collection $articles, ConnectionInterface $con = null)
     {
-        /** @var ChildArticle[] $articlesRelatedByCategoryIdToDelete */
-        $articlesRelatedByCategoryIdToDelete = $this->getArticlesRelatedByCategoryId(new Criteria(), $con)->diff($articlesRelatedByCategoryId);
+        /** @var ChildArticle[] $articlesToDelete */
+        $articlesToDelete = $this->getArticles(new Criteria(), $con)->diff($articles);
 
 
-        $this->articlesRelatedByCategoryIdScheduledForDeletion = $articlesRelatedByCategoryIdToDelete;
+        $this->articlesScheduledForDeletion = $articlesToDelete;
 
-        foreach ($articlesRelatedByCategoryIdToDelete as $articleRelatedByCategoryIdRemoved) {
-            $articleRelatedByCategoryIdRemoved->setcategory(null);
+        foreach ($articlesToDelete as $articleRemoved) {
+            $articleRemoved->setuser(null);
         }
 
-        $this->collArticlesRelatedByCategoryId = null;
-        foreach ($articlesRelatedByCategoryId as $articleRelatedByCategoryId) {
-            $this->addArticleRelatedByCategoryId($articleRelatedByCategoryId);
+        $this->collArticles = null;
+        foreach ($articles as $article) {
+            $this->addArticle($article);
         }
 
-        $this->collArticlesRelatedByCategoryId = $articlesRelatedByCategoryId;
-        $this->collArticlesRelatedByCategoryIdPartial = false;
+        $this->collArticles = $articles;
+        $this->collArticlesPartial = false;
 
         return $this;
     }
@@ -1511,16 +1778,16 @@ abstract class Category implements ActiveRecordInterface
      * @return int             Count of related Article objects.
      * @throws PropelException
      */
-    public function countArticlesRelatedByCategoryId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countArticles(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesRelatedByCategoryIdPartial && !$this->isNew();
-        if (null === $this->collArticlesRelatedByCategoryId || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collArticlesRelatedByCategoryId) {
+        $partial = $this->collArticlesPartial && !$this->isNew();
+        if (null === $this->collArticles || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collArticles) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getArticlesRelatedByCategoryId());
+                return count($this->getArticles());
             }
 
             $query = ChildArticleQuery::create(null, $criteria);
@@ -1529,11 +1796,11 @@ abstract class Category implements ActiveRecordInterface
             }
 
             return $query
-                ->filterBycategory($this)
+                ->filterByuser($this)
                 ->count($con);
         }
 
-        return count($this->collArticlesRelatedByCategoryId);
+        return count($this->collArticles);
     }
 
     /**
@@ -1541,20 +1808,20 @@ abstract class Category implements ActiveRecordInterface
      * through the ChildArticle foreign key attribute.
      *
      * @param  ChildArticle $l ChildArticle
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
-    public function addArticleRelatedByCategoryId(ChildArticle $l)
+    public function addArticle(ChildArticle $l)
     {
-        if ($this->collArticlesRelatedByCategoryId === null) {
-            $this->initArticlesRelatedByCategoryId();
-            $this->collArticlesRelatedByCategoryIdPartial = true;
+        if ($this->collArticles === null) {
+            $this->initArticles();
+            $this->collArticlesPartial = true;
         }
 
-        if (!$this->collArticlesRelatedByCategoryId->contains($l)) {
-            $this->doAddArticleRelatedByCategoryId($l);
+        if (!$this->collArticles->contains($l)) {
+            $this->doAddArticle($l);
 
-            if ($this->articlesRelatedByCategoryIdScheduledForDeletion and $this->articlesRelatedByCategoryIdScheduledForDeletion->contains($l)) {
-                $this->articlesRelatedByCategoryIdScheduledForDeletion->remove($this->articlesRelatedByCategoryIdScheduledForDeletion->search($l));
+            if ($this->articlesScheduledForDeletion and $this->articlesScheduledForDeletion->contains($l)) {
+                $this->articlesScheduledForDeletion->remove($this->articlesScheduledForDeletion->search($l));
             }
         }
 
@@ -1562,29 +1829,29 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildArticle $articleRelatedByCategoryId The ChildArticle object to add.
+     * @param ChildArticle $article The ChildArticle object to add.
      */
-    protected function doAddArticleRelatedByCategoryId(ChildArticle $articleRelatedByCategoryId)
+    protected function doAddArticle(ChildArticle $article)
     {
-        $this->collArticlesRelatedByCategoryId[]= $articleRelatedByCategoryId;
-        $articleRelatedByCategoryId->setcategory($this);
+        $this->collArticles[]= $article;
+        $article->setuser($this);
     }
 
     /**
-     * @param  ChildArticle $articleRelatedByCategoryId The ChildArticle object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @param  ChildArticle $article The ChildArticle object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function removeArticleRelatedByCategoryId(ChildArticle $articleRelatedByCategoryId)
+    public function removeArticle(ChildArticle $article)
     {
-        if ($this->getArticlesRelatedByCategoryId()->contains($articleRelatedByCategoryId)) {
-            $pos = $this->collArticlesRelatedByCategoryId->search($articleRelatedByCategoryId);
-            $this->collArticlesRelatedByCategoryId->remove($pos);
-            if (null === $this->articlesRelatedByCategoryIdScheduledForDeletion) {
-                $this->articlesRelatedByCategoryIdScheduledForDeletion = clone $this->collArticlesRelatedByCategoryId;
-                $this->articlesRelatedByCategoryIdScheduledForDeletion->clear();
+        if ($this->getArticles()->contains($article)) {
+            $pos = $this->collArticles->search($article);
+            $this->collArticles->remove($pos);
+            if (null === $this->articlesScheduledForDeletion) {
+                $this->articlesScheduledForDeletion = clone $this->collArticles;
+                $this->articlesScheduledForDeletion->clear();
             }
-            $this->articlesRelatedByCategoryIdScheduledForDeletion[]= $articleRelatedByCategoryId;
-            $articleRelatedByCategoryId->setcategory(null);
+            $this->articlesScheduledForDeletion[]= clone $article;
+            $article->setuser(null);
         }
 
         return $this;
@@ -1594,53 +1861,78 @@ abstract class Category implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related ArticlesRelatedByCategoryId from storage.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Articles from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * actually need in User.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesRelatedByCategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesJoincategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('user', $joinBehavior);
+        $query->joinWith('category', $joinBehavior);
 
-        return $this->getArticlesRelatedByCategoryId($query, $con);
+        return $this->getArticles($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Articles from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     */
+    public function getArticlesJoinsubcategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildArticleQuery::create(null, $criteria);
+        $query->joinWith('subcategory', $joinBehavior);
+
+        return $this->getArticles($query, $con);
     }
 
     /**
-     * Clears out the collArticlesRelatedBySubcategoryId collection
+     * Clears out the collHighlightedArticles collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addArticlesRelatedBySubcategoryId()
+     * @see        addHighlightedArticles()
      */
-    public function clearArticlesRelatedBySubcategoryId()
+    public function clearHighlightedArticles()
     {
-        $this->collArticlesRelatedBySubcategoryId = null; // important to set this to NULL since that means it is uninitialized
+        $this->collHighlightedArticles = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collArticlesRelatedBySubcategoryId collection loaded partially.
+     * Reset is the collHighlightedArticles collection loaded partially.
      */
-    public function resetPartialArticlesRelatedBySubcategoryId($v = true)
+    public function resetPartialHighlightedArticles($v = true)
     {
-        $this->collArticlesRelatedBySubcategoryIdPartial = $v;
+        $this->collHighlightedArticlesPartial = $v;
     }
 
     /**
-     * Initializes the collArticlesRelatedBySubcategoryId collection.
+     * Initializes the collHighlightedArticles collection.
      *
-     * By default this just sets the collArticlesRelatedBySubcategoryId collection to an empty array (like clearcollArticlesRelatedBySubcategoryId());
+     * By default this just sets the collHighlightedArticles collection to an empty array (like clearcollHighlightedArticles());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1649,162 +1941,165 @@ abstract class Category implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initArticlesRelatedBySubcategoryId($overrideExisting = true)
+    public function initHighlightedArticles($overrideExisting = true)
     {
-        if (null !== $this->collArticlesRelatedBySubcategoryId && !$overrideExisting) {
+        if (null !== $this->collHighlightedArticles && !$overrideExisting) {
             return;
         }
 
-        $collectionClassName = ArticleTableMap::getTableMap()->getCollectionClassName();
+        $collectionClassName = HighlightedArticleTableMap::getTableMap()->getCollectionClassName();
 
-        $this->collArticlesRelatedBySubcategoryId = new $collectionClassName;
-        $this->collArticlesRelatedBySubcategoryId->setModel('\SciMS\Models\Article');
+        $this->collHighlightedArticles = new $collectionClassName;
+        $this->collHighlightedArticles->setModel('\SciMS\Models\HighlightedArticle');
     }
 
     /**
-     * Gets an array of ChildArticle objects which contain a foreign key that references this object.
+     * Gets an array of ChildHighlightedArticle objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
+     * If this ChildUser is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     * @return ObjectCollection|ChildHighlightedArticle[] List of ChildHighlightedArticle objects
      * @throws PropelException
      */
-    public function getArticlesRelatedBySubcategoryId(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getHighlightedArticles(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesRelatedBySubcategoryIdPartial && !$this->isNew();
-        if (null === $this->collArticlesRelatedBySubcategoryId || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collArticlesRelatedBySubcategoryId) {
+        $partial = $this->collHighlightedArticlesPartial && !$this->isNew();
+        if (null === $this->collHighlightedArticles || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collHighlightedArticles) {
                 // return empty collection
-                $this->initArticlesRelatedBySubcategoryId();
+                $this->initHighlightedArticles();
             } else {
-                $collArticlesRelatedBySubcategoryId = ChildArticleQuery::create(null, $criteria)
-                    ->filterBysubcategory($this)
+                $collHighlightedArticles = ChildHighlightedArticleQuery::create(null, $criteria)
+                    ->filterByuser($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collArticlesRelatedBySubcategoryIdPartial && count($collArticlesRelatedBySubcategoryId)) {
-                        $this->initArticlesRelatedBySubcategoryId(false);
+                    if (false !== $this->collHighlightedArticlesPartial && count($collHighlightedArticles)) {
+                        $this->initHighlightedArticles(false);
 
-                        foreach ($collArticlesRelatedBySubcategoryId as $obj) {
-                            if (false == $this->collArticlesRelatedBySubcategoryId->contains($obj)) {
-                                $this->collArticlesRelatedBySubcategoryId->append($obj);
+                        foreach ($collHighlightedArticles as $obj) {
+                            if (false == $this->collHighlightedArticles->contains($obj)) {
+                                $this->collHighlightedArticles->append($obj);
                             }
                         }
 
-                        $this->collArticlesRelatedBySubcategoryIdPartial = true;
+                        $this->collHighlightedArticlesPartial = true;
                     }
 
-                    return $collArticlesRelatedBySubcategoryId;
+                    return $collHighlightedArticles;
                 }
 
-                if ($partial && $this->collArticlesRelatedBySubcategoryId) {
-                    foreach ($this->collArticlesRelatedBySubcategoryId as $obj) {
+                if ($partial && $this->collHighlightedArticles) {
+                    foreach ($this->collHighlightedArticles as $obj) {
                         if ($obj->isNew()) {
-                            $collArticlesRelatedBySubcategoryId[] = $obj;
+                            $collHighlightedArticles[] = $obj;
                         }
                     }
                 }
 
-                $this->collArticlesRelatedBySubcategoryId = $collArticlesRelatedBySubcategoryId;
-                $this->collArticlesRelatedBySubcategoryIdPartial = false;
+                $this->collHighlightedArticles = $collHighlightedArticles;
+                $this->collHighlightedArticlesPartial = false;
             }
         }
 
-        return $this->collArticlesRelatedBySubcategoryId;
+        return $this->collHighlightedArticles;
     }
 
     /**
-     * Sets a collection of ChildArticle objects related by a one-to-many relationship
+     * Sets a collection of ChildHighlightedArticle objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $articlesRelatedBySubcategoryId A Propel collection.
+     * @param      Collection $highlightedArticles A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function setArticlesRelatedBySubcategoryId(Collection $articlesRelatedBySubcategoryId, ConnectionInterface $con = null)
+    public function setHighlightedArticles(Collection $highlightedArticles, ConnectionInterface $con = null)
     {
-        /** @var ChildArticle[] $articlesRelatedBySubcategoryIdToDelete */
-        $articlesRelatedBySubcategoryIdToDelete = $this->getArticlesRelatedBySubcategoryId(new Criteria(), $con)->diff($articlesRelatedBySubcategoryId);
+        /** @var ChildHighlightedArticle[] $highlightedArticlesToDelete */
+        $highlightedArticlesToDelete = $this->getHighlightedArticles(new Criteria(), $con)->diff($highlightedArticles);
 
 
-        $this->articlesRelatedBySubcategoryIdScheduledForDeletion = $articlesRelatedBySubcategoryIdToDelete;
+        //since at least one column in the foreign key is at the same time a PK
+        //we can not just set a PK to NULL in the lines below. We have to store
+        //a backup of all values, so we are able to manipulate these items based on the onDelete value later.
+        $this->highlightedArticlesScheduledForDeletion = clone $highlightedArticlesToDelete;
 
-        foreach ($articlesRelatedBySubcategoryIdToDelete as $articleRelatedBySubcategoryIdRemoved) {
-            $articleRelatedBySubcategoryIdRemoved->setsubcategory(null);
+        foreach ($highlightedArticlesToDelete as $highlightedArticleRemoved) {
+            $highlightedArticleRemoved->setuser(null);
         }
 
-        $this->collArticlesRelatedBySubcategoryId = null;
-        foreach ($articlesRelatedBySubcategoryId as $articleRelatedBySubcategoryId) {
-            $this->addArticleRelatedBySubcategoryId($articleRelatedBySubcategoryId);
+        $this->collHighlightedArticles = null;
+        foreach ($highlightedArticles as $highlightedArticle) {
+            $this->addHighlightedArticle($highlightedArticle);
         }
 
-        $this->collArticlesRelatedBySubcategoryId = $articlesRelatedBySubcategoryId;
-        $this->collArticlesRelatedBySubcategoryIdPartial = false;
+        $this->collHighlightedArticles = $highlightedArticles;
+        $this->collHighlightedArticlesPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related Article objects.
+     * Returns the number of related HighlightedArticle objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related Article objects.
+     * @return int             Count of related HighlightedArticle objects.
      * @throws PropelException
      */
-    public function countArticlesRelatedBySubcategoryId(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countHighlightedArticles(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collArticlesRelatedBySubcategoryIdPartial && !$this->isNew();
-        if (null === $this->collArticlesRelatedBySubcategoryId || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collArticlesRelatedBySubcategoryId) {
+        $partial = $this->collHighlightedArticlesPartial && !$this->isNew();
+        if (null === $this->collHighlightedArticles || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collHighlightedArticles) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getArticlesRelatedBySubcategoryId());
+                return count($this->getHighlightedArticles());
             }
 
-            $query = ChildArticleQuery::create(null, $criteria);
+            $query = ChildHighlightedArticleQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterBysubcategory($this)
+                ->filterByuser($this)
                 ->count($con);
         }
 
-        return count($this->collArticlesRelatedBySubcategoryId);
+        return count($this->collHighlightedArticles);
     }
 
     /**
-     * Method called to associate a ChildArticle object to this object
-     * through the ChildArticle foreign key attribute.
+     * Method called to associate a ChildHighlightedArticle object to this object
+     * through the ChildHighlightedArticle foreign key attribute.
      *
-     * @param  ChildArticle $l ChildArticle
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @param  ChildHighlightedArticle $l ChildHighlightedArticle
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
-    public function addArticleRelatedBySubcategoryId(ChildArticle $l)
+    public function addHighlightedArticle(ChildHighlightedArticle $l)
     {
-        if ($this->collArticlesRelatedBySubcategoryId === null) {
-            $this->initArticlesRelatedBySubcategoryId();
-            $this->collArticlesRelatedBySubcategoryIdPartial = true;
+        if ($this->collHighlightedArticles === null) {
+            $this->initHighlightedArticles();
+            $this->collHighlightedArticlesPartial = true;
         }
 
-        if (!$this->collArticlesRelatedBySubcategoryId->contains($l)) {
-            $this->doAddArticleRelatedBySubcategoryId($l);
+        if (!$this->collHighlightedArticles->contains($l)) {
+            $this->doAddHighlightedArticle($l);
 
-            if ($this->articlesRelatedBySubcategoryIdScheduledForDeletion and $this->articlesRelatedBySubcategoryIdScheduledForDeletion->contains($l)) {
-                $this->articlesRelatedBySubcategoryIdScheduledForDeletion->remove($this->articlesRelatedBySubcategoryIdScheduledForDeletion->search($l));
+            if ($this->highlightedArticlesScheduledForDeletion and $this->highlightedArticlesScheduledForDeletion->contains($l)) {
+                $this->highlightedArticlesScheduledForDeletion->remove($this->highlightedArticlesScheduledForDeletion->search($l));
             }
         }
 
@@ -1812,29 +2107,29 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildArticle $articleRelatedBySubcategoryId The ChildArticle object to add.
+     * @param ChildHighlightedArticle $highlightedArticle The ChildHighlightedArticle object to add.
      */
-    protected function doAddArticleRelatedBySubcategoryId(ChildArticle $articleRelatedBySubcategoryId)
+    protected function doAddHighlightedArticle(ChildHighlightedArticle $highlightedArticle)
     {
-        $this->collArticlesRelatedBySubcategoryId[]= $articleRelatedBySubcategoryId;
-        $articleRelatedBySubcategoryId->setsubcategory($this);
+        $this->collHighlightedArticles[]= $highlightedArticle;
+        $highlightedArticle->setuser($this);
     }
 
     /**
-     * @param  ChildArticle $articleRelatedBySubcategoryId The ChildArticle object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @param  ChildHighlightedArticle $highlightedArticle The ChildHighlightedArticle object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function removeArticleRelatedBySubcategoryId(ChildArticle $articleRelatedBySubcategoryId)
+    public function removeHighlightedArticle(ChildHighlightedArticle $highlightedArticle)
     {
-        if ($this->getArticlesRelatedBySubcategoryId()->contains($articleRelatedBySubcategoryId)) {
-            $pos = $this->collArticlesRelatedBySubcategoryId->search($articleRelatedBySubcategoryId);
-            $this->collArticlesRelatedBySubcategoryId->remove($pos);
-            if (null === $this->articlesRelatedBySubcategoryIdScheduledForDeletion) {
-                $this->articlesRelatedBySubcategoryIdScheduledForDeletion = clone $this->collArticlesRelatedBySubcategoryId;
-                $this->articlesRelatedBySubcategoryIdScheduledForDeletion->clear();
+        if ($this->getHighlightedArticles()->contains($highlightedArticle)) {
+            $pos = $this->collHighlightedArticles->search($highlightedArticle);
+            $this->collHighlightedArticles->remove($pos);
+            if (null === $this->highlightedArticlesScheduledForDeletion) {
+                $this->highlightedArticlesScheduledForDeletion = clone $this->collHighlightedArticles;
+                $this->highlightedArticlesScheduledForDeletion->clear();
             }
-            $this->articlesRelatedBySubcategoryIdScheduledForDeletion[]= $articleRelatedBySubcategoryId;
-            $articleRelatedBySubcategoryId->setsubcategory(null);
+            $this->highlightedArticlesScheduledForDeletion[]= clone $highlightedArticle;
+            $highlightedArticle->setuser(null);
         }
 
         return $this;
@@ -1844,53 +2139,53 @@ abstract class Category implements ActiveRecordInterface
     /**
      * If this collection has already been initialized with
      * an identical criteria, it returns the collection.
-     * Otherwise if this Category is new, it will return
-     * an empty collection; or if this Category has previously
-     * been saved, it will retrieve related ArticlesRelatedBySubcategoryId from storage.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related HighlightedArticles from storage.
      *
      * This method is protected by default in order to keep the public
      * api reasonable.  You can provide public methods for those you
-     * actually need in Category.
+     * actually need in User.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
+     * @return ObjectCollection|ChildHighlightedArticle[] List of ChildHighlightedArticle objects
      */
-    public function getArticlesRelatedBySubcategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getHighlightedArticlesJoinarticle(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
-        $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('user', $joinBehavior);
+        $query = ChildHighlightedArticleQuery::create(null, $criteria);
+        $query->joinWith('article', $joinBehavior);
 
-        return $this->getArticlesRelatedBySubcategoryId($query, $con);
+        return $this->getHighlightedArticles($query, $con);
     }
 
     /**
-     * Clears out the collCategoriesRelatedById collection
+     * Clears out the collComments collection
      *
      * This does not modify the database; however, it will remove any associated objects, causing
      * them to be refetched by subsequent calls to accessor method.
      *
      * @return void
-     * @see        addCategoriesRelatedById()
+     * @see        addComments()
      */
-    public function clearCategoriesRelatedById()
+    public function clearComments()
     {
-        $this->collCategoriesRelatedById = null; // important to set this to NULL since that means it is uninitialized
+        $this->collComments = null; // important to set this to NULL since that means it is uninitialized
     }
 
     /**
-     * Reset is the collCategoriesRelatedById collection loaded partially.
+     * Reset is the collComments collection loaded partially.
      */
-    public function resetPartialCategoriesRelatedById($v = true)
+    public function resetPartialComments($v = true)
     {
-        $this->collCategoriesRelatedByIdPartial = $v;
+        $this->collCommentsPartial = $v;
     }
 
     /**
-     * Initializes the collCategoriesRelatedById collection.
+     * Initializes the collComments collection.
      *
-     * By default this just sets the collCategoriesRelatedById collection to an empty array (like clearcollCategoriesRelatedById());
+     * By default this just sets the collComments collection to an empty array (like clearcollComments());
      * however, you may wish to override this method in your stub class to provide setting appropriate
      * to your application -- for example, setting the initial array to the values stored in database.
      *
@@ -1899,162 +2194,162 @@ abstract class Category implements ActiveRecordInterface
      *
      * @return void
      */
-    public function initCategoriesRelatedById($overrideExisting = true)
+    public function initComments($overrideExisting = true)
     {
-        if (null !== $this->collCategoriesRelatedById && !$overrideExisting) {
+        if (null !== $this->collComments && !$overrideExisting) {
             return;
         }
 
-        $collectionClassName = CategoryTableMap::getTableMap()->getCollectionClassName();
+        $collectionClassName = CommentTableMap::getTableMap()->getCollectionClassName();
 
-        $this->collCategoriesRelatedById = new $collectionClassName;
-        $this->collCategoriesRelatedById->setModel('\SciMS\Models\Category');
+        $this->collComments = new $collectionClassName;
+        $this->collComments->setModel('\SciMS\Models\Comment');
     }
 
     /**
-     * Gets an array of ChildCategory objects which contain a foreign key that references this object.
+     * Gets an array of ChildComment objects which contain a foreign key that references this object.
      *
      * If the $criteria is not null, it is used to always fetch the results from the database.
      * Otherwise the results are fetched from the database the first time, then cached.
      * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildCategory is new, it will return
+     * If this ChildUser is new, it will return
      * an empty collection or the current collection; the criteria is ignored on a new object.
      *
      * @param      Criteria $criteria optional Criteria object to narrow the query
      * @param      ConnectionInterface $con optional connection object
-     * @return ObjectCollection|ChildCategory[] List of ChildCategory objects
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
      * @throws PropelException
      */
-    public function getCategoriesRelatedById(Criteria $criteria = null, ConnectionInterface $con = null)
+    public function getComments(Criteria $criteria = null, ConnectionInterface $con = null)
     {
-        $partial = $this->collCategoriesRelatedByIdPartial && !$this->isNew();
-        if (null === $this->collCategoriesRelatedById || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collCategoriesRelatedById) {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
                 // return empty collection
-                $this->initCategoriesRelatedById();
+                $this->initComments();
             } else {
-                $collCategoriesRelatedById = ChildCategoryQuery::create(null, $criteria)
-                    ->filterByparentCategory($this)
+                $collComments = ChildCommentQuery::create(null, $criteria)
+                    ->filterByAuthor($this)
                     ->find($con);
 
                 if (null !== $criteria) {
-                    if (false !== $this->collCategoriesRelatedByIdPartial && count($collCategoriesRelatedById)) {
-                        $this->initCategoriesRelatedById(false);
+                    if (false !== $this->collCommentsPartial && count($collComments)) {
+                        $this->initComments(false);
 
-                        foreach ($collCategoriesRelatedById as $obj) {
-                            if (false == $this->collCategoriesRelatedById->contains($obj)) {
-                                $this->collCategoriesRelatedById->append($obj);
+                        foreach ($collComments as $obj) {
+                            if (false == $this->collComments->contains($obj)) {
+                                $this->collComments->append($obj);
                             }
                         }
 
-                        $this->collCategoriesRelatedByIdPartial = true;
+                        $this->collCommentsPartial = true;
                     }
 
-                    return $collCategoriesRelatedById;
+                    return $collComments;
                 }
 
-                if ($partial && $this->collCategoriesRelatedById) {
-                    foreach ($this->collCategoriesRelatedById as $obj) {
+                if ($partial && $this->collComments) {
+                    foreach ($this->collComments as $obj) {
                         if ($obj->isNew()) {
-                            $collCategoriesRelatedById[] = $obj;
+                            $collComments[] = $obj;
                         }
                     }
                 }
 
-                $this->collCategoriesRelatedById = $collCategoriesRelatedById;
-                $this->collCategoriesRelatedByIdPartial = false;
+                $this->collComments = $collComments;
+                $this->collCommentsPartial = false;
             }
         }
 
-        return $this->collCategoriesRelatedById;
+        return $this->collComments;
     }
 
     /**
-     * Sets a collection of ChildCategory objects related by a one-to-many relationship
+     * Sets a collection of ChildComment objects related by a one-to-many relationship
      * to the current object.
      * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
      * and new objects from the given Propel collection.
      *
-     * @param      Collection $categoriesRelatedById A Propel collection.
+     * @param      Collection $comments A Propel collection.
      * @param      ConnectionInterface $con Optional connection object
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function setCategoriesRelatedById(Collection $categoriesRelatedById, ConnectionInterface $con = null)
+    public function setComments(Collection $comments, ConnectionInterface $con = null)
     {
-        /** @var ChildCategory[] $categoriesRelatedByIdToDelete */
-        $categoriesRelatedByIdToDelete = $this->getCategoriesRelatedById(new Criteria(), $con)->diff($categoriesRelatedById);
+        /** @var ChildComment[] $commentsToDelete */
+        $commentsToDelete = $this->getComments(new Criteria(), $con)->diff($comments);
 
 
-        $this->categoriesRelatedByIdScheduledForDeletion = $categoriesRelatedByIdToDelete;
+        $this->commentsScheduledForDeletion = $commentsToDelete;
 
-        foreach ($categoriesRelatedByIdToDelete as $categoryRelatedByIdRemoved) {
-            $categoryRelatedByIdRemoved->setparentCategory(null);
+        foreach ($commentsToDelete as $commentRemoved) {
+            $commentRemoved->setAuthor(null);
         }
 
-        $this->collCategoriesRelatedById = null;
-        foreach ($categoriesRelatedById as $categoryRelatedById) {
-            $this->addCategoryRelatedById($categoryRelatedById);
+        $this->collComments = null;
+        foreach ($comments as $comment) {
+            $this->addComment($comment);
         }
 
-        $this->collCategoriesRelatedById = $categoriesRelatedById;
-        $this->collCategoriesRelatedByIdPartial = false;
+        $this->collComments = $comments;
+        $this->collCommentsPartial = false;
 
         return $this;
     }
 
     /**
-     * Returns the number of related Category objects.
+     * Returns the number of related Comment objects.
      *
      * @param      Criteria $criteria
      * @param      boolean $distinct
      * @param      ConnectionInterface $con
-     * @return int             Count of related Category objects.
+     * @return int             Count of related Comment objects.
      * @throws PropelException
      */
-    public function countCategoriesRelatedById(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function countComments(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
     {
-        $partial = $this->collCategoriesRelatedByIdPartial && !$this->isNew();
-        if (null === $this->collCategoriesRelatedById || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collCategoriesRelatedById) {
+        $partial = $this->collCommentsPartial && !$this->isNew();
+        if (null === $this->collComments || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collComments) {
                 return 0;
             }
 
             if ($partial && !$criteria) {
-                return count($this->getCategoriesRelatedById());
+                return count($this->getComments());
             }
 
-            $query = ChildCategoryQuery::create(null, $criteria);
+            $query = ChildCommentQuery::create(null, $criteria);
             if ($distinct) {
                 $query->distinct();
             }
 
             return $query
-                ->filterByparentCategory($this)
+                ->filterByAuthor($this)
                 ->count($con);
         }
 
-        return count($this->collCategoriesRelatedById);
+        return count($this->collComments);
     }
 
     /**
-     * Method called to associate a ChildCategory object to this object
-     * through the ChildCategory foreign key attribute.
+     * Method called to associate a ChildComment object to this object
+     * through the ChildComment foreign key attribute.
      *
-     * @param  ChildCategory $l ChildCategory
-     * @return $this|\SciMS\Models\Category The current object (for fluent API support)
+     * @param  ChildComment $l ChildComment
+     * @return $this|\SciMS\Models\User The current object (for fluent API support)
      */
-    public function addCategoryRelatedById(ChildCategory $l)
+    public function addComment(ChildComment $l)
     {
-        if ($this->collCategoriesRelatedById === null) {
-            $this->initCategoriesRelatedById();
-            $this->collCategoriesRelatedByIdPartial = true;
+        if ($this->collComments === null) {
+            $this->initComments();
+            $this->collCommentsPartial = true;
         }
 
-        if (!$this->collCategoriesRelatedById->contains($l)) {
-            $this->doAddCategoryRelatedById($l);
+        if (!$this->collComments->contains($l)) {
+            $this->doAddComment($l);
 
-            if ($this->categoriesRelatedByIdScheduledForDeletion and $this->categoriesRelatedByIdScheduledForDeletion->contains($l)) {
-                $this->categoriesRelatedByIdScheduledForDeletion->remove($this->categoriesRelatedByIdScheduledForDeletion->search($l));
+            if ($this->commentsScheduledForDeletion and $this->commentsScheduledForDeletion->contains($l)) {
+                $this->commentsScheduledForDeletion->remove($this->commentsScheduledForDeletion->search($l));
             }
         }
 
@@ -2062,32 +2357,82 @@ abstract class Category implements ActiveRecordInterface
     }
 
     /**
-     * @param ChildCategory $categoryRelatedById The ChildCategory object to add.
+     * @param ChildComment $comment The ChildComment object to add.
      */
-    protected function doAddCategoryRelatedById(ChildCategory $categoryRelatedById)
+    protected function doAddComment(ChildComment $comment)
     {
-        $this->collCategoriesRelatedById[]= $categoryRelatedById;
-        $categoryRelatedById->setparentCategory($this);
+        $this->collComments[]= $comment;
+        $comment->setAuthor($this);
     }
 
     /**
-     * @param  ChildCategory $categoryRelatedById The ChildCategory object to remove.
-     * @return $this|ChildCategory The current object (for fluent API support)
+     * @param  ChildComment $comment The ChildComment object to remove.
+     * @return $this|ChildUser The current object (for fluent API support)
      */
-    public function removeCategoryRelatedById(ChildCategory $categoryRelatedById)
+    public function removeComment(ChildComment $comment)
     {
-        if ($this->getCategoriesRelatedById()->contains($categoryRelatedById)) {
-            $pos = $this->collCategoriesRelatedById->search($categoryRelatedById);
-            $this->collCategoriesRelatedById->remove($pos);
-            if (null === $this->categoriesRelatedByIdScheduledForDeletion) {
-                $this->categoriesRelatedByIdScheduledForDeletion = clone $this->collCategoriesRelatedById;
-                $this->categoriesRelatedByIdScheduledForDeletion->clear();
+        if ($this->getComments()->contains($comment)) {
+            $pos = $this->collComments->search($comment);
+            $this->collComments->remove($pos);
+            if (null === $this->commentsScheduledForDeletion) {
+                $this->commentsScheduledForDeletion = clone $this->collComments;
+                $this->commentsScheduledForDeletion->clear();
             }
-            $this->categoriesRelatedByIdScheduledForDeletion[]= $categoryRelatedById;
-            $categoryRelatedById->setparentCategory(null);
+            $this->commentsScheduledForDeletion[]= clone $comment;
+            $comment->setAuthor(null);
         }
 
         return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Comments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     */
+    public function getCommentsJoinParentComment(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCommentQuery::create(null, $criteria);
+        $query->joinWith('ParentComment', $joinBehavior);
+
+        return $this->getComments($query, $con);
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this User is new, it will return
+     * an empty collection; or if this User has previously
+     * been saved, it will retrieve related Comments from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in User.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildComment[] List of ChildComment objects
+     */
+    public function getCommentsJoinArticle(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildCommentQuery::create(null, $criteria);
+        $query->joinWith('Article', $joinBehavior);
+
+        return $this->getComments($query, $con);
     }
 
     /**
@@ -2097,15 +2442,17 @@ abstract class Category implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->aparentCategory) {
-            $this->aparentCategory->removeCategoryRelatedById($this);
-        }
         $this->id = null;
-        $this->name = null;
-        $this->parent_category_id = null;
+        $this->uid = null;
+        $this->email = null;
+        $this->first_name = null;
+        $this->last_name = null;
+        $this->biography = null;
+        $this->password = null;
+        $this->token = null;
+        $this->token_expiration = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
@@ -2122,27 +2469,26 @@ abstract class Category implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collArticlesRelatedByCategoryId) {
-                foreach ($this->collArticlesRelatedByCategoryId as $o) {
+            if ($this->collArticles) {
+                foreach ($this->collArticles as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collArticlesRelatedBySubcategoryId) {
-                foreach ($this->collArticlesRelatedBySubcategoryId as $o) {
+            if ($this->collHighlightedArticles) {
+                foreach ($this->collHighlightedArticles as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
-            if ($this->collCategoriesRelatedById) {
-                foreach ($this->collCategoriesRelatedById as $o) {
+            if ($this->collComments) {
+                foreach ($this->collComments as $o) {
                     $o->clearAllReferences($deep);
                 }
             }
         } // if ($deep)
 
-        $this->collArticlesRelatedByCategoryId = null;
-        $this->collArticlesRelatedBySubcategoryId = null;
-        $this->collCategoriesRelatedById = null;
-        $this->aparentCategory = null;
+        $this->collArticles = null;
+        $this->collHighlightedArticles = null;
+        $this->collComments = null;
     }
 
     /**
@@ -2152,7 +2498,7 @@ abstract class Category implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(CategoryTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(UserTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // validate behavior
@@ -2165,7 +2511,11 @@ abstract class Category implements ActiveRecordInterface
      */
     static public function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('name', new NotBlank(array ('message' => 'INVALID_NAME',)));
+        $metadata->addPropertyConstraint('email', new NotBlank(array ('message' => 'INVALID_EMAIL',)));
+        $metadata->addPropertyConstraint('email', new Unique(array ('message' => 'EMAIL_ALREADY_EXISTS',)));
+        $metadata->addPropertyConstraint('first_name', new NotBlank(array ('message' => 'INVALID_FIRST_NAME',)));
+        $metadata->addPropertyConstraint('last_name', new NotBlank(array ('message' => 'INVALID_LAST_NAME',)));
+        $metadata->addPropertyConstraint('password', new NotNull(array ('message' => 'INVALID_PASSWORD',)));
     }
 
     /**
@@ -2191,25 +2541,14 @@ abstract class Category implements ActiveRecordInterface
             $this->alreadyInValidation = true;
             $retval = null;
 
-            // We call the validate method on the following object(s) if they
-            // were passed to this object by their corresponding set
-            // method.  This object relates to these object(s) by a
-            // foreign key reference.
-
-            // If validate() method exists, the validate-behavior is configured for related object
-            if (method_exists($this->aparentCategory, 'validate')) {
-                if (!$this->aparentCategory->validate($validator)) {
-                    $failureMap->addAll($this->aparentCategory->getValidationFailures());
-                }
-            }
 
             $retval = $validator->validate($this);
             if (count($retval) > 0) {
                 $failureMap->addAll($retval);
             }
 
-            if (null !== $this->collArticlesRelatedByCategoryId) {
-                foreach ($this->collArticlesRelatedByCategoryId as $referrerFK) {
+            if (null !== $this->collArticles) {
+                foreach ($this->collArticles as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());
@@ -2217,8 +2556,8 @@ abstract class Category implements ActiveRecordInterface
                     }
                 }
             }
-            if (null !== $this->collArticlesRelatedBySubcategoryId) {
-                foreach ($this->collArticlesRelatedBySubcategoryId as $referrerFK) {
+            if (null !== $this->collHighlightedArticles) {
+                foreach ($this->collHighlightedArticles as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());
@@ -2226,8 +2565,8 @@ abstract class Category implements ActiveRecordInterface
                     }
                 }
             }
-            if (null !== $this->collCategoriesRelatedById) {
-                foreach ($this->collCategoriesRelatedById as $referrerFK) {
+            if (null !== $this->collComments) {
+                foreach ($this->collComments as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {
                         if (!$referrerFK->validate($validator)) {
                             $failureMap->addAll($referrerFK->getValidationFailures());

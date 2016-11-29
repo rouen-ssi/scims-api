@@ -5,11 +5,11 @@ return [
         'database' => [
             'connections' => [
                 'scims' => [
-                    'adapter'    => 'sqlite',
+                    'adapter'    => 'pgsql',
                     'classname'  => 'Propel\Runtime\Connection\ConnectionWrapper',
-                    'dsn'        => 'sqlite:' . __DIR__ . '/../scims.sqlite' ,
-                    'user'       => '',
-                    'password'   => '',
+                    'dsn'        => 'pgsql:host=localhost;dbname=scims' ,
+                    'user'       => 'scims',
+                    'password'   => 'scims',
                     'attributes' => []
                 ]
             ]
@@ -23,7 +23,7 @@ return [
             'connections' => ['scims']
         ],
         'paths' => [
-          'phpDir'       => 'app/',
+          'phpDir'       => 'app',
           'phpConfDir'   => 'config',
           'sqlDir'       => 'sql',
           'migrationDir' => 'sql/migrations'
