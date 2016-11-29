@@ -14,7 +14,6 @@ use SciMS\Models\Base\CategoryQuery as BaseCategoryQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class CategoryQuery extends BaseCategoryQuery
-{
+class CategoryQuery extends BaseCategoryQuery {
 
 }

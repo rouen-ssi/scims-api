@@ -14,7 +14,6 @@ use SciMS\Models\Base\HighlightedArticleQuery as BaseHighlightedArticleQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class HighlightedArticleQuery extends BaseHighlightedArticleQuery
-{
+class HighlightedArticleQuery extends BaseHighlightedArticleQuery {
 
 }

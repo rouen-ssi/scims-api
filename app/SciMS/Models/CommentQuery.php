@@ -14,7 +14,6 @@ use SciMS\Models\Base\CommentQuery as BaseCommentQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class CommentQuery extends BaseCommentQuery
-{
+class CommentQuery extends BaseCommentQuery {
 
 }

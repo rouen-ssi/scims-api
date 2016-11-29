@@ -14,7 +14,6 @@ use SciMS\Models\Base\ArticleQuery as BaseArticleQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class ArticleQuery extends BaseArticleQuery
-{
+class ArticleQuery extends BaseArticleQuery {
 
 }

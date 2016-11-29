@@ -14,7 +14,6 @@ use SciMS\Models\Base\HighlightedArticle as BaseHighlightedArticle;
  * long as it does not already exist in the output directory.
  *
  */
-class HighlightedArticle extends BaseHighlightedArticle
-{
+class HighlightedArticle extends BaseHighlightedArticle {
 
 }

@@ -2,9 +2,9 @@
 
 namespace SciMS\Middlewares;
 
-use \Slim\Http\Request;
-use \Slim\Http\Response;
 use SciMS\Models\AccountQuery;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class TokenMiddleware {
 

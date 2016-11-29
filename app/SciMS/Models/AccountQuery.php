@@ -14,7 +14,6 @@ use SciMS\Models\Base\AccountQuery as BaseAccountQuery;
  * long as it does not already exist in the output directory.
  *
  */
-class AccountQuery extends BaseAccountQuery
-{
+class AccountQuery extends BaseAccountQuery {
 
 }
