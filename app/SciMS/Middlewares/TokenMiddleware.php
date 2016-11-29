@@ -18,11 +18,13 @@ class TokenMiddleware {
      * @return Response a JSON containing errors if the given token is invalid.
      */
     public function __invoke(Request $request, Response $response, callable $next) {
-        $token = explode(' ', $request->getHeaderLine('Authorization'))[1];
+        $args = explode(' ', $request->getHeaderLine('Authorization'));
 
-        if (!$token) {
+        if (count($args) != 2) {
             return $this->invalidToken($response);
         }
+
+        $token = $args[1];
 
         // Retreives the user associated with the given token
         $account = AccountQuery::create()->findOneByToken($token);
