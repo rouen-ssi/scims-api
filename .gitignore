@@ -1,9 +1,4 @@
 vendor/
-sql/
-config/config.php
-app/avatars/
-
-*.sqlite
-
 .idea/
+*.database
 .DS_Store

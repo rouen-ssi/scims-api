@@ -124,6 +124,25 @@ class ArticleController {
     }
 
     /**
+     * Get all draft articles of the current user
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function drafts(Request $request, Response $response) {
+        /** @var \SciMS\Models\Account $user */
+        $user = $request->getAttribute('user');
+
+        $drafts = ArticleQuery::create()
+            ->orderByLastModificationDate('DESC')
+            ->filterByaccount($user)
+            ->findByIsDraft(true)
+            ->getData();
+
+        return $response->withJson(['drafts' => $drafts], 200);
+    }
+
+    /**
      * Returns an article given by its id.
      * @param  Request $request a PSR-7 Request object.
      * @param  Response $response a PSR-7 Response object.

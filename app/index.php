@@ -1,7 +1,7 @@
 <?php
 
 require '../vendor/autoload.php';
-include '../config/config.php';
+include '../generated-conf/config.php';
 
 $app = new \Slim\App();
 
@@ -12,6 +12,8 @@ $app->add('SciMS\Middlewares\CorsMiddleware');
  * Article *
  ***********/
 $app->get('/articles', 'SciMS\Controllers\ArticleController:getPage');
+$app->get('/drafts', 'SciMS\Controllers\ArticleController:drafts')
+    ->add('SciMS\Middlewares\TokenMiddleware');
 
 $app->group('/article', function() {
     $this->post('', 'SciMS\Controllers\ArticleController:create')

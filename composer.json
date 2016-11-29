@@ -3,8 +3,7 @@
     "description": "Un CMS open-source pour les scientifiques",
     "require": {
         "slim/slim": "^3.5",
-        "propel/propel": "~2.0@dev",
-        "fzaninotto/faker": "^1.6"
+        "propel/propel": "~2.0@dev"
     },
     "license": "GPL-3.0",
     "autoload": {
@@ -12,26 +11,27 @@
     },
     "scripts": {
       "post-install-cmd": [
-        "vendor/bin/propel sql:build",
-        "vendor/bin/propel config:convert",
+        "propel sql:insert --config-dir=config/prod",
+        "propel config:convert --config-dir=config/prod",
         "@composer dump-autoload"
-      ],
-      "create-database": [
-        "vendor/bin/propel sql:insert",
-        "\\SciMS\\Scripts\\ProductionFixture::create",
-        "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "migrate": [
-        "vendor/bin/propel model:build",
-        "vendor/bin/propel diff",
-        "vendor/bin/propel migrate",
-        "@composer dump-autoload"
+        "propel migrate --config-dir=config/prod"
+      ],
+      "fake-data": [
+        "\\SciMS\\Scripts\\FakeFixture::onMigrate"
+      ],
+      "test": [
+        "propel sql:insert --config-dir=config/test",
+        "propel config-convert --config-dir=config/test",
+        "phpunit tests/"
       ],
       "dev-server": [
         "php -S localhost:8080 -t app/"
       ]
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.6"
+        "phpunit/phpunit": "^5.6",
+        "fzaninotto/faker": "^1.6"
     }
 }
