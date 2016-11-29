@@ -1,4 +1,5 @@
 vendor/
+generated-conf/
 .idea/
 *.database
 .DS_Store
