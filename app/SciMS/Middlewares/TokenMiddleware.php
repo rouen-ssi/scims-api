@@ -4,7 +4,7 @@ namespace SciMS\Middlewares;
 
 use \Slim\Http\Request;
 use \Slim\Http\Response;
-use SciMS\Models\UserQuery;
+use SciMS\Models\AccountQuery;
 
 class TokenMiddleware {
 
@@ -25,19 +25,19 @@ class TokenMiddleware {
         }
 
         // Retreives the user associated with the given token
-        $user = UserQuery::create()->findOneByToken($token);
-        if (!$user) {
+        $account = AccountQuery::create()->findOneByToken($token);
+        if (!$account) {
             return $this->invalidToken($response);
         }
 
         // Checks the token validity
         $today = new \DateTime();
-        if ($user->getTokenExpiration() >= $today->getTimestamp()) {
+        if ($account->getTokenExpiration() >= $today->getTimestamp()) {
             return $this->invalidToken($response);
         }
 
         // Add user informations to the request
-        $request = $request->withAttribute('user', $user);
+        $request = $request->withAttribute('user', $account);
 
         return $next($request, $response);
     }
