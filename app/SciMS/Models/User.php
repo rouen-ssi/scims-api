@@ -21,26 +21,7 @@ use SciMS\Models\ArticleQuery;
 class User extends BaseUser implements \JsonSerializable {
 
   public function jsonSerialize() {
-    // Retreives the user's highlighted articles.
-    $highlightedArticleIds = [];
-    foreach ($this->getHighlightedArticles() as $highlightedArticle) {
-      $highlightedArticleIds[] = $highlightedArticle->getArticleId();
-    }
 
-    // Retreives the last posted article.
-    $lastArticle = ArticleQuery::create()
-      ->orderByPublicationDate('desc')
-      ->findOne();
-
-    $json = array(
-      'uid' => $this->uid,
-      'email' => $this->email,
-      'last_name' => $this->last_name,
-      'first_name' => $this->first_name,
-      'biography' => $this->biography,
-    );
-
-    return $json;
   }
 
 }

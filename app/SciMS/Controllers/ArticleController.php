@@ -2,7 +2,7 @@
 
 namespace SciMS\Controllers;
 
-use SciMS\Models\User;
+use SciMS\Models\Account;
 use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
 use Slim\Http\Request;
@@ -30,7 +30,7 @@ class ArticleController {
 
     $article = new Article();
     $article->setIsDraft($isDraft);
-    $article->setUserId($user->getId());
+    $article->setAccountId($user->getId());
     $article->setTitle($title);
     $article->setContent($content);
     $article->setPublicationDate(time());

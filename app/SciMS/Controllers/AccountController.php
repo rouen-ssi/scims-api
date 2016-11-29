@@ -4,8 +4,8 @@ namespace SciMS\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SciMS\Models\account;
-use SciMS\Models\accountQuery;
+use SciMS\Models\Account;
+use SciMS\Models\AccountQuery;
 use SciMS\Models\ArticleQuery;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery;
@@ -19,7 +19,7 @@ class AccountController {
   const INVALID_PASSWORD = 'INVALID_PASSWORD';
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
-  const account_NOT_FOUND = 'account_NOT_FOUND';
+  const account_NOT_FOUND = 'ACCOUNT_NOT_FOUND';
   const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
 
   /**
@@ -198,7 +198,7 @@ class AccountController {
     $lastName = $request->getParsedBodyParam('last_name', '');
     $password = $request->getParsedBodyParam('password', '');
 
-    $account = new account();
+    $account = new Account();
     $account->setUid(uniqid());
     $account->setEmail($email);
     $account->setFirstName($firstName);
@@ -241,7 +241,7 @@ class AccountController {
     $body = $request->getParsedBody();
 
     // Verifies email address and password
-    $account = accountQuery::create()->findOneByEmail($body['email']);
+    $account = AccountQuery::create()->findOneByEmail($body['email']);
 
     if (!$account || !password_verify($body['password'], $account->getPassword())) {
       return $response->withJson([

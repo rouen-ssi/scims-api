@@ -6,8 +6,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SciMS\Models\Category;
 use SciMS\Models\CategoryQuery;
-use SciMS\Models\Article;
-use SciMS\Models\ArticleQuery;
 
 class CategoryController
 {
