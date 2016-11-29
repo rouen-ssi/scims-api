@@ -16,12 +16,12 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use SciMS\Models\Account as ChildAccount;
+use SciMS\Models\AccountQuery as ChildAccountQuery;
 use SciMS\Models\Article as ChildArticle;
 use SciMS\Models\ArticleQuery as ChildArticleQuery;
 use SciMS\Models\Comment as ChildComment;
 use SciMS\Models\CommentQuery as ChildCommentQuery;
-use SciMS\Models\User as ChildUser;
-use SciMS\Models\UserQuery as ChildUserQuery;
 use SciMS\Models\Map\CommentTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
@@ -123,7 +123,7 @@ abstract class Comment implements ActiveRecordInterface
     protected $aParentComment;
 
     /**
-     * @var        ChildUser
+     * @var        ChildAccount
      */
     protected $aAuthor;
 
@@ -1092,10 +1092,10 @@ abstract class Comment implements ActiveRecordInterface
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
+                        $key = 'account';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'user';
+                        $key = 'account';
                         break;
                     default:
                         $key = 'Author';
@@ -1473,13 +1473,13 @@ abstract class Comment implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildUser object.
+     * Declares an association between this object and a ChildAccount object.
      *
-     * @param  ChildUser $v
+     * @param  ChildAccount $v
      * @return $this|\SciMS\Models\Comment The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setAuthor(ChildUser $v = null)
+    public function setAuthor(ChildAccount $v = null)
     {
         if ($v === null) {
             $this->setAuthorId(NULL);
@@ -1490,7 +1490,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->aAuthor = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
+        // If this object has already been added to the ChildAccount object, it will not be re-added.
         if ($v !== null) {
             $v->addComment($this);
         }
@@ -1501,16 +1501,16 @@ abstract class Comment implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildUser object
+     * Get the associated ChildAccount object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
+     * @return ChildAccount The associated ChildAccount object.
      * @throws PropelException
      */
     public function getAuthor(ConnectionInterface $con = null)
     {
         if ($this->aAuthor === null && ($this->author_id !== null)) {
-            $this->aAuthor = ChildUserQuery::create()
+            $this->aAuthor = ChildAccountQuery::create()
                 ->filterByComment($this) // here
                 ->findOne($con);
             /* The following can be used additionally to

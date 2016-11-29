@@ -82,7 +82,7 @@ use SciMS\Models\Map\CommentTableMap;
  * @method     ChildCommentQuery rightJoinWithCommentRelatedById() Adds a RIGHT JOIN clause and with to the query using the CommentRelatedById relation
  * @method     ChildCommentQuery innerJoinWithCommentRelatedById() Adds a INNER JOIN clause and with to the query using the CommentRelatedById relation
  *
- * @method     \SciMS\Models\CommentQuery|\SciMS\Models\UserQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \SciMS\Models\CommentQuery|\SciMS\Models\AccountQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildComment findOne(ConnectionInterface $con = null) Return the first ChildComment matching the query
  * @method     ChildComment findOneOrCreate(ConnectionInterface $con = null) Return the first ChildComment matching the query, or a new ChildComment object populated from the query conditions when no match is found
@@ -613,29 +613,29 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \SciMS\Models\User object
+     * Filter the query by a related \SciMS\Models\Account object
      *
-     * @param \SciMS\Models\User|ObjectCollection $user The related object(s) to use as filter
+     * @param \SciMS\Models\Account|ObjectCollection $account The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
      * @return ChildCommentQuery The current query, for fluid interface
      */
-    public function filterByAuthor($user, $comparison = null)
+    public function filterByAuthor($account, $comparison = null)
     {
-        if ($user instanceof \SciMS\Models\User) {
+        if ($account instanceof \SciMS\Models\Account) {
             return $this
-                ->addUsingAlias(CommentTableMap::COL_AUTHOR_ID, $user->getId(), $comparison);
-        } elseif ($user instanceof ObjectCollection) {
+                ->addUsingAlias(CommentTableMap::COL_AUTHOR_ID, $account->getId(), $comparison);
+        } elseif ($account instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(CommentTableMap::COL_AUTHOR_ID, $user->toKeyValue('Id', 'Id'), $comparison);
+                ->addUsingAlias(CommentTableMap::COL_AUTHOR_ID, $account->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByAuthor() only accepts arguments of type \SciMS\Models\User or Collection');
+            throw new PropelException('filterByAuthor() only accepts arguments of type \SciMS\Models\Account or Collection');
         }
     }
 
@@ -672,7 +672,7 @@ abstract class CommentQuery extends ModelCriteria
     }
 
     /**
-     * Use the Author relation User object
+     * Use the Author relation Account object
      *
      * @see useQuery()
      *
@@ -680,13 +680,13 @@ abstract class CommentQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \SciMS\Models\UserQuery A secondary query class using the current class as primary query
+     * @return \SciMS\Models\AccountQuery A secondary query class using the current class as primary query
      */
     public function useAuthorQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
             ->joinAuthor($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'Author', '\SciMS\Models\UserQuery');
+            ->useQuery($relationAlias ? $relationAlias : 'Author', '\SciMS\Models\AccountQuery');
     }
 
     /**

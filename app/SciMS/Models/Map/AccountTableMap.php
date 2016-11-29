@@ -11,12 +11,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Map\TableMapTrait;
-use SciMS\Models\HighlightedArticle;
-use SciMS\Models\HighlightedArticleQuery;
+use SciMS\Models\Account;
+use SciMS\Models\AccountQuery;
 
 
 /**
- * This class defines the structure of the 'highlighted_article' table.
+ * This class defines the structure of the 'account' table.
  *
  *
  *
@@ -26,7 +26,7 @@ use SciMS\Models\HighlightedArticleQuery;
  * (i.e. if it's a text column type).
  *
  */
-class HighlightedArticleTableMap extends TableMap
+class AccountTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
@@ -34,7 +34,7 @@ class HighlightedArticleTableMap extends TableMap
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'SciMS.Models.Map.HighlightedArticleTableMap';
+    const CLASS_NAME = 'SciMS.Models.Map.AccountTableMap';
 
     /**
      * The default database name for this class
@@ -44,22 +44,22 @@ class HighlightedArticleTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'highlighted_article';
+    const TABLE_NAME = 'account';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\SciMS\\Models\\HighlightedArticle';
+    const OM_CLASS = '\\SciMS\\Models\\Account';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'SciMS.Models.HighlightedArticle';
+    const CLASS_DEFAULT = 'SciMS.Models.Account';
 
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 2;
+    const NUM_COLUMNS = 9;
 
     /**
      * The number of lazy-loaded columns
@@ -69,17 +69,52 @@ class HighlightedArticleTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 2;
+    const NUM_HYDRATE_COLUMNS = 9;
 
     /**
-     * the column name for the account_id field
+     * the column name for the id field
      */
-    const COL_ACCOUNT_ID = 'highlighted_article.account_id';
+    const COL_ID = 'account.id';
 
     /**
-     * the column name for the article_id field
+     * the column name for the uid field
      */
-    const COL_ARTICLE_ID = 'highlighted_article.article_id';
+    const COL_UID = 'account.uid';
+
+    /**
+     * the column name for the email field
+     */
+    const COL_EMAIL = 'account.email';
+
+    /**
+     * the column name for the first_name field
+     */
+    const COL_FIRST_NAME = 'account.first_name';
+
+    /**
+     * the column name for the last_name field
+     */
+    const COL_LAST_NAME = 'account.last_name';
+
+    /**
+     * the column name for the biography field
+     */
+    const COL_BIOGRAPHY = 'account.biography';
+
+    /**
+     * the column name for the password field
+     */
+    const COL_PASSWORD = 'account.password';
+
+    /**
+     * the column name for the token field
+     */
+    const COL_TOKEN = 'account.token';
+
+    /**
+     * the column name for the token_expiration field
+     */
+    const COL_TOKEN_EXPIRATION = 'account.token_expiration';
 
     /**
      * The default string format for model objects of the related table
@@ -93,11 +128,11 @@ class HighlightedArticleTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('AccountId', 'ArticleId', ),
-        self::TYPE_CAMELNAME     => array('accountId', 'articleId', ),
-        self::TYPE_COLNAME       => array(HighlightedArticleTableMap::COL_ACCOUNT_ID, HighlightedArticleTableMap::COL_ARTICLE_ID, ),
-        self::TYPE_FIELDNAME     => array('account_id', 'article_id', ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Id', 'Uid', 'Email', 'FirstName', 'LastName', 'Biography', 'Password', 'Token', 'TokenExpiration', ),
+        self::TYPE_CAMELNAME     => array('id', 'uid', 'email', 'firstName', 'lastName', 'biography', 'password', 'token', 'tokenExpiration', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID, AccountTableMap::COL_UID, AccountTableMap::COL_EMAIL, AccountTableMap::COL_FIRST_NAME, AccountTableMap::COL_LAST_NAME, AccountTableMap::COL_BIOGRAPHY, AccountTableMap::COL_PASSWORD, AccountTableMap::COL_TOKEN, AccountTableMap::COL_TOKEN_EXPIRATION, ),
+        self::TYPE_FIELDNAME     => array('id', 'uid', 'email', 'first_name', 'last_name', 'biography', 'password', 'token', 'token_expiration', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -107,11 +142,11 @@ class HighlightedArticleTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('AccountId' => 0, 'ArticleId' => 1, ),
-        self::TYPE_CAMELNAME     => array('accountId' => 0, 'articleId' => 1, ),
-        self::TYPE_COLNAME       => array(HighlightedArticleTableMap::COL_ACCOUNT_ID => 0, HighlightedArticleTableMap::COL_ARTICLE_ID => 1, ),
-        self::TYPE_FIELDNAME     => array('account_id' => 0, 'article_id' => 1, ),
-        self::TYPE_NUM           => array(0, 1, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Uid' => 1, 'Email' => 2, 'FirstName' => 3, 'LastName' => 4, 'Biography' => 5, 'Password' => 6, 'Token' => 7, 'TokenExpiration' => 8, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'firstName' => 3, 'lastName' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'tokenExpiration' => 8, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID => 0, AccountTableMap::COL_UID => 1, AccountTableMap::COL_EMAIL => 2, AccountTableMap::COL_FIRST_NAME => 3, AccountTableMap::COL_LAST_NAME => 4, AccountTableMap::COL_BIOGRAPHY => 5, AccountTableMap::COL_PASSWORD => 6, AccountTableMap::COL_TOKEN => 7, AccountTableMap::COL_TOKEN_EXPIRATION => 8, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'first_name' => 3, 'last_name' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'token_expiration' => 8, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
     );
 
     /**
@@ -124,15 +159,23 @@ class HighlightedArticleTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('highlighted_article');
-        $this->setPhpName('HighlightedArticle');
+        $this->setName('account');
+        $this->setPhpName('Account');
         $this->setIdentifierQuoting(false);
-        $this->setClassName('\\SciMS\\Models\\HighlightedArticle');
+        $this->setClassName('\\SciMS\\Models\\Account');
         $this->setPackage('SciMS.Models');
-        $this->setUseIdGenerator(false);
+        $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('account_id_seq');
         // columns
-        $this->addForeignPrimaryKey('account_id', 'AccountId', 'INTEGER' , 'account', 'id', true, null, null);
-        $this->addForeignPrimaryKey('article_id', 'ArticleId', 'INTEGER' , 'article', 'id', true, null, null);
+        $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
+        $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);
+        $this->addPrimaryKey('email', 'Email', 'VARCHAR', true, 254, null);
+        $this->addColumn('first_name', 'FirstName', 'VARCHAR', true, 128, null);
+        $this->addColumn('last_name', 'LastName', 'VARCHAR', true, 128, null);
+        $this->addColumn('biography', 'Biography', 'LONGVARCHAR', false, null, null);
+        $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
+        $this->addColumn('token', 'Token', 'VARCHAR', false, 255, null);
+        $this->addColumn('token_expiration', 'TokenExpiration', 'INTEGER', false, 8, null);
     } // initialize()
 
     /**
@@ -140,21 +183,41 @@ class HighlightedArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('account', '\\SciMS\\Models\\Account', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Article', '\\SciMS\\Models\\Article', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, null, false);
-        $this->addRelation('article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
+), null, null, 'Articles', false);
+        $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
-    0 => ':article_id',
+    0 => ':account_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), null, null, 'HighlightedArticles', false);
+        $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':author_id',
+    1 => ':id',
+  ),
+), null, null, 'Comments', false);
     } // buildRelations()
+
+    /**
+     *
+     * Gets the list of behaviors registered for this table
+     *
+     * @return array Associative array (name => parameters) of behaviors
+     */
+    public function getBehaviors()
+    {
+        return array(
+            'validate' => array('email_blank' => array ('column' => 'email','validator' => 'NotBlank','options' => array ('message' => 'INVALID_EMAIL',),), 'email_already_exists' => array ('column' => 'email','validator' => 'Unique','options' => array ('message' => 'EMAIL_ALREADY_EXISTS',),), 'first_name' => array ('column' => 'first_name','validator' => 'NotBlank','options' => array ('message' => 'INVALID_FIRST_NAME',),), 'last_name' => array ('column' => 'last_name','validator' => 'NotBlank','options' => array ('message' => 'INVALID_LAST_NAME',),), 'password' => array ('column' => 'password','validator' => 'NotNull','options' => array ('message' => 'INVALID_PASSWORD',),), ),
+        );
+    } // getBehaviors()
 
     /**
      * Adds an object to the instance pool.
@@ -164,14 +227,14 @@ class HighlightedArticleTableMap extends TableMap
      * to the cache in order to ensure that the same objects are always returned by find*()
      * and findPk*() calls.
      *
-     * @param \SciMS\Models\HighlightedArticle $obj A \SciMS\Models\HighlightedArticle object.
+     * @param \SciMS\Models\Account $obj A \SciMS\Models\Account object.
      * @param string $key             (optional) key to use for instance map (for performance boost if key was already calculated externally).
      */
     public static function addInstanceToPool($obj, $key = null)
     {
         if (Propel::isInstancePoolingEnabled()) {
             if (null === $key) {
-                $key = serialize([(null === $obj->getAccountId() || is_scalar($obj->getAccountId()) || is_callable([$obj->getAccountId(), '__toString']) ? (string) $obj->getAccountId() : $obj->getAccountId()), (null === $obj->getArticleId() || is_scalar($obj->getArticleId()) || is_callable([$obj->getArticleId(), '__toString']) ? (string) $obj->getArticleId() : $obj->getArticleId())]);
+                $key = serialize([(null === $obj->getId() || is_scalar($obj->getId()) || is_callable([$obj->getId(), '__toString']) ? (string) $obj->getId() : $obj->getId()), (null === $obj->getEmail() || is_scalar($obj->getEmail()) || is_callable([$obj->getEmail(), '__toString']) ? (string) $obj->getEmail() : $obj->getEmail())]);
             } // if key === null
             self::$instances[$key] = $obj;
         }
@@ -185,13 +248,13 @@ class HighlightedArticleTableMap extends TableMap
      * methods in your stub classes -- you may need to explicitly remove objects
      * from the cache in order to prevent returning objects that no longer exist.
      *
-     * @param mixed $value A \SciMS\Models\HighlightedArticle object or a primary key value.
+     * @param mixed $value A \SciMS\Models\Account object or a primary key value.
      */
     public static function removeInstanceFromPool($value)
     {
         if (Propel::isInstancePoolingEnabled() && null !== $value) {
-            if (is_object($value) && $value instanceof \SciMS\Models\HighlightedArticle) {
-                $key = serialize([(null === $value->getAccountId() || is_scalar($value->getAccountId()) || is_callable([$value->getAccountId(), '__toString']) ? (string) $value->getAccountId() : $value->getAccountId()), (null === $value->getArticleId() || is_scalar($value->getArticleId()) || is_callable([$value->getArticleId(), '__toString']) ? (string) $value->getArticleId() : $value->getArticleId())]);
+            if (is_object($value) && $value instanceof \SciMS\Models\Account) {
+                $key = serialize([(null === $value->getId() || is_scalar($value->getId()) || is_callable([$value->getId(), '__toString']) ? (string) $value->getId() : $value->getId()), (null === $value->getEmail() || is_scalar($value->getEmail()) || is_callable([$value->getEmail(), '__toString']) ? (string) $value->getEmail() : $value->getEmail())]);
 
             } elseif (is_array($value) && count($value) === 2) {
                 // assume we've been passed a primary key";
@@ -201,7 +264,7 @@ class HighlightedArticleTableMap extends TableMap
 
                 return;
             } else {
-                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \SciMS\Models\HighlightedArticle object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
+                $e = new PropelException("Invalid value passed to removeInstanceFromPool().  Expected primary key or \SciMS\Models\Account object; got " . (is_object($value) ? get_class($value) . ' object.' : var_export($value, true)));
                 throw $e;
             }
 
@@ -225,11 +288,11 @@ class HighlightedArticleTableMap extends TableMap
     public static function getPrimaryKeyHashFromRow($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
         // If the PK cannot be derived from the row, return NULL.
-        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)] === null) {
+        if ($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] === null && $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] === null) {
             return null;
         }
 
-        return serialize([(null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)]), (null === $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 1 + $offset : static::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)])]);
+        return serialize([(null === $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 0 + $offset : static::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)]), (null === $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] || is_scalar($row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)]) || is_callable([$row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)], '__toString']) ? (string) $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)] : $row[TableMap::TYPE_NUM == $indexType ? 2 + $offset : static::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)])]);
     }
 
     /**
@@ -251,12 +314,12 @@ class HighlightedArticleTableMap extends TableMap
         $pks[] = (int) $row[
             $indexType == TableMap::TYPE_NUM
                 ? 0 + $offset
-                : self::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)
+                : self::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)
         ];
-        $pks[] = (int) $row[
+        $pks[] = (string) $row[
             $indexType == TableMap::TYPE_NUM
-                ? 1 + $offset
-                : self::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)
+                ? 2 + $offset
+                : self::translateFieldName('Email', TableMap::TYPE_PHPNAME, $indexType)
         ];
 
         return $pks;
@@ -275,7 +338,7 @@ class HighlightedArticleTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? HighlightedArticleTableMap::CLASS_DEFAULT : HighlightedArticleTableMap::OM_CLASS;
+        return $withPrefix ? AccountTableMap::CLASS_DEFAULT : AccountTableMap::OM_CLASS;
     }
 
     /**
@@ -289,22 +352,22 @@ class HighlightedArticleTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *                         rethrown wrapped into a PropelException.
-     * @return array           (HighlightedArticle object, last column rank)
+     * @return array           (Account object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = HighlightedArticleTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = HighlightedArticleTableMap::getInstanceFromPool($key))) {
+        $key = AccountTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = AccountTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + HighlightedArticleTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + AccountTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = HighlightedArticleTableMap::OM_CLASS;
-            /** @var HighlightedArticle $obj */
+            $cls = AccountTableMap::OM_CLASS;
+            /** @var Account $obj */
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            HighlightedArticleTableMap::addInstanceToPool($obj, $key);
+            AccountTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -327,18 +390,18 @@ class HighlightedArticleTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = HighlightedArticleTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = HighlightedArticleTableMap::getInstanceFromPool($key))) {
+            $key = AccountTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = AccountTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
                 $results[] = $obj;
             } else {
-                /** @var HighlightedArticle $obj */
+                /** @var Account $obj */
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                HighlightedArticleTableMap::addInstanceToPool($obj, $key);
+                AccountTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -359,11 +422,25 @@ class HighlightedArticleTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(HighlightedArticleTableMap::COL_ACCOUNT_ID);
-            $criteria->addSelectColumn(HighlightedArticleTableMap::COL_ARTICLE_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_ID);
+            $criteria->addSelectColumn(AccountTableMap::COL_UID);
+            $criteria->addSelectColumn(AccountTableMap::COL_EMAIL);
+            $criteria->addSelectColumn(AccountTableMap::COL_FIRST_NAME);
+            $criteria->addSelectColumn(AccountTableMap::COL_LAST_NAME);
+            $criteria->addSelectColumn(AccountTableMap::COL_BIOGRAPHY);
+            $criteria->addSelectColumn(AccountTableMap::COL_PASSWORD);
+            $criteria->addSelectColumn(AccountTableMap::COL_TOKEN);
+            $criteria->addSelectColumn(AccountTableMap::COL_TOKEN_EXPIRATION);
         } else {
-            $criteria->addSelectColumn($alias . '.account_id');
-            $criteria->addSelectColumn($alias . '.article_id');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.uid');
+            $criteria->addSelectColumn($alias . '.email');
+            $criteria->addSelectColumn($alias . '.first_name');
+            $criteria->addSelectColumn($alias . '.last_name');
+            $criteria->addSelectColumn($alias . '.biography');
+            $criteria->addSelectColumn($alias . '.password');
+            $criteria->addSelectColumn($alias . '.token');
+            $criteria->addSelectColumn($alias . '.token_expiration');
         }
     }
 
@@ -376,7 +453,7 @@ class HighlightedArticleTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(HighlightedArticleTableMap::DATABASE_NAME)->getTable(HighlightedArticleTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(AccountTableMap::DATABASE_NAME)->getTable(AccountTableMap::TABLE_NAME);
     }
 
     /**
@@ -384,16 +461,16 @@ class HighlightedArticleTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-        $dbMap = Propel::getServiceContainer()->getDatabaseMap(HighlightedArticleTableMap::DATABASE_NAME);
-        if (!$dbMap->hasTable(HighlightedArticleTableMap::TABLE_NAME)) {
-            $dbMap->addTableObject(new HighlightedArticleTableMap());
+        $dbMap = Propel::getServiceContainer()->getDatabaseMap(AccountTableMap::DATABASE_NAME);
+        if (!$dbMap->hasTable(AccountTableMap::TABLE_NAME)) {
+            $dbMap->addTableObject(new AccountTableMap());
         }
     }
 
     /**
-     * Performs a DELETE on the database, given a HighlightedArticle or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a Account or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or HighlightedArticle object or primary key or array of primary keys
+     * @param mixed               $values Criteria or Account object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param  ConnectionInterface $con the connection to use
      * @return int             The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -404,17 +481,17 @@ class HighlightedArticleTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(HighlightedArticleTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \SciMS\Models\HighlightedArticle) { // it's a model object
+        } elseif ($values instanceof \SciMS\Models\Account) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(HighlightedArticleTableMap::DATABASE_NAME);
+            $criteria = new Criteria(AccountTableMap::DATABASE_NAME);
             // primary key is composite; we therefore, expect
             // the primary key passed to be an array of pkey values
             if (count($values) == count($values, COUNT_RECURSIVE)) {
@@ -422,19 +499,19 @@ class HighlightedArticleTableMap extends TableMap
                 $values = array($values);
             }
             foreach ($values as $value) {
-                $criterion = $criteria->getNewCriterion(HighlightedArticleTableMap::COL_ACCOUNT_ID, $value[0]);
-                $criterion->addAnd($criteria->getNewCriterion(HighlightedArticleTableMap::COL_ARTICLE_ID, $value[1]));
+                $criterion = $criteria->getNewCriterion(AccountTableMap::COL_ID, $value[0]);
+                $criterion->addAnd($criteria->getNewCriterion(AccountTableMap::COL_EMAIL, $value[1]));
                 $criteria->addOr($criterion);
             }
         }
 
-        $query = HighlightedArticleQuery::create()->mergeWith($criteria);
+        $query = AccountQuery::create()->mergeWith($criteria);
 
         if ($values instanceof Criteria) {
-            HighlightedArticleTableMap::clearInstancePool();
+            AccountTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
             foreach ((array) $values as $singleval) {
-                HighlightedArticleTableMap::removeInstanceFromPool($singleval);
+                AccountTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -442,20 +519,20 @@ class HighlightedArticleTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the highlighted_article table.
+     * Deletes all rows from the account table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return HighlightedArticleQuery::create()->doDeleteAll($con);
+        return AccountQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a HighlightedArticle or Criteria object.
+     * Performs an INSERT on the database, given a Account or Criteria object.
      *
-     * @param mixed               $criteria Criteria or HighlightedArticle object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or Account object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -464,18 +541,22 @@ class HighlightedArticleTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(HighlightedArticleTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(AccountTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from HighlightedArticle object
+            $criteria = $criteria->buildCriteria(); // build Criteria from Account object
+        }
+
+        if ($criteria->containsKey(AccountTableMap::COL_ID) && $criteria->keyContainsValue(AccountTableMap::COL_ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.AccountTableMap::COL_ID.')');
         }
 
 
         // Set the correct dbName
-        $query = HighlightedArticleQuery::create()->mergeWith($criteria);
+        $query = AccountQuery::create()->mergeWith($criteria);
 
         // use transaction because $criteria could contain info
         // for more than one table (I guess, conceivably)
@@ -484,7 +565,7 @@ class HighlightedArticleTableMap extends TableMap
         });
     }
 
-} // HighlightedArticleTableMap
+} // AccountTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-HighlightedArticleTableMap::buildTableMap();
+AccountTableMap::buildTableMap();

@@ -154,7 +154,7 @@ class CommentTableMap extends TableMap
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('parent_comment_id', 'ParentCommentId', 'INTEGER', 'comment', 'id', false, null, null);
-        $this->addForeignKey('author_id', 'AuthorId', 'INTEGER', 'user', 'id', true, null, null);
+        $this->addForeignKey('author_id', 'AuthorId', 'INTEGER', 'account', 'id', true, null, null);
         $this->addForeignKey('article_id', 'ArticleId', 'INTEGER', 'article', 'id', true, null, null);
         $this->addColumn('publication_date', 'PublicationDate', 'INTEGER', true, null, null);
         $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
@@ -172,7 +172,7 @@ class CommentTableMap extends TableMap
     1 => ':id',
   ),
 ), 'CASCADE', null, null, false);
-        $this->addRelation('Author', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Author', '\\SciMS\\Models\\Account', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':author_id',

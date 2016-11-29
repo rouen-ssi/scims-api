@@ -12,7 +12,7 @@ use SciMS\Models\Article;
 use SciMS\Models\Category;
 use SciMS\Models\Comment;
 use SciMS\Models\HighlightedArticle;
-use SciMS\Models\User;
+use SciMS\Models\Account;
 
 class FakeFixture
 {
@@ -27,19 +27,19 @@ class FakeFixture
 
     $faker = Factory::create();
 
-    /** @var User[] $users */
-    $users = [];
+    /** @var Account[] $accounts */
+    $accounts = [];
     for ($i = 0; $i < 10; $i++) {
-      $user = new User();
-      $user->setUid(uniqid());
-      $user->setEmail($faker->email);
-      $user->setFirstName($faker->firstName);
-      $user->setLastName($faker->lastName);
-      $user->setBiography($faker->text(140));
-      $user->setPassword(password_hash('testtest', PASSWORD_DEFAULT));
+      $account = new Account();
+      $account->setUid(uniqid());
+      $account->setEmail($faker->email);
+      $account->setFirstName($faker->firstName);
+      $account->setLastName($faker->lastName);
+      $account->setBiography($faker->text(140));
+      $account->setPassword(password_hash('testtest', PASSWORD_DEFAULT));
 
-      $user->save();
-      $users[] = $user;
+      $account->save();
+      $accounts[] = $account;
     }
 
     /** @var Category[] $categories */
@@ -56,9 +56,9 @@ class FakeFixture
     /** @var Article[] $articles */
     $articles = [];
 
-    for ($i = 0; $i < count($users) * 10; $i++) {
+    for ($i = 0; $i < count($accounts) * 10; $i++) {
       $article = new Article();
-      $article->setUser($faker->randomElement($users));
+      $article->setAccount($faker->randomElement($accounts));
       $article->setIsDraft($faker->randomElement([true, false]));
       $article->setTitle($faker->sentence($faker->numberBetween(5, 15), false));
       $article->setContent($faker->realText($faker->numberBetween(3000, 10000)));
@@ -71,7 +71,7 @@ class FakeFixture
       for ($j = 0; $j < $faker->numberBetween(0, 30); $j++) {
           $comment = new Comment();
           $comment->setParentComment($faker->boolean(30) ? $faker->randomElement($comments) : null);
-          $comment->setAuthor($faker->randomElement($users));
+          $comment->setAuthor($faker->randomElement($accounts));
           $comment->setArticle($article);
           $comment->setPublicationDate($faker->dateTimeBetween($articlePublicationDate)->getTimestamp());
           $comment->setContent($faker->paragraph(15));
@@ -83,12 +83,12 @@ class FakeFixture
       $articles[] = $article;
     }
 
-    foreach ($users as $user) {
-      $userArticles = $user->getArticles();
-      $highlighted = $faker->randomElements($userArticles->getData());
+    foreach ($accounts as $account) {
+      $accountArticles = $account->getArticles();
+      $highlighted = $faker->randomElements($accountArticles->getData());
       foreach ($highlighted as $a) {
         $highlightedArticle = new HighlightedArticle();
-        $highlightedArticle->setuser($user);
+        $highlightedArticle->setaccount($account);
         $highlightedArticle->setarticle($a);
 
         $highlightedArticle->save();

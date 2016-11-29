@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database name="scims" defaultIdMethod="native" namespace="SciMS\Models">
-    <table name="user" phpName="User">
+    <table name="account" phpName="Account">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
         <column name="uid" type="varchar" size="16" required="true" />
         <column name="email" type="varchar" size="254" required="true" primaryKey="true" />
@@ -21,15 +21,15 @@
 
     <table name="article" phpName="Article">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-        <column name="user_id" type="integer" required="true" />
+        <column name="account_id" type="integer" required="true" />
         <column name="is_draft" type="boolean" required="true" default="true" />
         <column name="title" type="varchar" size="128" required="true" />
         <column name="content" type="longvarchar" required="true" />
         <column name="publication_date" type="integer" required="true" />
         <column name="category_id" type="integer" required="false" default="-1" />
         <column name="subcategory_id" type="integer" required="false" default="-1" />
-        <foreign-key foreignTable="user" phpName="user">
-            <reference local="user_id" foreign="id" />
+        <foreign-key foreignTable="account" phpName="account">
+            <reference local="account_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="category" phpName="category" skipSql="true">
             <reference local="category_id" foreign="id" />
@@ -44,10 +44,10 @@
     </table>
 
     <table name="highlighted_article" phpName="HighlightedArticle">
-        <column name="user_id" type="integer" required="true" primaryKey="true" />
+        <column name="account_id" type="integer" required="true" primaryKey="true" />
         <column name="article_id" type="integer" required="true" primaryKey="true" />
-        <foreign-key foreignTable="user" phpName="user">
-            <reference local="user_id" foreign="id" />
+        <foreign-key foreignTable="account" phpName="account">
+            <reference local="account_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="article" phpName="article">
             <reference local="article_id" foreign="id" />
@@ -76,7 +76,7 @@
         <foreign-key foreignTable="comment" phpName="ParentComment" onDelete="CASCADE">
             <reference local="parent_comment_id" foreign="id" />
         </foreign-key>
-        <foreign-key foreignTable="user" phpName="Author">
+        <foreign-key foreignTable="account" phpName="Author">
             <reference local="author_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="article" phpName="Article">

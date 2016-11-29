@@ -15,11 +15,11 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
+use SciMS\Models\Account as ChildAccount;
+use SciMS\Models\AccountQuery as ChildAccountQuery;
 use SciMS\Models\Article as ChildArticle;
 use SciMS\Models\ArticleQuery as ChildArticleQuery;
 use SciMS\Models\HighlightedArticleQuery as ChildHighlightedArticleQuery;
-use SciMS\Models\User as ChildUser;
-use SciMS\Models\UserQuery as ChildUserQuery;
 use SciMS\Models\Map\HighlightedArticleTableMap;
 
 /**
@@ -64,11 +64,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the user_id field.
+     * The value for the account_id field.
      *
      * @var        int
      */
-    protected $user_id;
+    protected $account_id;
 
     /**
      * The value for the article_id field.
@@ -78,9 +78,9 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     protected $article_id;
 
     /**
-     * @var        ChildUser
+     * @var        ChildAccount
      */
-    protected $auser;
+    protected $aaccount;
 
     /**
      * @var        ChildArticle
@@ -321,13 +321,13 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     }
 
     /**
-     * Get the [user_id] column value.
+     * Get the [account_id] column value.
      *
      * @return int
      */
-    public function getUserId()
+    public function getAccountId()
     {
-        return $this->user_id;
+        return $this->account_id;
     }
 
     /**
@@ -341,28 +341,28 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     }
 
     /**
-     * Set the value of [user_id] column.
+     * Set the value of [account_id] column.
      *
      * @param int $v new value
      * @return $this|\SciMS\Models\HighlightedArticle The current object (for fluent API support)
      */
-    public function setUserId($v)
+    public function setAccountId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[HighlightedArticleTableMap::COL_USER_ID] = true;
+        if ($this->account_id !== $v) {
+            $this->account_id = $v;
+            $this->modifiedColumns[HighlightedArticleTableMap::COL_ACCOUNT_ID] = true;
         }
 
-        if ($this->auser !== null && $this->auser->getId() !== $v) {
-            $this->auser = null;
+        if ($this->aaccount !== null && $this->aaccount->getId() !== $v) {
+            $this->aaccount = null;
         }
 
         return $this;
-    } // setUserId()
+    } // setAccountId()
 
     /**
      * Set the value of [article_id] column.
@@ -424,8 +424,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     {
         try {
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : HighlightedArticleTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : HighlightedArticleTableMap::translateFieldName('AccountId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->account_id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : HighlightedArticleTableMap::translateFieldName('ArticleId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->article_id = (null !== $col) ? (int) $col : null;
@@ -459,8 +459,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->auser !== null && $this->user_id !== $this->auser->getId()) {
-            $this->auser = null;
+        if ($this->aaccount !== null && $this->account_id !== $this->aaccount->getId()) {
+            $this->aaccount = null;
         }
         if ($this->aarticle !== null && $this->article_id !== $this->aarticle->getId()) {
             $this->aarticle = null;
@@ -504,7 +504,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->auser = null;
+            $this->aaccount = null;
             $this->aarticle = null;
         } // if (deep)
     }
@@ -610,11 +610,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->auser !== null) {
-                if ($this->auser->isModified() || $this->auser->isNew()) {
-                    $affectedRows += $this->auser->save($con);
+            if ($this->aaccount !== null) {
+                if ($this->aaccount->isModified() || $this->aaccount->isNew()) {
+                    $affectedRows += $this->aaccount->save($con);
                 }
-                $this->setuser($this->auser);
+                $this->setaccount($this->aaccount);
             }
 
             if ($this->aarticle !== null) {
@@ -657,8 +657,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(HighlightedArticleTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
+        if ($this->isColumnModified(HighlightedArticleTableMap::COL_ACCOUNT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'account_id';
         }
         if ($this->isColumnModified(HighlightedArticleTableMap::COL_ARTICLE_ID)) {
             $modifiedColumns[':p' . $index++]  = 'article_id';
@@ -674,8 +674,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
+                    case 'account_id':
+                        $stmt->bindValue($identifier, $this->account_id, PDO::PARAM_INT);
                         break;
                     case 'article_id':
                         $stmt->bindValue($identifier, $this->article_id, PDO::PARAM_INT);
@@ -736,7 +736,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                return $this->getUserId();
+                return $this->getAccountId();
                 break;
             case 1:
                 return $this->getArticleId();
@@ -771,7 +771,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         $alreadyDumpedObjects['HighlightedArticle'][$this->hashCode()] = true;
         $keys = HighlightedArticleTableMap::getFieldNames($keyType);
         $result = array(
-            $keys[0] => $this->getUserId(),
+            $keys[0] => $this->getAccountId(),
             $keys[1] => $this->getArticleId(),
         );
         $virtualColumns = $this->virtualColumns;
@@ -780,20 +780,20 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->auser) {
+            if (null !== $this->aaccount) {
 
                 switch ($keyType) {
                     case TableMap::TYPE_CAMELNAME:
-                        $key = 'user';
+                        $key = 'account';
                         break;
                     case TableMap::TYPE_FIELDNAME:
-                        $key = 'user';
+                        $key = 'account';
                         break;
                     default:
-                        $key = 'user';
+                        $key = 'account';
                 }
 
-                $result[$key] = $this->auser->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+                $result[$key] = $this->aaccount->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->aarticle) {
 
@@ -845,7 +845,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     {
         switch ($pos) {
             case 0:
-                $this->setUserId($value);
+                $this->setAccountId($value);
                 break;
             case 1:
                 $this->setArticleId($value);
@@ -877,7 +877,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         $keys = HighlightedArticleTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) {
-            $this->setUserId($arr[$keys[0]]);
+            $this->setAccountId($arr[$keys[0]]);
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setArticleId($arr[$keys[1]]);
@@ -923,8 +923,8 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     {
         $criteria = new Criteria(HighlightedArticleTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(HighlightedArticleTableMap::COL_USER_ID)) {
-            $criteria->add(HighlightedArticleTableMap::COL_USER_ID, $this->user_id);
+        if ($this->isColumnModified(HighlightedArticleTableMap::COL_ACCOUNT_ID)) {
+            $criteria->add(HighlightedArticleTableMap::COL_ACCOUNT_ID, $this->account_id);
         }
         if ($this->isColumnModified(HighlightedArticleTableMap::COL_ARTICLE_ID)) {
             $criteria->add(HighlightedArticleTableMap::COL_ARTICLE_ID, $this->article_id);
@@ -946,7 +946,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildHighlightedArticleQuery::create();
-        $criteria->add(HighlightedArticleTableMap::COL_USER_ID, $this->user_id);
+        $criteria->add(HighlightedArticleTableMap::COL_ACCOUNT_ID, $this->account_id);
         $criteria->add(HighlightedArticleTableMap::COL_ARTICLE_ID, $this->article_id);
 
         return $criteria;
@@ -960,14 +960,14 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function hashCode()
     {
-        $validPk = null !== $this->getUserId() &&
+        $validPk = null !== $this->getAccountId() &&
             null !== $this->getArticleId();
 
         $validPrimaryKeyFKs = 2;
         $primaryKeyFKs = [];
 
-        //relation highlighted_article_fk_29554a to table user
-        if ($this->auser && $hash = spl_object_hash($this->auser)) {
+        //relation highlighted_article_fk_474870 to table account
+        if ($this->aaccount && $hash = spl_object_hash($this->aaccount)) {
             $primaryKeyFKs[] = $hash;
         } else {
             $validPrimaryKeyFKs = false;
@@ -997,7 +997,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     public function getPrimaryKey()
     {
         $pks = array();
-        $pks[0] = $this->getUserId();
+        $pks[0] = $this->getAccountId();
         $pks[1] = $this->getArticleId();
 
         return $pks;
@@ -1011,7 +1011,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function setPrimaryKey($keys)
     {
-        $this->setUserId($keys[0]);
+        $this->setAccountId($keys[0]);
         $this->setArticleId($keys[1]);
     }
 
@@ -1021,7 +1021,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function isPrimaryKeyNull()
     {
-        return (null === $this->getUserId()) && (null === $this->getArticleId());
+        return (null === $this->getAccountId()) && (null === $this->getArticleId());
     }
 
     /**
@@ -1037,7 +1037,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setUserId($this->getUserId());
+        $copyObj->setAccountId($this->getAccountId());
         $copyObj->setArticleId($this->getArticleId());
         if ($makeNew) {
             $copyObj->setNew(true);
@@ -1067,24 +1067,24 @@ abstract class HighlightedArticle implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildUser object.
+     * Declares an association between this object and a ChildAccount object.
      *
-     * @param  ChildUser $v
+     * @param  ChildAccount $v
      * @return $this|\SciMS\Models\HighlightedArticle The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setuser(ChildUser $v = null)
+    public function setaccount(ChildAccount $v = null)
     {
         if ($v === null) {
-            $this->setUserId(NULL);
+            $this->setAccountId(NULL);
         } else {
-            $this->setUserId($v->getId());
+            $this->setAccountId($v->getId());
         }
 
-        $this->auser = $v;
+        $this->aaccount = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildUser object, it will not be re-added.
+        // If this object has already been added to the ChildAccount object, it will not be re-added.
         if ($v !== null) {
             $v->addHighlightedArticle($this);
         }
@@ -1095,16 +1095,16 @@ abstract class HighlightedArticle implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildUser object
+     * Get the associated ChildAccount object
      *
      * @param  ConnectionInterface $con Optional Connection object.
-     * @return ChildUser The associated ChildUser object.
+     * @return ChildAccount The associated ChildAccount object.
      * @throws PropelException
      */
-    public function getuser(ConnectionInterface $con = null)
+    public function getaccount(ConnectionInterface $con = null)
     {
-        if ($this->auser === null && ($this->user_id !== null)) {
-            $this->auser = ChildUserQuery::create()
+        if ($this->aaccount === null && ($this->account_id !== null)) {
+            $this->aaccount = ChildAccountQuery::create()
                 ->filterByHighlightedArticle($this) // here
                 ->findOne($con);
             /* The following can be used additionally to
@@ -1112,11 +1112,11 @@ abstract class HighlightedArticle implements ActiveRecordInterface
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->auser->addHighlightedArticles($this);
+                $this->aaccount->addHighlightedArticles($this);
              */
         }
 
-        return $this->auser;
+        return $this->aaccount;
     }
 
     /**
@@ -1177,13 +1177,13 @@ abstract class HighlightedArticle implements ActiveRecordInterface
      */
     public function clear()
     {
-        if (null !== $this->auser) {
-            $this->auser->removeHighlightedArticle($this);
+        if (null !== $this->aaccount) {
+            $this->aaccount->removeHighlightedArticle($this);
         }
         if (null !== $this->aarticle) {
             $this->aarticle->removeHighlightedArticle($this);
         }
-        $this->user_id = null;
+        $this->account_id = null;
         $this->article_id = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
@@ -1205,7 +1205,7 @@ abstract class HighlightedArticle implements ActiveRecordInterface
         if ($deep) {
         } // if ($deep)
 
-        $this->auser = null;
+        $this->aaccount = null;
         $this->aarticle = null;
     }
 

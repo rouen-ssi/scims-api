@@ -4,8 +4,8 @@ namespace SciMS\Controllers;
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SciMS\Models\User;
-use SciMS\Models\UserQuery;
+use SciMS\Models\account;
+use SciMS\Models\accountQuery;
 use SciMS\Models\ArticleQuery;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery;
@@ -19,7 +19,7 @@ class AccountController {
   const INVALID_PASSWORD = 'INVALID_PASSWORD';
   const INVALID_OLD_PASSWORD = 'INVALID_OLD_PASSWORD';
   const INVALID_NEW_PASSWORD = 'INVALID_NEW_PASSWORD';
-  const USER_NOT_FOUND = 'USER_NOT_FOUND';
+  const account_NOT_FOUND = 'account_NOT_FOUND';
   const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
 
   /**
@@ -30,24 +30,24 @@ class AccountController {
    * @return Response a PSR-7 Response object containing a JSON with the account informations.
    */
   public function get(Request $request, Response $response, array $args) {
-    // Get the user given by its uid
-    $user = UserQuery::create()->findOneByUid($args['uid']);
+    // Get the account given by its uid
+    $account = AccountQuery::create()->findOneByUid($args['uid']);
 
-    // Returns an error if the user is not found
-    if (!$user) {
+    // Returns an error if the account is not found
+    if (!$account) {
       return $response->withJson([
         'errors' => [
-          self::USER_NOT_FOUND
+          self::account_NOT_FOUND
         ]
       ], 400);
     }
 
-    // Returns the user's informations
-    return $response->withJson(json_encode($user), 200);
+    // Returns the account's informations
+    return $response->withJson(json_encode($account), 200);
   }
 
   /**
-   * Changes the user's password given by his token.
+   * Changes the account's password given by his token.
    * @param  Request $request  a PSR-7 request object.
    * @param  Response      $response a PSR-7 response object
    * @return Response a 200 response code if successful or an array of errors.
@@ -55,11 +55,11 @@ class AccountController {
   public function changePassword(Request $request, Response $response) {
     $body = $request->getParsedBody();
 
-    // Gets the users from TokenMiddleware
-    $user = $request->getAttribute('user');
+    // Gets the accounts from TokenMiddleware
+    $account = $request->getAttribute('account');
 
     // Checks if the given old password matches
-    if (!password_verify($body['old_password'], $user->getPassword())) {
+    if (!password_verify($body['old_password'], $account->getPassword())) {
       return $response->withJson([
         'errors' => [
           self::INVALID_OLD_PASSWORD
@@ -76,80 +76,80 @@ class AccountController {
       ], 400);
     }
 
-    // Changes the user's password
-    $user->setPassword(password_hash($body['new_password'], PASSWORD_DEFAULT));
-    $user->save();
+    // Changes the account's password
+    $account->setPassword(password_hash($body['new_password'], PASSWORD_DEFAULT));
+    $account->save();
 
     return $response->withStatus(200);
   }
 
   /**
-   * Update the user's email given by its token.
+   * Update the account's email given by its token.
    * Returns an http 200 status or a JSON containing errors.
    */
   public function updateEmail(Request $request, Response $response) {
-    // Retreives the user given by TokenMiddleware
-    $user = $request->getAttribute('user');
+    // Retreives the account given by TokenMiddleware
+    $account = $request->getAttribute('account');
 
     // Retreives the parameters
     $email = $request->getParsedBodyParam('email', NULL);
 
-    // Updates the user's email and validate
-    $user->setEmail(trim($email));
-    if (!$user->validate()) {
+    // Updates the account's email and validate
+    $account->setEmail(trim($email));
+    if (!$account->validate()) {
       $errors = [];
-      foreach ($user->getValidationFailures() as $failure) {
+      foreach ($account->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
         return $response->withJson([
           'errors' => $errors
         ], 400);
       }
     }
-    $user->save();
+    $account->save();
 
     // Returns an http 200 status
     return $response->withStatus(200);
   }
 
   /**
-   * Endpoint to update user's informations (avatar, biography, lastname, ...).
+   * Endpoint to update account's informations (avatar, biography, lastname, ...).
    * If an information is not given, it will not be updated.
    * Returns an http 200 status or a json containing errors.
    */
   public function updateInformations(Request $request, Response $response) {
-    // Retreives the user given by its token.
-    $user = $request->getAttribute('user');
+    // Retreives the account given by its token.
+    $account = $request->getAttribute('account');
 
     // Retreives the parameters.
-    $firstName = trim($request->getParsedBodyParam('first_name', $user->getFirstName()));
-    $lastName = trim($request->getParsedBodyParam('last_name', $user->getLastName()));
-    $biography = trim($request->getParsedBodyParam('biography', $user->getBiography()));
+    $firstName = trim($request->getParsedBodyParam('first_name', $account->getFirstName()));
+    $lastName = trim($request->getParsedBodyParam('last_name', $account->getLastName()));
+    $biography = trim($request->getParsedBodyParam('biography', $account->getBiography()));
 
-    // Updates the user's highlighted articles.
+    // Updates the account's highlighted articles.
     $response = $this->updateHighlighted($request, $response);
 
-    // Updates and validates the user's informations.
-    $user->setFirstName($firstName);
-    $user->setLastName($lastName);
-    $user->setBiography($biography);
-    if (!$user->validate()) {
+    // Updates and validates the account's informations.
+    $account->setFirstName($firstName);
+    $account->setLastName($lastName);
+    $account->setBiography($biography);
+    if (!$account->validate()) {
       $errors = [];
-      foreach ($user->getValidationFailures() as $failure) {
+      foreach ($account->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
       }
       return $response->withJson([
         'errors' => $errors
       ], 400);
     }
-    $user->save();
+    $account->save();
 
     // Returns an http 200 status
     return $response->withStatus(200);
   }
 
   public function updateHighlighted(Request $request, Response $response) {
-    // Retreives the user given by its token.
-    $user = $request->getAttribute('user');
+    // Retreives the account given by its token.
+    $account = $request->getAttribute('account');
 
     // Retreives the parameters.
     $articleIds = $request->getParsedBodyParam('highlighted_articles', []);
@@ -168,7 +168,7 @@ class AccountController {
 
       // Checks if the highlighted articles already exists
       $highlightedArticlesCount = HighlightedArticleQuery::create()
-        ->filterByUser($user)
+        ->filterByaccount($account)
         ->filterByArticle($article)
         ->count();
       if ($highlightedArticlesCount > 0) {
@@ -176,7 +176,7 @@ class AccountController {
       }
 
       $highlightedArticle = new HighlightedArticle();
-      $highlightedArticle->setUser($user);
+      $highlightedArticle->setaccount($account);
       $highlightedArticle->setArticle($article);
       $highlightedArticle->save();
     }
@@ -198,18 +198,18 @@ class AccountController {
     $lastName = $request->getParsedBodyParam('last_name', '');
     $password = $request->getParsedBodyParam('password', '');
 
-    $user = new User();
-    $user->setUid(uniqid());
-    $user->setEmail($email);
-    $user->setFirstName($firstName);
-    $user->setLastName($lastName);
-    $user->setPassword(password_hash($password, PASSWORD_DEFAULT));
+    $account = new account();
+    $account->setUid(uniqid());
+    $account->setEmail($email);
+    $account->setFirstName($firstName);
+    $account->setLastName($lastName);
+    $account->setPassword(password_hash($password, PASSWORD_DEFAULT));
 
     $errors = [];
 
-    // Validates the new User.
-    if (!$user->validate()) {
-      foreach ($user->getValidationFailures() as $failure) {
+    // Validates the new account.
+    if (!$account->validate()) {
+      foreach ($account->getValidationFailures() as $failure) {
         $errors[] = $failure->getMessage();
       }
     }
@@ -226,13 +226,13 @@ class AccountController {
       ], 400);
     }
 
-    $user->save();
+    $account->save();
 
     return $response->withStatus(200);
   }
 
   /**
-   * Endpoint used for user authentification
+   * Endpoint used for account authentification
    * @param  Request $request  a PSR 7 Request object
    * @param  Response      $response a PSR 7 Response object
    * @return Response PSR 7 Response object containing the response.
@@ -241,9 +241,9 @@ class AccountController {
     $body = $request->getParsedBody();
 
     // Verifies email address and password
-    $user = UserQuery::create()->findOneByEmail($body['email']);
+    $account = accountQuery::create()->findOneByEmail($body['email']);
 
-    if (!$user || !password_verify($body['password'], $user->getPassword())) {
+    if (!$account || !password_verify($body['password'], $account->getPassword())) {
       return $response->withJson([
         'errors' => [
           self::INVALID_CREDENTIALS
@@ -251,39 +251,39 @@ class AccountController {
       ], 400);
     }
 
-    $token = $user->getToken();
+    $token = $account->getToken();
 
     if ($token) {
       $token_expiration = new \DateTime();
-      $token_expiration->setTimestamp($user->getTokenExpiration());
+      $token_expiration->setTimestamp($account->getTokenExpiration());
       $date_now = new \DateTime();
       $date_diff = $date_now->diff($token_expiration);
 
-      // If the user's token is not valid anymore, regenerates it
+      // If the account's token is not valid anymore, regenerates it
       if ($date_diff->h >= self::TOKEN_HOURS) {
-        $token = $this->generateAndStoreToken($user);
+        $token = $this->generateAndStoreToken($account);
       }
-    } else { // If the user does not have a token, generate it
-      $token = $this->generateAndStoreToken($user);
+    } else { // If the account does not have a token, generate it
+      $token = $this->generateAndStoreToken($account);
     }
 
     return $response->withJson([
       'token' => $token,
-      'user' => $user
+      'account' => $account
     ], 200);
 
   }
 
   /**
-   * Generate to new token and stores it in the database for the user given
-   * @param  User   $user the concerned User.
+   * Generate to new token and stores it in the database for the account given
+   * @param  account   $account the concerned account.
    * @return String the newly generated token encoded in base64.
    */
-  private function generateAndStoreToken(User $user) {
+  private function generateAndStoreToken(account $account) {
     $token = base64_encode(openssl_random_pseudo_bytes(64));
-    $user->setToken($token);
-    $user->setTokenExpiration(time());
-    $user->save();
+    $account->setToken($token);
+    $account->setTokenExpiration(time());
+    $account->save();
     return $token;
   }
 

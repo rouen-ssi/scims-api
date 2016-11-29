@@ -20,10 +20,10 @@ use SciMS\Models\Map\HighlightedArticleTableMap;
  *
  *
  *
- * @method     ChildHighlightedArticleQuery orderByUserId($order = Criteria::ASC) Order by the user_id column
+ * @method     ChildHighlightedArticleQuery orderByAccountId($order = Criteria::ASC) Order by the account_id column
  * @method     ChildHighlightedArticleQuery orderByArticleId($order = Criteria::ASC) Order by the article_id column
  *
- * @method     ChildHighlightedArticleQuery groupByUserId() Group by the user_id column
+ * @method     ChildHighlightedArticleQuery groupByAccountId() Group by the account_id column
  * @method     ChildHighlightedArticleQuery groupByArticleId() Group by the article_id column
  *
  * @method     ChildHighlightedArticleQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -34,15 +34,15 @@ use SciMS\Models\Map\HighlightedArticleTableMap;
  * @method     ChildHighlightedArticleQuery rightJoinWith($relation) Adds a RIGHT JOIN clause and with to the query
  * @method     ChildHighlightedArticleQuery innerJoinWith($relation) Adds a INNER JOIN clause and with to the query
  *
- * @method     ChildHighlightedArticleQuery leftJoinuser($relationAlias = null) Adds a LEFT JOIN clause to the query using the user relation
- * @method     ChildHighlightedArticleQuery rightJoinuser($relationAlias = null) Adds a RIGHT JOIN clause to the query using the user relation
- * @method     ChildHighlightedArticleQuery innerJoinuser($relationAlias = null) Adds a INNER JOIN clause to the query using the user relation
+ * @method     ChildHighlightedArticleQuery leftJoinaccount($relationAlias = null) Adds a LEFT JOIN clause to the query using the account relation
+ * @method     ChildHighlightedArticleQuery rightJoinaccount($relationAlias = null) Adds a RIGHT JOIN clause to the query using the account relation
+ * @method     ChildHighlightedArticleQuery innerJoinaccount($relationAlias = null) Adds a INNER JOIN clause to the query using the account relation
  *
- * @method     ChildHighlightedArticleQuery joinWithuser($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the user relation
+ * @method     ChildHighlightedArticleQuery joinWithaccount($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the account relation
  *
- * @method     ChildHighlightedArticleQuery leftJoinWithuser() Adds a LEFT JOIN clause and with to the query using the user relation
- * @method     ChildHighlightedArticleQuery rightJoinWithuser() Adds a RIGHT JOIN clause and with to the query using the user relation
- * @method     ChildHighlightedArticleQuery innerJoinWithuser() Adds a INNER JOIN clause and with to the query using the user relation
+ * @method     ChildHighlightedArticleQuery leftJoinWithaccount() Adds a LEFT JOIN clause and with to the query using the account relation
+ * @method     ChildHighlightedArticleQuery rightJoinWithaccount() Adds a RIGHT JOIN clause and with to the query using the account relation
+ * @method     ChildHighlightedArticleQuery innerJoinWithaccount() Adds a INNER JOIN clause and with to the query using the account relation
  *
  * @method     ChildHighlightedArticleQuery leftJoinarticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the article relation
  * @method     ChildHighlightedArticleQuery rightJoinarticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the article relation
@@ -54,22 +54,22 @@ use SciMS\Models\Map\HighlightedArticleTableMap;
  * @method     ChildHighlightedArticleQuery rightJoinWitharticle() Adds a RIGHT JOIN clause and with to the query using the article relation
  * @method     ChildHighlightedArticleQuery innerJoinWitharticle() Adds a INNER JOIN clause and with to the query using the article relation
  *
- * @method     \SciMS\Models\UserQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \SciMS\Models\AccountQuery|\SciMS\Models\ArticleQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildHighlightedArticle findOne(ConnectionInterface $con = null) Return the first ChildHighlightedArticle matching the query
  * @method     ChildHighlightedArticle findOneOrCreate(ConnectionInterface $con = null) Return the first ChildHighlightedArticle matching the query, or a new ChildHighlightedArticle object populated from the query conditions when no match is found
  *
- * @method     ChildHighlightedArticle findOneByUserId(int $user_id) Return the first ChildHighlightedArticle filtered by the user_id column
+ * @method     ChildHighlightedArticle findOneByAccountId(int $account_id) Return the first ChildHighlightedArticle filtered by the account_id column
  * @method     ChildHighlightedArticle findOneByArticleId(int $article_id) Return the first ChildHighlightedArticle filtered by the article_id column *
 
  * @method     ChildHighlightedArticle requirePk($key, ConnectionInterface $con = null) Return the ChildHighlightedArticle by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildHighlightedArticle requireOne(ConnectionInterface $con = null) Return the first ChildHighlightedArticle matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
- * @method     ChildHighlightedArticle requireOneByUserId(int $user_id) Return the first ChildHighlightedArticle filtered by the user_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildHighlightedArticle requireOneByAccountId(int $account_id) Return the first ChildHighlightedArticle filtered by the account_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildHighlightedArticle requireOneByArticleId(int $article_id) Return the first ChildHighlightedArticle filtered by the article_id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildHighlightedArticle[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildHighlightedArticle objects based on current ModelCriteria
- * @method     ChildHighlightedArticle[]|ObjectCollection findByUserId(int $user_id) Return ChildHighlightedArticle objects filtered by the user_id column
+ * @method     ChildHighlightedArticle[]|ObjectCollection findByAccountId(int $account_id) Return ChildHighlightedArticle objects filtered by the account_id column
  * @method     ChildHighlightedArticle[]|ObjectCollection findByArticleId(int $article_id) Return ChildHighlightedArticle objects filtered by the article_id column
  * @method     ChildHighlightedArticle[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
@@ -123,7 +123,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      * $obj = $c->findPk(array(12, 34), $con);
      * </code>
      *
-     * @param array[$user_id, $article_id] $key Primary key to use for the query
+     * @param array[$account_id, $article_id] $key Primary key to use for the query
      * @param ConnectionInterface $con an optional connection object
      *
      * @return ChildHighlightedArticle|array|mixed the result, formatted by the current formatter
@@ -169,7 +169,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT user_id, article_id FROM highlighted_article WHERE user_id = :p0 AND article_id = :p1';
+        $sql = 'SELECT account_id, article_id FROM highlighted_article WHERE account_id = :p0 AND article_id = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -243,7 +243,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      */
     public function filterByPrimaryKey($key)
     {
-        $this->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $key[0], Criteria::EQUAL);
+        $this->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $key[0], Criteria::EQUAL);
         $this->addUsingAlias(HighlightedArticleTableMap::COL_ARTICLE_ID, $key[1], Criteria::EQUAL);
 
         return $this;
@@ -262,7 +262,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             return $this->add(null, '1<>1', Criteria::CUSTOM);
         }
         foreach ($keys as $key) {
-            $cton0 = $this->getNewCriterion(HighlightedArticleTableMap::COL_USER_ID, $key[0], Criteria::EQUAL);
+            $cton0 = $this->getNewCriterion(HighlightedArticleTableMap::COL_ACCOUNT_ID, $key[0], Criteria::EQUAL);
             $cton1 = $this->getNewCriterion(HighlightedArticleTableMap::COL_ARTICLE_ID, $key[1], Criteria::EQUAL);
             $cton0->addAnd($cton1);
             $this->addOr($cton0);
@@ -272,18 +272,18 @@ abstract class HighlightedArticleQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query on the user_id column
+     * Filter the query on the account_id column
      *
      * Example usage:
      * <code>
-     * $query->filterByUserId(1234); // WHERE user_id = 1234
-     * $query->filterByUserId(array(12, 34)); // WHERE user_id IN (12, 34)
-     * $query->filterByUserId(array('min' => 12)); // WHERE user_id > 12
+     * $query->filterByAccountId(1234); // WHERE account_id = 1234
+     * $query->filterByAccountId(array(12, 34)); // WHERE account_id IN (12, 34)
+     * $query->filterByAccountId(array('min' => 12)); // WHERE account_id > 12
      * </code>
      *
-     * @see       filterByuser()
+     * @see       filterByaccount()
      *
-     * @param     mixed $userId The value to use as filter.
+     * @param     mixed $accountId The value to use as filter.
      *              Use scalar values for equality.
      *              Use array values for in_array() equivalent.
      *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -291,16 +291,16 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *
      * @return $this|ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function filterByUserId($userId = null, $comparison = null)
+    public function filterByAccountId($accountId = null, $comparison = null)
     {
-        if (is_array($userId)) {
+        if (is_array($accountId)) {
             $useMinMax = false;
-            if (isset($userId['min'])) {
-                $this->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $userId['min'], Criteria::GREATER_EQUAL);
+            if (isset($accountId['min'])) {
+                $this->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $accountId['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
-            if (isset($userId['max'])) {
-                $this->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $userId['max'], Criteria::LESS_EQUAL);
+            if (isset($accountId['max'])) {
+                $this->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $accountId['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -311,7 +311,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $userId, $comparison);
+        return $this->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $accountId, $comparison);
     }
 
     /**
@@ -358,44 +358,44 @@ abstract class HighlightedArticleQuery extends ModelCriteria
     }
 
     /**
-     * Filter the query by a related \SciMS\Models\User object
+     * Filter the query by a related \SciMS\Models\Account object
      *
-     * @param \SciMS\Models\User|ObjectCollection $user The related object(s) to use as filter
+     * @param \SciMS\Models\Account|ObjectCollection $account The related object(s) to use as filter
      * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
      *
      * @throws \Propel\Runtime\Exception\PropelException
      *
      * @return ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function filterByuser($user, $comparison = null)
+    public function filterByaccount($account, $comparison = null)
     {
-        if ($user instanceof \SciMS\Models\User) {
+        if ($account instanceof \SciMS\Models\Account) {
             return $this
-                ->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $user->getId(), $comparison);
-        } elseif ($user instanceof ObjectCollection) {
+                ->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $account->getId(), $comparison);
+        } elseif ($account instanceof ObjectCollection) {
             if (null === $comparison) {
                 $comparison = Criteria::IN;
             }
 
             return $this
-                ->addUsingAlias(HighlightedArticleTableMap::COL_USER_ID, $user->toKeyValue('Id', 'Id'), $comparison);
+                ->addUsingAlias(HighlightedArticleTableMap::COL_ACCOUNT_ID, $account->toKeyValue('Id', 'Id'), $comparison);
         } else {
-            throw new PropelException('filterByuser() only accepts arguments of type \SciMS\Models\User or Collection');
+            throw new PropelException('filterByaccount() only accepts arguments of type \SciMS\Models\Account or Collection');
         }
     }
 
     /**
-     * Adds a JOIN clause to the query using the user relation
+     * Adds a JOIN clause to the query using the account relation
      *
      * @param     string $relationAlias optional alias for the relation
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
      * @return $this|ChildHighlightedArticleQuery The current query, for fluid interface
      */
-    public function joinuser($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function joinaccount($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         $tableMap = $this->getTableMap();
-        $relationMap = $tableMap->getRelation('user');
+        $relationMap = $tableMap->getRelation('account');
 
         // create a ModelJoin object for this join
         $join = new ModelJoin();
@@ -410,14 +410,14 @@ abstract class HighlightedArticleQuery extends ModelCriteria
             $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
             $this->addJoinObject($join, $relationAlias);
         } else {
-            $this->addJoinObject($join, 'user');
+            $this->addJoinObject($join, 'account');
         }
 
         return $this;
     }
 
     /**
-     * Use the user relation User object
+     * Use the account relation Account object
      *
      * @see useQuery()
      *
@@ -425,13 +425,13 @@ abstract class HighlightedArticleQuery extends ModelCriteria
      *                                   to be used as main alias in the secondary query
      * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
      *
-     * @return \SciMS\Models\UserQuery A secondary query class using the current class as primary query
+     * @return \SciMS\Models\AccountQuery A secondary query class using the current class as primary query
      */
-    public function useuserQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    public function useaccountQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
     {
         return $this
-            ->joinuser($relationAlias, $joinType)
-            ->useQuery($relationAlias ? $relationAlias : 'user', '\SciMS\Models\UserQuery');
+            ->joinaccount($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'account', '\SciMS\Models\AccountQuery');
     }
 
     /**
@@ -521,7 +521,7 @@ abstract class HighlightedArticleQuery extends ModelCriteria
     public function prune($highlightedArticle = null)
     {
         if ($highlightedArticle) {
-            $this->addCond('pruneCond0', $this->getAliasedColName(HighlightedArticleTableMap::COL_USER_ID), $highlightedArticle->getUserId(), Criteria::NOT_EQUAL);
+            $this->addCond('pruneCond0', $this->getAliasedColName(HighlightedArticleTableMap::COL_ACCOUNT_ID), $highlightedArticle->getAccountId(), Criteria::NOT_EQUAL);
             $this->addCond('pruneCond1', $this->getAliasedColName(HighlightedArticleTableMap::COL_ARTICLE_ID), $highlightedArticle->getArticleId(), Criteria::NOT_EQUAL);
             $this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
         }

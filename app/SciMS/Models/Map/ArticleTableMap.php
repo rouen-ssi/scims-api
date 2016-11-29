@@ -77,9 +77,9 @@ class ArticleTableMap extends TableMap
     const COL_ID = 'article.id';
 
     /**
-     * the column name for the user_id field
+     * the column name for the account_id field
      */
-    const COL_USER_ID = 'article.user_id';
+    const COL_ACCOUNT_ID = 'article.account_id';
 
     /**
      * the column name for the is_draft field
@@ -123,10 +123,10 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'UserId', 'IsDraft', 'Title', 'Content', 'PublicationDate', 'CategoryId', 'SubcategoryId', ),
-        self::TYPE_CAMELNAME     => array('id', 'userId', 'isDraft', 'title', 'content', 'publicationDate', 'categoryId', 'subcategoryId', ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID, ArticleTableMap::COL_USER_ID, ArticleTableMap::COL_IS_DRAFT, ArticleTableMap::COL_TITLE, ArticleTableMap::COL_CONTENT, ArticleTableMap::COL_PUBLICATION_DATE, ArticleTableMap::COL_CATEGORY_ID, ArticleTableMap::COL_SUBCATEGORY_ID, ),
-        self::TYPE_FIELDNAME     => array('id', 'user_id', 'is_draft', 'title', 'content', 'publication_date', 'category_id', 'subcategory_id', ),
+        self::TYPE_PHPNAME       => array('Id', 'AccountId', 'IsDraft', 'Title', 'Content', 'PublicationDate', 'CategoryId', 'SubcategoryId', ),
+        self::TYPE_CAMELNAME     => array('id', 'accountId', 'isDraft', 'title', 'content', 'publicationDate', 'categoryId', 'subcategoryId', ),
+        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID, ArticleTableMap::COL_ACCOUNT_ID, ArticleTableMap::COL_IS_DRAFT, ArticleTableMap::COL_TITLE, ArticleTableMap::COL_CONTENT, ArticleTableMap::COL_PUBLICATION_DATE, ArticleTableMap::COL_CATEGORY_ID, ArticleTableMap::COL_SUBCATEGORY_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'account_id', 'is_draft', 'title', 'content', 'publication_date', 'category_id', 'subcategory_id', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
@@ -137,10 +137,10 @@ class ArticleTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'UserId' => 1, 'IsDraft' => 2, 'Title' => 3, 'Content' => 4, 'PublicationDate' => 5, 'CategoryId' => 6, 'SubcategoryId' => 7, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'userId' => 1, 'isDraft' => 2, 'title' => 3, 'content' => 4, 'publicationDate' => 5, 'categoryId' => 6, 'subcategoryId' => 7, ),
-        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID => 0, ArticleTableMap::COL_USER_ID => 1, ArticleTableMap::COL_IS_DRAFT => 2, ArticleTableMap::COL_TITLE => 3, ArticleTableMap::COL_CONTENT => 4, ArticleTableMap::COL_PUBLICATION_DATE => 5, ArticleTableMap::COL_CATEGORY_ID => 6, ArticleTableMap::COL_SUBCATEGORY_ID => 7, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'user_id' => 1, 'is_draft' => 2, 'title' => 3, 'content' => 4, 'publication_date' => 5, 'category_id' => 6, 'subcategory_id' => 7, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'AccountId' => 1, 'IsDraft' => 2, 'Title' => 3, 'Content' => 4, 'PublicationDate' => 5, 'CategoryId' => 6, 'SubcategoryId' => 7, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'accountId' => 1, 'isDraft' => 2, 'title' => 3, 'content' => 4, 'publicationDate' => 5, 'categoryId' => 6, 'subcategoryId' => 7, ),
+        self::TYPE_COLNAME       => array(ArticleTableMap::COL_ID => 0, ArticleTableMap::COL_ACCOUNT_ID => 1, ArticleTableMap::COL_IS_DRAFT => 2, ArticleTableMap::COL_TITLE => 3, ArticleTableMap::COL_CONTENT => 4, ArticleTableMap::COL_PUBLICATION_DATE => 5, ArticleTableMap::COL_CATEGORY_ID => 6, ArticleTableMap::COL_SUBCATEGORY_ID => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'account_id' => 1, 'is_draft' => 2, 'title' => 3, 'content' => 4, 'publication_date' => 5, 'category_id' => 6, 'subcategory_id' => 7, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
@@ -163,7 +163,7 @@ class ArticleTableMap extends TableMap
         $this->setPrimaryKeyMethodInfo('article_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('user_id', 'UserId', 'INTEGER', 'user', 'id', true, null, null);
+        $this->addForeignKey('account_id', 'AccountId', 'INTEGER', 'account', 'id', true, null, null);
         $this->addColumn('is_draft', 'IsDraft', 'BOOLEAN', true, null, true);
         $this->addColumn('title', 'Title', 'VARCHAR', true, 128, null);
         $this->addColumn('content', 'Content', 'LONGVARCHAR', true, null, null);
@@ -177,10 +177,10 @@ class ArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('user', '\\SciMS\\Models\\User', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('account', '\\SciMS\\Models\\Account', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
-    0 => ':user_id',
+    0 => ':account_id',
     1 => ':id',
   ),
 ), null, null, null, false);
@@ -369,7 +369,7 @@ class ArticleTableMap extends TableMap
     {
         if (null === $alias) {
             $criteria->addSelectColumn(ArticleTableMap::COL_ID);
-            $criteria->addSelectColumn(ArticleTableMap::COL_USER_ID);
+            $criteria->addSelectColumn(ArticleTableMap::COL_ACCOUNT_ID);
             $criteria->addSelectColumn(ArticleTableMap::COL_IS_DRAFT);
             $criteria->addSelectColumn(ArticleTableMap::COL_TITLE);
             $criteria->addSelectColumn(ArticleTableMap::COL_CONTENT);
@@ -378,7 +378,7 @@ class ArticleTableMap extends TableMap
             $criteria->addSelectColumn(ArticleTableMap::COL_SUBCATEGORY_ID);
         } else {
             $criteria->addSelectColumn($alias . '.id');
-            $criteria->addSelectColumn($alias . '.user_id');
+            $criteria->addSelectColumn($alias . '.account_id');
             $criteria->addSelectColumn($alias . '.is_draft');
             $criteria->addSelectColumn($alias . '.title');
             $criteria->addSelectColumn($alias . '.content');

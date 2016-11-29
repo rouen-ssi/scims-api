@@ -1609,10 +1609,10 @@ abstract class Category implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesRelatedByCategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesRelatedByCategoryIdJoinaccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('user', $joinBehavior);
+        $query->joinWith('account', $joinBehavior);
 
         return $this->getArticlesRelatedByCategoryId($query, $con);
     }
@@ -1859,10 +1859,10 @@ abstract class Category implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesRelatedBySubcategoryIdJoinuser(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesRelatedBySubcategoryIdJoinaccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('user', $joinBehavior);
+        $query->joinWith('account', $joinBehavior);
 
         return $this->getArticlesRelatedBySubcategoryId($query, $con);
     }
