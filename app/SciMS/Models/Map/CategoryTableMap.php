@@ -135,7 +135,6 @@ class CategoryTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Category');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('category_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 32, null);
@@ -160,14 +159,14 @@ class CategoryTableMap extends TableMap
     0 => ':category_id',
     1 => ':id',
   ),
-), null, null, 'ArticlesRelatedByCategoryId', false);
+), 'CASCADE', null, 'ArticlesRelatedByCategoryId', false);
         $this->addRelation('ArticleRelatedBySubcategoryId', '\\SciMS\\Models\\Article', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':subcategory_id',
     1 => ':id',
   ),
-), null, null, 'ArticlesRelatedBySubcategoryId', false);
+), 'CASCADE', null, 'ArticlesRelatedBySubcategoryId', false);
         $this->addRelation('CategoryRelatedById', '\\SciMS\\Models\\Category', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -196,6 +195,7 @@ class CategoryTableMap extends TableMap
     {
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        ArticleTableMap::clearInstancePool();
         CategoryTableMap::clearInstancePool();
     }
 

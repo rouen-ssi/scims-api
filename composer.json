@@ -24,8 +24,9 @@
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "test": [
-        "propel sql:build --config-dir=config/test",
+        "propel sql:build --config-dir=config/test --overwrite",
         "propel sql:insert --config-dir=config/test",
+        "propel model:build --config-dir=config/test",
         "propel config:convert --config-dir=config/test",
         "phpunit tests/",
         "propel config:convert --config-dir=config/prod"

@@ -165,7 +165,6 @@ class ArticleTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Article');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('article_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('account_id', 'AccountId', 'INTEGER', 'account', 'id', true, null, null);
@@ -189,21 +188,21 @@ class ArticleTableMap extends TableMap
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':category_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':subcategory_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -217,7 +216,7 @@ class ArticleTableMap extends TableMap
     0 => ':article_id',
     1 => ':id',
   ),
-), null, null, 'Comments', false);
+), 'CASCADE', null, 'Comments', false);
     } // buildRelations()
 
     /**
@@ -232,6 +231,15 @@ class ArticleTableMap extends TableMap
             'validate' => array('title_invalid' => array ('column' => 'title','validator' => 'NotBlank','options' => array ('message' => 'INVALID_TITLE',),), 'content_invalid' => array ('column' => 'content','validator' => 'NotBlank','options' => array ('message' => 'INVALID_CONTENT',),), ),
         );
     } // getBehaviors()
+    /**
+     * Method to invalidate the instance pool of all tables related to article     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        CommentTableMap::clearInstancePool();
+    }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.

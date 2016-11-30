@@ -1,114 +1,95 @@
 
-BEGIN;
-
 -----------------------------------------------------------------------
 -- account
 -----------------------------------------------------------------------
 
-DROP TABLE IF EXISTS "account" CASCADE;
+DROP TABLE IF EXISTS [account];
 
-CREATE TABLE "account"
+CREATE TABLE [account]
 (
-    "id" serial NOT NULL,
-    "uid" VARCHAR(16) NOT NULL,
-    "email" VARCHAR(254) NOT NULL,
-    "first_name" VARCHAR(128) NOT NULL,
-    "last_name" VARCHAR(128) NOT NULL,
-    "biography" TEXT,
-    "password" VARCHAR(255) NOT NULL,
-    "token" VARCHAR(255),
-    "token_expiration" INTEGER,
-    PRIMARY KEY ("id","email"),
-    CONSTRAINT "account_u_db2f7c" UNIQUE ("id")
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [uid] VARCHAR(16) NOT NULL,
+    [email] VARCHAR(254) NOT NULL,
+    [first_name] VARCHAR(128) NOT NULL,
+    [last_name] VARCHAR(128) NOT NULL,
+    [biography] MEDIUMTEXT,
+    [password] VARCHAR(255) NOT NULL,
+    [token] VARCHAR(255),
+    [token_expiration] INTEGER(8),
+    UNIQUE ([id],[email])
 );
 
 -----------------------------------------------------------------------
 -- article
 -----------------------------------------------------------------------
 
-DROP TABLE IF EXISTS "article" CASCADE;
+DROP TABLE IF EXISTS [article];
 
-CREATE TABLE "article"
+CREATE TABLE [article]
 (
-    "id" serial NOT NULL,
-    "account_id" INTEGER NOT NULL,
-    "is_draft" BOOLEAN DEFAULT 't' NOT NULL,
-    "title" VARCHAR(128) NOT NULL,
-    "content" TEXT NOT NULL,
-    "publication_date" INTEGER NOT NULL,
-    "last_modification_date" INTEGER NOT NULL,
-    "category_id" INTEGER DEFAULT -1,
-    "subcategory_id" INTEGER DEFAULT -1,
-    PRIMARY KEY ("id")
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [account_id] INTEGER NOT NULL,
+    [is_draft] INTEGER DEFAULT 1 NOT NULL,
+    [title] VARCHAR(128) NOT NULL,
+    [content] MEDIUMTEXT NOT NULL,
+    [publication_date] INTEGER NOT NULL,
+    [last_modification_date] INTEGER NOT NULL,
+    [category_id] INTEGER DEFAULT -1,
+    [subcategory_id] INTEGER DEFAULT -1,
+    UNIQUE ([id]),
+    FOREIGN KEY ([account_id]) REFERENCES [account] ([id])
+        ON DELETE CASCADE
 );
 
 -----------------------------------------------------------------------
 -- highlighted_article
 -----------------------------------------------------------------------
 
-DROP TABLE IF EXISTS "highlighted_article" CASCADE;
+DROP TABLE IF EXISTS [highlighted_article];
 
-CREATE TABLE "highlighted_article"
+CREATE TABLE [highlighted_article]
 (
-    "account_id" INTEGER NOT NULL,
-    "article_id" INTEGER NOT NULL,
-    PRIMARY KEY ("account_id","article_id")
+    [account_id] INTEGER NOT NULL,
+    [article_id] INTEGER NOT NULL,
+    PRIMARY KEY ([account_id],[article_id]),
+    UNIQUE ([account_id],[article_id]),
+    FOREIGN KEY ([account_id]) REFERENCES [account] ([id]),
+    FOREIGN KEY ([article_id]) REFERENCES [article] ([id])
 );
 
 -----------------------------------------------------------------------
 -- category
 -----------------------------------------------------------------------
 
-DROP TABLE IF EXISTS "category" CASCADE;
+DROP TABLE IF EXISTS [category];
 
-CREATE TABLE "category"
+CREATE TABLE [category]
 (
-    "id" serial NOT NULL,
-    "name" VARCHAR(32) NOT NULL,
-    "parent_category_id" INTEGER DEFAULT -1,
-    PRIMARY KEY ("id")
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [name] VARCHAR(32) NOT NULL,
+    [parent_category_id] INTEGER DEFAULT -1,
+    UNIQUE ([id])
 );
 
 -----------------------------------------------------------------------
 -- comment
 -----------------------------------------------------------------------
 
-DROP TABLE IF EXISTS "comment" CASCADE;
+DROP TABLE IF EXISTS [comment];
 
-CREATE TABLE "comment"
+CREATE TABLE [comment]
 (
-    "id" serial NOT NULL,
-    "parent_comment_id" INTEGER,
-    "author_id" INTEGER NOT NULL,
-    "article_id" INTEGER NOT NULL,
-    "publication_date" INTEGER NOT NULL,
-    "content" TEXT NOT NULL,
-    PRIMARY KEY ("id")
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [parent_comment_id] INTEGER,
+    [author_id] INTEGER NOT NULL,
+    [article_id] INTEGER NOT NULL,
+    [publication_date] INTEGER NOT NULL,
+    [content] MEDIUMTEXT NOT NULL,
+    UNIQUE ([id]),
+    FOREIGN KEY ([parent_comment_id]) REFERENCES [comment] ([id])
+        ON DELETE CASCADE,
+    FOREIGN KEY ([author_id]) REFERENCES [account] ([id])
+        ON DELETE CASCADE,
+    FOREIGN KEY ([article_id]) REFERENCES [article] ([id])
+        ON DELETE CASCADE
 );
-
-ALTER TABLE "article" ADD CONSTRAINT "article_fk_474870"
-    FOREIGN KEY ("account_id")
-    REFERENCES "account" ("id");
-
-ALTER TABLE "highlighted_article" ADD CONSTRAINT "highlighted_article_fk_474870"
-    FOREIGN KEY ("account_id")
-    REFERENCES "account" ("id");
-
-ALTER TABLE "highlighted_article" ADD CONSTRAINT "highlighted_article_fk_3610e9"
-    FOREIGN KEY ("article_id")
-    REFERENCES "article" ("id");
-
-ALTER TABLE "comment" ADD CONSTRAINT "comment_fk_22957b"
-    FOREIGN KEY ("parent_comment_id")
-    REFERENCES "comment" ("id")
-    ON DELETE CASCADE;
-
-ALTER TABLE "comment" ADD CONSTRAINT "comment_fk_d5af8f"
-    FOREIGN KEY ("author_id")
-    REFERENCES "account" ("id");
-
-ALTER TABLE "comment" ADD CONSTRAINT "comment_fk_3610e9"
-    FOREIGN KEY ("article_id")
-    REFERENCES "article" ("id");
-
-COMMIT;

@@ -150,7 +150,6 @@ class CommentTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Comment');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('comment_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('parent_comment_id', 'ParentCommentId', 'INTEGER', 'comment', 'id', false, null, null);
@@ -178,14 +177,14 @@ class CommentTableMap extends TableMap
     0 => ':author_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('Article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':article_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('CommentRelatedById', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (

@@ -745,10 +745,9 @@ abstract class Category implements ActiveRecordInterface
 
             if ($this->articlesRelatedByCategoryIdScheduledForDeletion !== null) {
                 if (!$this->articlesRelatedByCategoryIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->articlesRelatedByCategoryIdScheduledForDeletion as $articleRelatedByCategoryId) {
-                        // need to save related object because we set the relation to null
-                        $articleRelatedByCategoryId->save($con);
-                    }
+                    \SciMS\Models\ArticleQuery::create()
+                        ->filterByPrimaryKeys($this->articlesRelatedByCategoryIdScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->articlesRelatedByCategoryIdScheduledForDeletion = null;
                 }
             }
@@ -763,10 +762,9 @@ abstract class Category implements ActiveRecordInterface
 
             if ($this->articlesRelatedBySubcategoryIdScheduledForDeletion !== null) {
                 if (!$this->articlesRelatedBySubcategoryIdScheduledForDeletion->isEmpty()) {
-                    foreach ($this->articlesRelatedBySubcategoryIdScheduledForDeletion as $articleRelatedBySubcategoryId) {
-                        // need to save related object because we set the relation to null
-                        $articleRelatedBySubcategoryId->save($con);
-                    }
+                    \SciMS\Models\ArticleQuery::create()
+                        ->filterByPrimaryKeys($this->articlesRelatedBySubcategoryIdScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->articlesRelatedBySubcategoryIdScheduledForDeletion = null;
                 }
             }
@@ -820,15 +818,6 @@ abstract class Category implements ActiveRecordInterface
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
         }
-        if (null === $this->id) {
-            try {
-                $dataFetcher = $con->query("SELECT nextval('category_id_seq')");
-                $this->id = (int) $dataFetcher->fetchColumn();
-            } catch (Exception $e) {
-                throw new PropelException('Unable to get sequence id.', 0, $e);
-            }
-        }
-
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
@@ -867,6 +856,13 @@ abstract class Category implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }

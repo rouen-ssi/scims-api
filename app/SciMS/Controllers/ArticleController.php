@@ -25,6 +25,8 @@ class ArticleController {
         $categoryId = $request->getParsedBodyParam('category_id', -1);
         $subcategoryId = $request->getParsedBodyParam('subcategory_id', -1);
 
+        echo $title;
+
         // Retreives the User from the given token.
         $user = $request->getAttribute('user');
 
@@ -43,6 +45,7 @@ class ArticleController {
                 'errors' => $errors
             ], 400);
         }
+
         $article->save();
 
         return $response->withJson(array(

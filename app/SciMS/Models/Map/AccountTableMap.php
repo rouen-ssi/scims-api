@@ -165,7 +165,6 @@ class AccountTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Account');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('account_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);
@@ -189,7 +188,7 @@ class AccountTableMap extends TableMap
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, 'Articles', false);
+), 'CASCADE', null, 'Articles', false);
         $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -203,7 +202,7 @@ class AccountTableMap extends TableMap
     0 => ':author_id',
     1 => ':id',
   ),
-), null, null, 'Comments', false);
+), 'CASCADE', null, 'Comments', false);
     } // buildRelations()
 
     /**
@@ -270,6 +269,16 @@ class AccountTableMap extends TableMap
 
             unset(self::$instances[$key]);
         }
+    }
+    /**
+     * Method to invalidate the instance pool of all tables related to account     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in related instance pools,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        ArticleTableMap::clearInstancePool();
+        CommentTableMap::clearInstancePool();
     }
 
     /**
