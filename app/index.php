@@ -53,6 +53,8 @@ $app->group('/account', function() {
         ->add('SciMS\Middlewares\TokenMiddleware');
     $this->put('/email', 'SciMS\Controllers\AccountController:updateEmail')
         ->add('SciMS\Middlewares\TokenMiddleware');
+    $this->get('/me', 'SciMS\Controllers\AccountController:profile')
+         ->add('SciMS\Middlewares\TokenMiddleware');
     $this->get('/{uid}', 'SciMS\Controllers\AccountController:get')
         ->add('SciMS\Middlewares\TokenMiddleware');
     $this->post('/create', 'SciMS\Controllers\AccountController:create');

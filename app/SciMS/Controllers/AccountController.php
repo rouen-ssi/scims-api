@@ -48,6 +48,16 @@ class AccountController {
     }
 
     /**
+     * @param Request $request
+     * @param Response $response
+     * @return Response
+     */
+    public function profile(Request $request, Response $response) {
+        $user = $request->getAttribute('user');
+        return $response->withJson(['user' => $user], 200);
+    }
+
+    /**
      * Changes the account's password given by his token.
      * @param  Request $request a PSR-7 request object.
      * @param  Response $response a PSR-7 response object
