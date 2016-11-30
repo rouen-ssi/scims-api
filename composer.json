@@ -1,4 +1,5 @@
 {
+    "process-timeout": "0",
     "name": "rouenssi/scims-backend",
     "description": "Un CMS open-source pour les scientifiques",
     "require": {
@@ -28,7 +29,7 @@
         "propel config:convert --config-dir=config/prod"
       ],
       "dev-server": [
-        "php -S localhost:8080 -t app/"
+        "php -S localhost:3000 -t app/"
       ]
     },
     "require-dev": {
