@@ -10,7 +10,7 @@ return [
                 'scims' => [
                     'adapter'    => 'sqlite',
                     'classname'  => 'Propel\Runtime\Connection\ConnectionWrapper',
-                    'dsn'        => 'sqlite:scims_test.database' ,
+                    'dsn'        => 'sqlite::memory:' ,
                     'user'       => '',
                     'password'   => '',
                     'attributes' => []
