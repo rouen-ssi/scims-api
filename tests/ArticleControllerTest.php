@@ -14,9 +14,25 @@ use Slim\Http\Uri;
 
 class ArticleControllerTest extends TestCase {
     private $articleController;
+    private $account;
+    private $article;
 
     public function setUp() {
         $this->articleController = new ArticleController();
+
+        $this->account = new Account();
+        $this->account->setUid('1234azer');
+        $this->account->setEmail('john.doe@example.com');
+        $this->account->setFirstName('John');
+        $this->account->setLastName('Doe');
+        $this->account->setPassword('johndoepassword');
+        $this->account->save();
+
+        $this->article = [
+            'is_draft' => 'false',
+            'title' => 'Dummy Article',
+            'content' => 'Dummy article content'
+        ];
     }
 
     public function tearDown() {
@@ -24,20 +40,6 @@ class ArticleControllerTest extends TestCase {
     }
 
     public function testCreate() {
-        $account = new Account();
-        $account->setUid('1234azer');
-        $account->setEmail('john.doe@example.com');
-        $account->setFirstName('John');
-        $account->setLastName('Doe');
-        $account->setPassword('johndoepassword');
-        $account->save();
-
-        $article = [
-            'is_draft' => 'false',
-            'title' => 'Dummy Article',
-            'content' => 'Dummy article content'
-        ];
-
         $environment = Environment::mock([
             'REQUEST_METHOD' => 'POST',
             'REQUEST_URI' => '/article',
@@ -46,11 +48,30 @@ class ArticleControllerTest extends TestCase {
         ]);
 
         $request = Request::createFromEnvironment($environment);
-        $request = $request->withAttribute('user', $account);
-        $request->getBody()->write(json_encode($article));
+        $request = $request->withAttribute('user', $this->account);
+        $request->getBody()->write(json_encode($this->article));
 
         $response = new Response();
         $response = $this->articleController->create($request, $response);
+
+        parent::assertEquals($response->getStatusCode(), 200);
+    }
+
+    /**
+     * @depends testCreate
+     */
+    public function testGetPage() {
+        $environment = Environment::mock([
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/article',
+            'QUERY_STRING' => '',
+            'CONTENT_TYPE' => 'application/json;charset=utf8'
+        ]);
+
+        $request = Request::createFromEnvironment($environment);
+
+        $response = new Response();
+        $response = $this->articleController->getPage($request, $response);
 
         parent::assertEquals($response->getStatusCode(), 200);
     }
