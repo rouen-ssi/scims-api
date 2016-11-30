@@ -6,11 +6,8 @@ use PHPUnit\Framework\TestCase;
 use SciMS\Controllers\ArticleController;
 use SciMS\Models\Account;
 use Slim\Http\Environment;
-use Slim\Http\Headers;
 use Slim\Http\Request;
-use Slim\Http\RequestBody;
 use Slim\Http\Response;
-use Slim\Http\Uri;
 
 class ArticleControllerTest extends TestCase {
     private $articleController;
@@ -54,7 +51,33 @@ class ArticleControllerTest extends TestCase {
         $response = new Response();
         $response = $this->articleController->create($request, $response);
 
-        parent::assertEquals($response->getStatusCode(), 200);
+        parent::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testCreate
+     */
+    public function testEdit() {
+        $environment = Environment::mock([
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '/article',
+            'QUERY_STRING' => '',
+            'CONTENT_TYPE' => 'application/json;charset=utf8'
+        ]);
+
+        $article = [
+            'is_draft' => true,
+            'title' => 'An edited dummy article',
+            'content' => 'An edit article content.'
+        ];
+
+        $request = Request::createFromEnvironment($environment);
+        $request->getBody()->write(json_encode($article));
+
+        $response = new Response();
+        $response = $this->articleController->edit($request, $response, [ 'id' => 1 ]);
+
+        parent::assertEquals(200, $response->getStatusCode());
     }
 
     /**
@@ -73,6 +96,6 @@ class ArticleControllerTest extends TestCase {
         $response = new Response();
         $response = $this->articleController->getPage($request, $response);
 
-        parent::assertEquals($response->getStatusCode(), 200);
+        parent::assertEquals(200, $response->getStatusCode());
     }
 }
