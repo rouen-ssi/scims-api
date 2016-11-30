@@ -24,7 +24,7 @@
       "test": [
         "propel sql:insert --config-dir=config/test",
         "propel config:convert --config-dir=config/test",
-        "phpunit tests/"
+        "phpunit tests/",
         "propel config:convert --config-dir=config/prod"
       ],
       "dev-server": [
