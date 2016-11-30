@@ -130,7 +130,6 @@ class ArticleController {
      * @return Response
      */
     public function drafts(Request $request, Response $response) {
-        /** @var \SciMS\Models\Account $user */
         $user = $request->getAttribute('user');
 
         $drafts = ArticleQuery::create()
