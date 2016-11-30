@@ -1,7 +1,5 @@
 <?php
 
-require_once 'generated-conf/config.php';
-
 use PHPUnit\Framework\TestCase;
 use SciMS\Controllers\ArticleController;
 use SciMS\Models\Account;
