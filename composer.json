@@ -11,7 +11,7 @@
       "classmap": ["app/"]
     },
     "scripts": {
-      "post-install-cmd": [
+      "install-db": [
         "propel sql:insert --config-dir=config/prod",
         "propel config:convert --config-dir=config/prod",
         "@composer dump-autoload"
