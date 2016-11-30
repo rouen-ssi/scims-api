@@ -5,12 +5,19 @@ require_once 'generated-conf/config.php';
 use PHPUnit\Framework\TestCase;
 use SciMS\Controllers\ArticleController;
 use SciMS\Models\Account;
+use SciMS\Models\Article;
 use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class ArticleControllerTest extends TestCase {
+    /**
+     * @var ArticleController
+     */
     private $articleController;
+    /**
+     * @var Account
+     */
     private $account;
     private $article;
 
@@ -83,6 +90,24 @@ class ArticleControllerTest extends TestCase {
     /**
      * @depends testCreate
      */
+    public function testGetById() {
+        $environment = Environment::mock([
+            'REQUEST_METHOD' => 'GET',
+            'REQUEST_URI' => '/article',
+            'QUERY_STRING' => '',
+            'CONTENT_TYPE' => 'application/json'
+        ]);
+
+        $request = Request::createFromEnvironment($environment);
+        $response = new Response();
+        $response = $this->articleController->getById($request, $response, [ 'id' => 1 ]);
+
+        parent::assertEquals(200, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testCreate
+     */
     public function testGetPage() {
         $environment = Environment::mock([
             'REQUEST_METHOD' => 'GET',
@@ -95,6 +120,30 @@ class ArticleControllerTest extends TestCase {
 
         $response = new Response();
         $response = $this->articleController->getPage($request, $response);
+
+        parent::assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDelete() {
+        $environnment = Environment::mock([
+            'REQUEST_METHOD' => 'DELETE',
+            'REQUEST_URI' => '/article',
+            'QUERY_STRING' => '',
+            'CONTENT_TYPE' => 'applocation/json;charset=utf8'
+        ]);
+
+        $article = new Article();
+        $article->setAccountId($this->account->getId());
+        $article->setTitle('Dummy article');
+        $article->setContent('Dummy article content');
+        $article->setPublicationDate(time());
+        $article->setLastModificationDate(time());
+        $article->save();
+
+        $request = Request::createFromEnvironment($environnment);
+
+        $response = new Response();
+        $response = $this->articleController->delete($request, $response, [ 'id' => $article->getId() ]);
 
         parent::assertEquals(200, $response->getStatusCode());
     }
