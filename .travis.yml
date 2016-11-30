@@ -1,3 +1,5 @@
+notifications:
+  slack: masterssi:DFiqJJCme5NaR4SPiPUa8TGB
 language: php
 php:
   - 5.6
