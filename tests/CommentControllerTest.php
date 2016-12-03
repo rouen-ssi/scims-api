@@ -16,6 +16,7 @@ class CommentControllerTest extends TestCase {
     private $account;
     /** @var  Article */
     private $article;
+    private $comment;
 
     public function setUp() {
         $this->commentController = new CommentController();
@@ -35,6 +36,13 @@ class CommentControllerTest extends TestCase {
         $this->article->setPublicationDate(time());
         $this->article->setLastModificationDate($this->article->getPublicationDate());
         $this->article->save();
+
+        $this->comment = new Comment();
+        $this->comment->setAuthor($this->account);
+        $this->comment->setArticle($this->article);
+        $this->comment->setPublicationDate(time());
+        $this->comment->setContent('This is a dummy comment.');
+        $this->comment->save();
     }
 
     public function testPost() {
@@ -58,13 +66,6 @@ class CommentControllerTest extends TestCase {
     }
 
     public function testEdit() {
-        $comment = new Comment();
-        $comment->setAuthor($this->account);
-        $comment->setArticle($this->article);
-        $comment->setPublicationDate(time());
-        $comment->setContent('This is a dummy comment.');
-        $comment->save();
-
         $environment = Environment::mock([
             'REQUEST_METHOD' => 'PUT',
             'REQUEST_URI' => '',
@@ -79,7 +80,23 @@ class CommentControllerTest extends TestCase {
         $request->getBody()->write(json_encode($editedComment));
 
         $response = new Response();
-        $response = $this->commentController->edit($request, $response, [ 'comment_id' => $comment->getId() ]);
+        $response = $this->commentController->edit($request, $response, [ 'comment_id' => $this->comment->getId() ]);
+
+        parent::assertEquals(200, $response->getStatusCode());
+    }
+
+    public function testDelete() {
+        $environment = Environment::mock([
+            'REQUEST_METHOD' => 'DELETE',
+            'REQUEST_URI' => '',
+            'QUERY_STRING' => ''
+        ]);
+
+        $request = Request::createFromEnvironment($environment);
+        $request = $request->withAttribute('user', $this->account);
+
+        $response = new Response();
+        $response = $this->commentController->delete($request, $response, [ 'comment_id' => $this->comment->getId() ]);
 
         parent::assertEquals(200, $response->getStatusCode());
     }
