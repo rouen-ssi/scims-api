@@ -165,6 +165,7 @@ class ArticleTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Article');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('article_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('account_id', 'AccountId', 'INTEGER', 'account', 'id', true, null, null);
@@ -182,21 +183,21 @@ class ArticleTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('account', '\\SciMS\\Models\\Account', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Account', '\\SciMS\\Models\\Account', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':account_id',
     1 => ':id',
   ),
 ), 'CASCADE', null, null, false);
-        $this->addRelation('category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Category', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':category_id',
     1 => ':id',
   ),
 ), 'CASCADE', null, null, false);
-        $this->addRelation('subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
+        $this->addRelation('Subcategory', '\\SciMS\\Models\\Category', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':subcategory_id',

@@ -23,7 +23,7 @@ class FakeFixture
       return;
     }
 
-    require_once "generated-conf/config.php";
+    require_once "generated-conf/prod/config.php";
 
     $faker = Factory::create();
 
@@ -66,6 +66,8 @@ class FakeFixture
       $article->setPublicationDate($articlePublicationDate->getTimestamp());
       $article->setLastModificationDate($articlePublicationDate->getTimestamp());
       $article->setcategory($faker->randomElement($categories));
+      $article->save();
+      $articles[] = $article;
 
       /** @var Comment[] $comments */
       $comments = [];
@@ -76,12 +78,10 @@ class FakeFixture
           $comment->setArticle($article);
           $comment->setPublicationDate($faker->dateTimeBetween($articlePublicationDate)->getTimestamp());
           $comment->setContent($faker->paragraph(15));
+          $comment->save();
 
           $comments[] = $comment;
       }
-
-      $article->save();
-      $articles[] = $article;
     }
 
     foreach ($accounts as $account) {

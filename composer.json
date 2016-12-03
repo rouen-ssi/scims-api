@@ -12,6 +12,7 @@
     },
     "scripts": {
       "install-db": [
+        "propel model:build",
         "propel sql:build",
         "propel sql:insert",
         "propel config:convert",

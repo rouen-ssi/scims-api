@@ -1023,6 +1023,15 @@ abstract class Account implements ActiveRecordInterface
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . AccountTableMap::COL_ID . ')');
         }
+        if (null === $this->id) {
+            try {
+                $dataFetcher = $con->query("SELECT nextval('account_id_seq')");
+                $this->id = (int) $dataFetcher->fetchColumn();
+            } catch (Exception $e) {
+                throw new PropelException('Unable to get sequence id.', 0, $e);
+            }
+        }
+
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(AccountTableMap::COL_ID)) {
@@ -1097,13 +1106,6 @@ abstract class Account implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1699,7 +1701,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->initArticles();
             } else {
                 $collArticles = ChildArticleQuery::create(null, $criteria)
-                    ->filterByaccount($this)
+                    ->filterByAccount($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1753,7 +1755,7 @@ abstract class Account implements ActiveRecordInterface
         $this->articlesScheduledForDeletion = $articlesToDelete;
 
         foreach ($articlesToDelete as $articleRemoved) {
-            $articleRemoved->setaccount(null);
+            $articleRemoved->setAccount(null);
         }
 
         $this->collArticles = null;
@@ -1794,7 +1796,7 @@ abstract class Account implements ActiveRecordInterface
             }
 
             return $query
-                ->filterByaccount($this)
+                ->filterByAccount($this)
                 ->count($con);
         }
 
@@ -1832,7 +1834,7 @@ abstract class Account implements ActiveRecordInterface
     protected function doAddArticle(ChildArticle $article)
     {
         $this->collArticles[]= $article;
-        $article->setaccount($this);
+        $article->setAccount($this);
     }
 
     /**
@@ -1849,7 +1851,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->articlesScheduledForDeletion->clear();
             }
             $this->articlesScheduledForDeletion[]= clone $article;
-            $article->setaccount(null);
+            $article->setAccount(null);
         }
 
         return $this;
@@ -1872,10 +1874,10 @@ abstract class Account implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesJoincategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesJoinCategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('category', $joinBehavior);
+        $query->joinWith('Category', $joinBehavior);
 
         return $this->getArticles($query, $con);
     }
@@ -1897,10 +1899,10 @@ abstract class Account implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesJoinsubcategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesJoinSubcategory(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('subcategory', $joinBehavior);
+        $query->joinWith('Subcategory', $joinBehavior);
 
         return $this->getArticles($query, $con);
     }

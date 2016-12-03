@@ -818,6 +818,15 @@ abstract class Category implements ActiveRecordInterface
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategoryTableMap::COL_ID . ')');
         }
+        if (null === $this->id) {
+            try {
+                $dataFetcher = $con->query("SELECT nextval('category_id_seq')");
+                $this->id = (int) $dataFetcher->fetchColumn();
+            } catch (Exception $e) {
+                throw new PropelException('Unable to get sequence id.', 0, $e);
+            }
+        }
+
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(CategoryTableMap::COL_ID)) {
@@ -856,13 +865,6 @@ abstract class Category implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1432,7 +1434,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->initArticlesRelatedByCategoryId();
             } else {
                 $collArticlesRelatedByCategoryId = ChildArticleQuery::create(null, $criteria)
-                    ->filterBycategory($this)
+                    ->filterByCategory($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1486,7 +1488,7 @@ abstract class Category implements ActiveRecordInterface
         $this->articlesRelatedByCategoryIdScheduledForDeletion = $articlesRelatedByCategoryIdToDelete;
 
         foreach ($articlesRelatedByCategoryIdToDelete as $articleRelatedByCategoryIdRemoved) {
-            $articleRelatedByCategoryIdRemoved->setcategory(null);
+            $articleRelatedByCategoryIdRemoved->setCategory(null);
         }
 
         $this->collArticlesRelatedByCategoryId = null;
@@ -1527,7 +1529,7 @@ abstract class Category implements ActiveRecordInterface
             }
 
             return $query
-                ->filterBycategory($this)
+                ->filterByCategory($this)
                 ->count($con);
         }
 
@@ -1565,7 +1567,7 @@ abstract class Category implements ActiveRecordInterface
     protected function doAddArticleRelatedByCategoryId(ChildArticle $articleRelatedByCategoryId)
     {
         $this->collArticlesRelatedByCategoryId[]= $articleRelatedByCategoryId;
-        $articleRelatedByCategoryId->setcategory($this);
+        $articleRelatedByCategoryId->setCategory($this);
     }
 
     /**
@@ -1582,7 +1584,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->articlesRelatedByCategoryIdScheduledForDeletion->clear();
             }
             $this->articlesRelatedByCategoryIdScheduledForDeletion[]= $articleRelatedByCategoryId;
-            $articleRelatedByCategoryId->setcategory(null);
+            $articleRelatedByCategoryId->setCategory(null);
         }
 
         return $this;
@@ -1605,10 +1607,10 @@ abstract class Category implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesRelatedByCategoryIdJoinaccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesRelatedByCategoryIdJoinAccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('account', $joinBehavior);
+        $query->joinWith('Account', $joinBehavior);
 
         return $this->getArticlesRelatedByCategoryId($query, $con);
     }
@@ -1682,7 +1684,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->initArticlesRelatedBySubcategoryId();
             } else {
                 $collArticlesRelatedBySubcategoryId = ChildArticleQuery::create(null, $criteria)
-                    ->filterBysubcategory($this)
+                    ->filterBySubcategory($this)
                     ->find($con);
 
                 if (null !== $criteria) {
@@ -1736,7 +1738,7 @@ abstract class Category implements ActiveRecordInterface
         $this->articlesRelatedBySubcategoryIdScheduledForDeletion = $articlesRelatedBySubcategoryIdToDelete;
 
         foreach ($articlesRelatedBySubcategoryIdToDelete as $articleRelatedBySubcategoryIdRemoved) {
-            $articleRelatedBySubcategoryIdRemoved->setsubcategory(null);
+            $articleRelatedBySubcategoryIdRemoved->setSubcategory(null);
         }
 
         $this->collArticlesRelatedBySubcategoryId = null;
@@ -1777,7 +1779,7 @@ abstract class Category implements ActiveRecordInterface
             }
 
             return $query
-                ->filterBysubcategory($this)
+                ->filterBySubcategory($this)
                 ->count($con);
         }
 
@@ -1815,7 +1817,7 @@ abstract class Category implements ActiveRecordInterface
     protected function doAddArticleRelatedBySubcategoryId(ChildArticle $articleRelatedBySubcategoryId)
     {
         $this->collArticlesRelatedBySubcategoryId[]= $articleRelatedBySubcategoryId;
-        $articleRelatedBySubcategoryId->setsubcategory($this);
+        $articleRelatedBySubcategoryId->setSubcategory($this);
     }
 
     /**
@@ -1832,7 +1834,7 @@ abstract class Category implements ActiveRecordInterface
                 $this->articlesRelatedBySubcategoryIdScheduledForDeletion->clear();
             }
             $this->articlesRelatedBySubcategoryIdScheduledForDeletion[]= $articleRelatedBySubcategoryId;
-            $articleRelatedBySubcategoryId->setsubcategory(null);
+            $articleRelatedBySubcategoryId->setSubcategory(null);
         }
 
         return $this;
@@ -1855,10 +1857,10 @@ abstract class Category implements ActiveRecordInterface
      * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
      * @return ObjectCollection|ChildArticle[] List of ChildArticle objects
      */
-    public function getArticlesRelatedBySubcategoryIdJoinaccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    public function getArticlesRelatedBySubcategoryIdJoinAccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
     {
         $query = ChildArticleQuery::create(null, $criteria);
-        $query->joinWith('account', $joinBehavior);
+        $query->joinWith('Account', $joinBehavior);
 
         return $this->getArticlesRelatedBySubcategoryId($query, $con);
     }

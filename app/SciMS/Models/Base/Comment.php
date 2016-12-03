@@ -85,6 +85,7 @@ abstract class Comment implements ActiveRecordInterface
     /**
      * The value for the parent_comment_id field.
      *
+     * Note: this column has a database default value of: -1
      * @var        int
      */
     protected $parent_comment_id;
@@ -170,10 +171,23 @@ abstract class Comment implements ActiveRecordInterface
     protected $commentsRelatedByIdScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->parent_comment_id = -1;
+    }
+
+    /**
      * Initializes internal state of SciMS\Models\Base\Comment object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -596,6 +610,10 @@ abstract class Comment implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->parent_comment_id !== -1) {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -899,6 +917,15 @@ abstract class Comment implements ActiveRecordInterface
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . CommentTableMap::COL_ID . ')');
         }
+        if (null === $this->id) {
+            try {
+                $dataFetcher = $con->query("SELECT nextval('comment_id_seq')");
+                $this->id = (int) $dataFetcher->fetchColumn();
+            } catch (Exception $e) {
+                throw new PropelException('Unable to get sequence id.', 0, $e);
+            }
+        }
+
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(CommentTableMap::COL_ID)) {
@@ -955,13 +982,6 @@ abstract class Comment implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
-
-        try {
-            $pk = $con->lastInsertId();
-        } catch (Exception $e) {
-            throw new PropelException('Unable to get autoincrement id.', 0, $e);
-        }
-        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1429,7 +1449,7 @@ abstract class Comment implements ActiveRecordInterface
     public function setParentComment(ChildComment $v = null)
     {
         if ($v === null) {
-            $this->setParentCommentId(NULL);
+            $this->setParentCommentId(-1);
         } else {
             $this->setParentCommentId($v->getId());
         }
@@ -1889,6 +1909,7 @@ abstract class Comment implements ActiveRecordInterface
         $this->content = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);

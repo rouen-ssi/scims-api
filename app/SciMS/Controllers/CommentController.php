@@ -42,14 +42,14 @@ class CommentController {
      * @param Response $response
      * @return Response a JSON containing the newly created comment id or an array of errors if any.
      */
-    public function post(Request $request, Response $response) {
+    public function post(Request $request, Response $response, array $args) {
         $errors = [];
 
         // Retrieves the user given by TokenMiddleware;
         $user = $request->getAttribute('user');
 
         // Retrieves all the parameters.
-        $articleId = $request->getAttribute('id', null);
+        $articleId = $args['id'];
         $parentCommentId = $request->getParsedBodyParam('parent_comment_id', null);
         $content = trim($request->getParsedBodyParam('content', ''));
 

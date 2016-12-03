@@ -165,6 +165,7 @@ class AccountTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Account');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('account_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);

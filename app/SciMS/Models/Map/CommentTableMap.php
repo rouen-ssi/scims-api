@@ -150,9 +150,10 @@ class CommentTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Comment');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('comment_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('parent_comment_id', 'ParentCommentId', 'INTEGER', 'comment', 'id', false, null, null);
+        $this->addForeignKey('parent_comment_id', 'ParentCommentId', 'INTEGER', 'comment', 'id', false, null, -1);
         $this->addForeignKey('author_id', 'AuthorId', 'INTEGER', 'account', 'id', true, null, null);
         $this->addForeignKey('article_id', 'ArticleId', 'INTEGER', 'article', 'id', true, null, null);
         $this->addColumn('publication_date', 'PublicationDate', 'INTEGER', true, null, null);
