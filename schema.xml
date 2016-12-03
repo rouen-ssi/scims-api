@@ -74,7 +74,7 @@
         <column name="article_id" type="integer" required="true" />
         <column name="publication_date" type="integer" required="true" />
         <column name="content" type="longvarchar" required="true" />
-        <foreign-key foreignTable="comment" phpName="ParentComment" onDelete="cascade">
+        <foreign-key foreignTable="comment" phpName="ParentComment" skipSql="true" onDelete="cascade">
             <reference local="parent_comment_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="account" phpName="Author" onDelete="cascade">
