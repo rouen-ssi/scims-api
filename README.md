@@ -1,4 +1,4 @@
-# SciMS - Un CMS open-source pour les scientifiques [![Build Status](https://travis-ci.org/rouen-ssi/scims-backend.svg?branch=master)](https://travis-ci.org/rouen-ssi/scims-backend)
+# SciMS - Un CMS open-source pour les scientifiques [![Build Status](https://travis-ci.org/rouen-ssi/scims-api.svg?branch=master)](https://travis-ci.org/rouen-ssi/scims-api)
 
 Ce dépôt est le backend du projet [SciMS](https://github.com/rouenssi-tnp/scims).
 
