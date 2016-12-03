@@ -12,25 +12,24 @@
     },
     "scripts": {
       "install-db": [
-        "propel sql:build --config-dir config/prod",
-        "propel sql:insert --config-dir=config/prod",
-        "propel config:convert --config-dir=config/prod",
+        "propel sql:build",
+        "propel sql:insert",
+        "propel config:convert",
         "@composer dump-autoload"
       ],
       "migrate": [
-        "propel diff --config-dir=config/prod",
-        "propel migrate --config-dir=config/prod"
+        "propel diff",
+        "propel migrate"
       ],
       "fake-data": [
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "test": [
-        "propel sql:build --config-dir=config/test --overwrite",
-        "propel sql:insert --config-dir=config/test",
-        "propel model:build --config-dir=config/test",
-        "propel config:convert --config-dir=config/test",
-        "phpunit tests/ --bootstrap generated-conf/config.php",
-        "propel config:convert --config-dir=config/prod"
+        "PHP_ENV=test propel sql:build --overwrite",
+        "PHP_ENV=test propel sql:insert",
+        "PHP_ENV=test propel model:build",
+        "PHP_ENV=test propel config:convert",
+        "phpunit tests/ --bootstrap generated-conf/test/config.php"
       ],
       "dev-server": [
         "php -S localhost:3000 -t app/"
