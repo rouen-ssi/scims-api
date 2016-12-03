@@ -38,7 +38,7 @@ class ArticleController {
         $article->setCategoryId($categoryId);
         $article->setSubcategoryId($subcategoryId);
         $errors = Utils::validate($article);
-        if (count($errors) > 0) {
+        if (count($errors) > 0 && !$isDraft) {
             return $response->withJson([
                 'errors' => $errors
             ], 400);
@@ -82,7 +82,7 @@ class ArticleController {
         $article->setLastModificationDate(time());
         $article->setSubcategoryId($subcategoryId);
         $errors = Utils::validate($article);
-        if (count($errors) > 0) {
+        if (count($errors) > 0 && !$isDraft) {
             return $response->withJson([
                 'errors' => $errors
             ], 400);
