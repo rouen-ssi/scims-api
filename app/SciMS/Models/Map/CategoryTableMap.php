@@ -135,6 +135,7 @@ class CategoryTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Category');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
+        $this->setPrimaryKeyMethodInfo('category_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 32, null);
