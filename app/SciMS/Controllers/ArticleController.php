@@ -113,14 +113,14 @@ class ArticleController {
         $page = (int)$request->getQueryParam('page', 1);
         $articles = $query->paginate($page, self::ARTICLES_PER_PAGE);
 
-        $nrOfArticles = ArticleQuery::create()->count();
+        $nrOfArticles = $query->count();
 
         return $response->withJson([
             'pagination' => [
                 'current' => $page,
-                'count' => $nrOfArticles / self::ARTICLES_PER_PAGE,
+                'count' => (int) ceil($nrOfArticles / self::ARTICLES_PER_PAGE),
             ],
-            'articles' => $articles->getData(),
+            'articles' => $articles->getResults()->getData(),
         ], 200);
     }
 
