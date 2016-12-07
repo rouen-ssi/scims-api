@@ -47,10 +47,10 @@
     <table name="highlighted_article" phpName="HighlightedArticle">
         <column name="account_id" type="integer" required="true" primaryKey="true" />
         <column name="article_id" type="integer" required="true" primaryKey="true" />
-        <foreign-key foreignTable="account" phpName="account">
+        <foreign-key foreignTable="account" phpName="account" onDelete="cascade">
             <reference local="account_id" foreign="id" />
         </foreign-key>
-        <foreign-key foreignTable="article" phpName="article">
+        <foreign-key foreignTable="article" phpName="article" onDelete="cascade">
             <reference local="article_id" foreign="id" />
         </foreign-key>
     </table>
