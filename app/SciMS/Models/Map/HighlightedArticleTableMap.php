@@ -146,14 +146,14 @@ class HighlightedArticleTableMap extends TableMap
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
         $this->addRelation('article', '\\SciMS\\Models\\Article', RelationMap::MANY_TO_ONE, array (
   0 =>
   array (
     0 => ':article_id',
     1 => ':id',
   ),
-), null, null, null, false);
+), 'CASCADE', null, null, false);
     } // buildRelations()
 
     /**
