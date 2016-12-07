@@ -195,6 +195,13 @@ class AccountTableMap extends TableMap
     1 => ':id',
   ),
 ), 'CASCADE', null, 'Articles', false);
+        $this->addRelation('ArticleView', '\\SciMS\\Models\\ArticleView', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':account_id',
+    1 => ':id',
+  ),
+), null, null, 'ArticleViews', false);
         $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (

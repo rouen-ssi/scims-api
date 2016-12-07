@@ -60,6 +60,16 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccountQuery rightJoinWithArticle() Adds a RIGHT JOIN clause and with to the query using the Article relation
  * @method     ChildAccountQuery innerJoinWithArticle() Adds a INNER JOIN clause and with to the query using the Article relation
  *
+ * @method     ChildAccountQuery leftJoinArticleView($relationAlias = null) Adds a LEFT JOIN clause to the query using the ArticleView relation
+ * @method     ChildAccountQuery rightJoinArticleView($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ArticleView relation
+ * @method     ChildAccountQuery innerJoinArticleView($relationAlias = null) Adds a INNER JOIN clause to the query using the ArticleView relation
+ *
+ * @method     ChildAccountQuery joinWithArticleView($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the ArticleView relation
+ *
+ * @method     ChildAccountQuery leftJoinWithArticleView() Adds a LEFT JOIN clause and with to the query using the ArticleView relation
+ * @method     ChildAccountQuery rightJoinWithArticleView() Adds a RIGHT JOIN clause and with to the query using the ArticleView relation
+ * @method     ChildAccountQuery innerJoinWithArticleView() Adds a INNER JOIN clause and with to the query using the ArticleView relation
+ *
  * @method     ChildAccountQuery leftJoinHighlightedArticle($relationAlias = null) Adds a LEFT JOIN clause to the query using the HighlightedArticle relation
  * @method     ChildAccountQuery rightJoinHighlightedArticle($relationAlias = null) Adds a RIGHT JOIN clause to the query using the HighlightedArticle relation
  * @method     ChildAccountQuery innerJoinHighlightedArticle($relationAlias = null) Adds a INNER JOIN clause to the query using the HighlightedArticle relation
@@ -80,7 +90,7 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccountQuery rightJoinWithComment() Adds a RIGHT JOIN clause and with to the query using the Comment relation
  * @method     ChildAccountQuery innerJoinWithComment() Adds a INNER JOIN clause and with to the query using the Comment relation
  *
- * @method     \SciMS\Models\ArticleQuery|\SciMS\Models\HighlightedArticleQuery|\SciMS\Models\CommentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \SciMS\Models\ArticleQuery|\SciMS\Models\ArticleViewQuery|\SciMS\Models\HighlightedArticleQuery|\SciMS\Models\CommentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildAccount findOne(ConnectionInterface $con = null) Return the first ChildAccount matching the query
  * @method     ChildAccount findOneOrCreate(ConnectionInterface $con = null) Return the first ChildAccount matching the query, or a new ChildAccount object populated from the query conditions when no match is found
@@ -674,6 +684,79 @@ abstract class AccountQuery extends ModelCriteria
         return $this
             ->joinArticle($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Article', '\SciMS\Models\ArticleQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\ArticleView object
+     *
+     * @param \SciMS\Models\ArticleView|ObjectCollection $articleView the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildAccountQuery The current query, for fluid interface
+     */
+    public function filterByArticleView($articleView, $comparison = null)
+    {
+        if ($articleView instanceof \SciMS\Models\ArticleView) {
+            return $this
+                ->addUsingAlias(AccountTableMap::COL_ID, $articleView->getAccountId(), $comparison);
+        } elseif ($articleView instanceof ObjectCollection) {
+            return $this
+                ->useArticleViewQuery()
+                ->filterByPrimaryKeys($articleView->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByArticleView() only accepts arguments of type \SciMS\Models\ArticleView or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the ArticleView relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildAccountQuery The current query, for fluid interface
+     */
+    public function joinArticleView($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('ArticleView');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'ArticleView');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the ArticleView relation ArticleView object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\ArticleViewQuery A secondary query class using the current class as primary query
+     */
+    public function useArticleViewQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinArticleView($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'ArticleView', '\SciMS\Models\ArticleViewQuery');
     }
 
     /**

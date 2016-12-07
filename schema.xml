@@ -45,6 +45,19 @@
         </behavior>
     </table>
 
+    <table name="article_view">
+        <column name="id" type="integer" required="true" primaryKey="true" autoincrement="true" />
+        <column name="article_id" type="integer" required="true" />
+        <column name="account_id" type="integer" />
+        <column name="date" type="integer" required="true" />
+        <foreign-key foreignTable="article" phpName="Article">
+            <reference local="article_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="account" phpName="Account">
+            <reference local="account_id" foreign="id" />
+        </foreign-key>
+    </table>
+
     <table name="highlighted_article" phpName="HighlightedArticle">
         <column name="account_id" type="integer" required="true" primaryKey="true" />
         <column name="article_id" type="integer" required="true" primaryKey="true" />

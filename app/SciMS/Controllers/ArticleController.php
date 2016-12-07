@@ -4,6 +4,9 @@ namespace SciMS\Controllers;
 
 use SciMS\Models\Article;
 use SciMS\Models\ArticleQuery;
+use SciMS\Models\AccountQuery;
+use SciMS\Models\ArticleView;
+use SciMS\Models\ArticleViewQuery;
 use SciMS\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -187,6 +190,57 @@ class ArticleController {
         $article->delete();
 
         return $response->withJson(200);
+    }
+
+    /**
+     * Endpoint to add an article view.
+     * If the user is a guest, record a view.
+     * If the user is authenticated, checks if the user has already view the article.
+     */
+    public function recordView(Request $request, Response $response, array $args) {
+        // Retreives the Article given by its ID.
+        $article = ArticleQuery::create()->findPk($args['id']);
+        if (!isset($article)) {
+            return $response->withJson([
+                'errors' => [
+                    self::ARTICLE_NOT_FOUND
+                ]
+            ], 400);
+        }
+
+        // Checks if a token is given in HTTP headers.
+        $token = null;
+        if ($request->hasHeader('Authorization')) {
+            $authorizationHeader = explode(' ', $request->getHeaderLine('Authorization'));
+            if (isset($authorizationHeader[1])) {
+                $token = $authorizationHeader[1];
+            }
+        }
+
+        // If a token is given, retreives the Account associated with it.
+        if (isset($token)) {
+            $account = AccountQuery::create()->findOneByToken($authorizationHeader[1]);
+            if (isset($account)) {
+                // Checks if the user read the article for the first time
+                $articleViewCount = ArticleViewQuery::create()
+                    ->filterByAccount($account)
+                    ->count();
+                if ($articleViewCount <= 0) {
+                    $articleView = new ArticleView();
+                    $articleView->setAccount($account);
+                    $articleView->setArticle($article);
+                    $articleView->setDate(time());
+                    $articleView->save();
+                }
+            }
+        } else {
+            $articleView = new ArticleView();
+            $articleView->setArticle($article);
+            $articleView->setDate(time());
+            $articleView->save();
+        }
+
+        return $response->withStatus(200);
     }
 
 }
