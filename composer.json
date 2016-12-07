@@ -1,10 +1,12 @@
 {
-    "process-timeout": "0",
     "name": "rouenssi/scims-backend",
     "description": "Un CMS open-source pour les scientifiques",
     "require": {
         "slim/slim": "^3.5",
         "propel/propel": "~2.0@dev"
+    },
+    "config": {
+      "process-timeout": 0
     },
     "license": "GPL-3.0",
     "autoload": {
