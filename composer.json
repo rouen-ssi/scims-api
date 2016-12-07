@@ -21,7 +21,8 @@
       "migrate": [
         "propel diff",
         "propel migrate",
-        "propel model:build"
+        "propel model:build",
+        "@composer dump-autoload"
       ],
       "fake-data": [
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"
