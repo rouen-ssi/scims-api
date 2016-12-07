@@ -16,7 +16,7 @@ use SciMS\Models\Base\Account as BaseAccount;
  */
 class Account extends BaseAccount implements \JsonSerializable {
     public function jsonSerialize() {
-        // Retreives the user's highlighted articles.
+        // Retrieves the user's highlighted articles.
         $highlightedArticleIds = [];
         foreach ($this->getHighlightedArticles() as $highlightedArticle) {
             $highlightedArticleIds[] = $highlightedArticle->getArticleId();
@@ -28,6 +28,7 @@ class Account extends BaseAccount implements \JsonSerializable {
             'last_name' => $this->last_name,
             'first_name' => $this->first_name,
             'biography' => $this->biography,
+            'role' => $this->role,
         );
 
         return $json;
