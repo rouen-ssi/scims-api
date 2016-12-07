@@ -146,6 +146,14 @@ abstract class Account implements ActiveRecordInterface
     protected $token_expiration;
 
     /**
+     * The value for the role field.
+     *
+     * Note: this column has a database default value of: 'user'
+     * @var        string
+     */
+    protected $role;
+
+    /**
      * @var        ObjectCollection|ChildArticle[] Collection to store aggregation of ChildArticle objects.
      */
     protected $collArticles;
@@ -207,10 +215,23 @@ abstract class Account implements ActiveRecordInterface
     protected $commentsScheduledForDeletion = null;
 
     /**
+     * Applies default values to this object.
+     * This method should be called from the object's constructor (or
+     * equivalent initialization method).
+     * @see __construct()
+     */
+    public function applyDefaultValues()
+    {
+        $this->role = 'user';
+    }
+
+    /**
      * Initializes internal state of SciMS\Models\Base\Account object.
+     * @see applyDefaults()
      */
     public function __construct()
     {
+        $this->applyDefaultValues();
     }
 
     /**
@@ -522,6 +543,16 @@ abstract class Account implements ActiveRecordInterface
     }
 
     /**
+     * Get the [role] column value.
+     *
+     * @return string
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
+
+    /**
      * Set the value of [id] column.
      *
      * @param int $v new value
@@ -702,6 +733,26 @@ abstract class Account implements ActiveRecordInterface
     } // setTokenExpiration()
 
     /**
+     * Set the value of [role] column.
+     *
+     * @param string $v new value
+     * @return $this|\SciMS\Models\Account The current object (for fluent API support)
+     */
+    public function setRole($v)
+    {
+        if ($v !== null) {
+            $v = (string) $v;
+        }
+
+        if ($this->role !== $v) {
+            $this->role = $v;
+            $this->modifiedColumns[AccountTableMap::COL_ROLE] = true;
+        }
+
+        return $this;
+    } // setRole()
+
+    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -711,6 +762,10 @@ abstract class Account implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
+            if ($this->role !== 'user') {
+                return false;
+            }
+
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -763,6 +818,9 @@ abstract class Account implements ActiveRecordInterface
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : AccountTableMap::translateFieldName('TokenExpiration', TableMap::TYPE_PHPNAME, $indexType)];
             $this->token_expiration = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : AccountTableMap::translateFieldName('Role', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->role = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -771,7 +829,7 @@ abstract class Account implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 9; // 9 = AccountTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 10; // 10 = AccountTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\SciMS\\Models\\Account'), 0, $e);
@@ -1023,15 +1081,6 @@ abstract class Account implements ActiveRecordInterface
         if (null !== $this->id) {
             throw new PropelException('Cannot insert a value for auto-increment primary key (' . AccountTableMap::COL_ID . ')');
         }
-        if (null === $this->id) {
-            try {
-                $dataFetcher = $con->query("SELECT nextval('account_id_seq')");
-                $this->id = (int) $dataFetcher->fetchColumn();
-            } catch (Exception $e) {
-                throw new PropelException('Unable to get sequence id.', 0, $e);
-            }
-        }
-
 
          // check the columns in natural order for more readable SQL queries
         if ($this->isColumnModified(AccountTableMap::COL_ID)) {
@@ -1060,6 +1109,9 @@ abstract class Account implements ActiveRecordInterface
         }
         if ($this->isColumnModified(AccountTableMap::COL_TOKEN_EXPIRATION)) {
             $modifiedColumns[':p' . $index++]  = 'token_expiration';
+        }
+        if ($this->isColumnModified(AccountTableMap::COL_ROLE)) {
+            $modifiedColumns[':p' . $index++]  = 'role';
         }
 
         $sql = sprintf(
@@ -1099,6 +1151,9 @@ abstract class Account implements ActiveRecordInterface
                     case 'token_expiration':
                         $stmt->bindValue($identifier, $this->token_expiration, PDO::PARAM_INT);
                         break;
+                    case 'role':
+                        $stmt->bindValue($identifier, $this->role, PDO::PARAM_STR);
+                        break;
                 }
             }
             $stmt->execute();
@@ -1106,6 +1161,13 @@ abstract class Account implements ActiveRecordInterface
             Propel::log($e->getMessage(), Propel::LOG_ERR);
             throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), 0, $e);
         }
+
+        try {
+            $pk = $con->lastInsertId();
+        } catch (Exception $e) {
+            throw new PropelException('Unable to get autoincrement id.', 0, $e);
+        }
+        $this->setId($pk);
 
         $this->setNew(false);
     }
@@ -1181,6 +1243,9 @@ abstract class Account implements ActiveRecordInterface
             case 8:
                 return $this->getTokenExpiration();
                 break;
+            case 9:
+                return $this->getRole();
+                break;
             default:
                 return null;
                 break;
@@ -1220,6 +1285,7 @@ abstract class Account implements ActiveRecordInterface
             $keys[6] => $this->getPassword(),
             $keys[7] => $this->getToken(),
             $keys[8] => $this->getTokenExpiration(),
+            $keys[9] => $this->getRole(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1333,6 +1399,9 @@ abstract class Account implements ActiveRecordInterface
             case 8:
                 $this->setTokenExpiration($value);
                 break;
+            case 9:
+                $this->setRole($value);
+                break;
         } // switch()
 
         return $this;
@@ -1385,6 +1454,9 @@ abstract class Account implements ActiveRecordInterface
         }
         if (array_key_exists($keys[8], $arr)) {
             $this->setTokenExpiration($arr[$keys[8]]);
+        }
+        if (array_key_exists($keys[9], $arr)) {
+            $this->setRole($arr[$keys[9]]);
         }
     }
 
@@ -1453,6 +1525,9 @@ abstract class Account implements ActiveRecordInterface
         }
         if ($this->isColumnModified(AccountTableMap::COL_TOKEN_EXPIRATION)) {
             $criteria->add(AccountTableMap::COL_TOKEN_EXPIRATION, $this->token_expiration);
+        }
+        if ($this->isColumnModified(AccountTableMap::COL_ROLE)) {
+            $criteria->add(AccountTableMap::COL_ROLE, $this->role);
         }
 
         return $criteria;
@@ -1556,6 +1631,7 @@ abstract class Account implements ActiveRecordInterface
         $copyObj->setPassword($this->getPassword());
         $copyObj->setToken($this->getToken());
         $copyObj->setTokenExpiration($this->getTokenExpiration());
+        $copyObj->setRole($this->getRole());
 
         if ($deepCopy) {
             // important: temporarily setNew(false) because this affects the behavior of
@@ -2451,8 +2527,10 @@ abstract class Account implements ActiveRecordInterface
         $this->password = null;
         $this->token = null;
         $this->token_expiration = null;
+        $this->role = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
+        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);

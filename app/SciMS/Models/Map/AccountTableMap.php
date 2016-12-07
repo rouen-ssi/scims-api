@@ -59,7 +59,7 @@ class AccountTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 9;
+    const NUM_COLUMNS = 10;
 
     /**
      * The number of lazy-loaded columns
@@ -69,7 +69,7 @@ class AccountTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 9;
+    const NUM_HYDRATE_COLUMNS = 10;
 
     /**
      * the column name for the id field
@@ -117,6 +117,11 @@ class AccountTableMap extends TableMap
     const COL_TOKEN_EXPIRATION = 'account.token_expiration';
 
     /**
+     * the column name for the role field
+     */
+    const COL_ROLE = 'account.role';
+
+    /**
      * The default string format for model objects of the related table
      */
     const DEFAULT_STRING_FORMAT = 'YAML';
@@ -128,11 +133,11 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Uid', 'Email', 'FirstName', 'LastName', 'Biography', 'Password', 'Token', 'TokenExpiration', ),
-        self::TYPE_CAMELNAME     => array('id', 'uid', 'email', 'firstName', 'lastName', 'biography', 'password', 'token', 'tokenExpiration', ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID, AccountTableMap::COL_UID, AccountTableMap::COL_EMAIL, AccountTableMap::COL_FIRST_NAME, AccountTableMap::COL_LAST_NAME, AccountTableMap::COL_BIOGRAPHY, AccountTableMap::COL_PASSWORD, AccountTableMap::COL_TOKEN, AccountTableMap::COL_TOKEN_EXPIRATION, ),
-        self::TYPE_FIELDNAME     => array('id', 'uid', 'email', 'first_name', 'last_name', 'biography', 'password', 'token', 'token_expiration', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id', 'Uid', 'Email', 'FirstName', 'LastName', 'Biography', 'Password', 'Token', 'TokenExpiration', 'Role', ),
+        self::TYPE_CAMELNAME     => array('id', 'uid', 'email', 'firstName', 'lastName', 'biography', 'password', 'token', 'tokenExpiration', 'role', ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID, AccountTableMap::COL_UID, AccountTableMap::COL_EMAIL, AccountTableMap::COL_FIRST_NAME, AccountTableMap::COL_LAST_NAME, AccountTableMap::COL_BIOGRAPHY, AccountTableMap::COL_PASSWORD, AccountTableMap::COL_TOKEN, AccountTableMap::COL_TOKEN_EXPIRATION, AccountTableMap::COL_ROLE, ),
+        self::TYPE_FIELDNAME     => array('id', 'uid', 'email', 'first_name', 'last_name', 'biography', 'password', 'token', 'token_expiration', 'role', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -142,11 +147,11 @@ class AccountTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Uid' => 1, 'Email' => 2, 'FirstName' => 3, 'LastName' => 4, 'Biography' => 5, 'Password' => 6, 'Token' => 7, 'TokenExpiration' => 8, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'firstName' => 3, 'lastName' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'tokenExpiration' => 8, ),
-        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID => 0, AccountTableMap::COL_UID => 1, AccountTableMap::COL_EMAIL => 2, AccountTableMap::COL_FIRST_NAME => 3, AccountTableMap::COL_LAST_NAME => 4, AccountTableMap::COL_BIOGRAPHY => 5, AccountTableMap::COL_PASSWORD => 6, AccountTableMap::COL_TOKEN => 7, AccountTableMap::COL_TOKEN_EXPIRATION => 8, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'first_name' => 3, 'last_name' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'token_expiration' => 8, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Uid' => 1, 'Email' => 2, 'FirstName' => 3, 'LastName' => 4, 'Biography' => 5, 'Password' => 6, 'Token' => 7, 'TokenExpiration' => 8, 'Role' => 9, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'firstName' => 3, 'lastName' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'tokenExpiration' => 8, 'role' => 9, ),
+        self::TYPE_COLNAME       => array(AccountTableMap::COL_ID => 0, AccountTableMap::COL_UID => 1, AccountTableMap::COL_EMAIL => 2, AccountTableMap::COL_FIRST_NAME => 3, AccountTableMap::COL_LAST_NAME => 4, AccountTableMap::COL_BIOGRAPHY => 5, AccountTableMap::COL_PASSWORD => 6, AccountTableMap::COL_TOKEN => 7, AccountTableMap::COL_TOKEN_EXPIRATION => 8, AccountTableMap::COL_ROLE => 9, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'uid' => 1, 'email' => 2, 'first_name' => 3, 'last_name' => 4, 'biography' => 5, 'password' => 6, 'token' => 7, 'token_expiration' => 8, 'role' => 9, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
     );
 
     /**
@@ -165,7 +170,6 @@ class AccountTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Account');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('account_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);
@@ -176,6 +180,7 @@ class AccountTableMap extends TableMap
         $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
         $this->addColumn('token', 'Token', 'VARCHAR', false, 255, null);
         $this->addColumn('token_expiration', 'TokenExpiration', 'INTEGER', false, 8, null);
+        $this->addColumn('role', 'Role', 'VARCHAR', true, 255, 'user');
     } // initialize()
 
     /**
@@ -196,7 +201,7 @@ class AccountTableMap extends TableMap
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, 'HighlightedArticles', false);
+), 'CASCADE', null, 'HighlightedArticles', false);
         $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -279,6 +284,7 @@ class AccountTableMap extends TableMap
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
         ArticleTableMap::clearInstancePool();
+        HighlightedArticleTableMap::clearInstancePool();
         CommentTableMap::clearInstancePool();
     }
 
@@ -441,6 +447,7 @@ class AccountTableMap extends TableMap
             $criteria->addSelectColumn(AccountTableMap::COL_PASSWORD);
             $criteria->addSelectColumn(AccountTableMap::COL_TOKEN);
             $criteria->addSelectColumn(AccountTableMap::COL_TOKEN_EXPIRATION);
+            $criteria->addSelectColumn(AccountTableMap::COL_ROLE);
         } else {
             $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.uid');
@@ -451,6 +458,7 @@ class AccountTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.password');
             $criteria->addSelectColumn($alias . '.token');
             $criteria->addSelectColumn($alias . '.token_expiration');
+            $criteria->addSelectColumn($alias . '.role');
         }
     }
 
