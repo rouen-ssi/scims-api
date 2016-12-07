@@ -145,4 +145,21 @@ class ArticleControllerTest extends TestCase {
 
         parent::assertEquals(200, $response->getStatusCode());
     }
+
+    /** @depends testCreate */
+    public function recordViewTest() {
+        $environment = Environment::mock([
+            'REQUEST_METHOD' => 'PUT',
+            'REQUEST_URI' => '',
+            'QUERY_STRING' => '',
+            'CONTENT_TYPE' => 'applocation/json;charset=utf8'
+        ]);
+        
+        $request = Request::createFromEnvironment($environment);
+
+        $response = new Response();
+        $response = $this->articleController->recordView($request, $response, [ 'id' => 1]);
+
+        parent::assertEquals(200, $response->getStatusCode());
+    }
 }

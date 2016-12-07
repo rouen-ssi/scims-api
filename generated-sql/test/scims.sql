@@ -43,6 +43,23 @@ CREATE TABLE [article]
 );
 
 -----------------------------------------------------------------------
+-- article_view
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS [article_view];
+
+CREATE TABLE [article_view]
+(
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [article_id] INTEGER NOT NULL,
+    [account_id] INTEGER,
+    [date] INTEGER NOT NULL,
+    UNIQUE ([id]),
+    FOREIGN KEY ([article_id]) REFERENCES [article] ([id]),
+    FOREIGN KEY ([account_id]) REFERENCES [account] ([id])
+);
+
+-----------------------------------------------------------------------
 -- highlighted_article
 -----------------------------------------------------------------------
 
