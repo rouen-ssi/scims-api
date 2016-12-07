@@ -29,6 +29,7 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccountQuery orderByPassword($order = Criteria::ASC) Order by the password column
  * @method     ChildAccountQuery orderByToken($order = Criteria::ASC) Order by the token column
  * @method     ChildAccountQuery orderByTokenExpiration($order = Criteria::ASC) Order by the token_expiration column
+ * @method     ChildAccountQuery orderByRole($order = Criteria::ASC) Order by the role column
  *
  * @method     ChildAccountQuery groupById() Group by the id column
  * @method     ChildAccountQuery groupByUid() Group by the uid column
@@ -39,6 +40,7 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccountQuery groupByPassword() Group by the password column
  * @method     ChildAccountQuery groupByToken() Group by the token column
  * @method     ChildAccountQuery groupByTokenExpiration() Group by the token_expiration column
+ * @method     ChildAccountQuery groupByRole() Group by the role column
  *
  * @method     ChildAccountQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildAccountQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -91,7 +93,8 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccount findOneByBiography(string $biography) Return the first ChildAccount filtered by the biography column
  * @method     ChildAccount findOneByPassword(string $password) Return the first ChildAccount filtered by the password column
  * @method     ChildAccount findOneByToken(string $token) Return the first ChildAccount filtered by the token column
- * @method     ChildAccount findOneByTokenExpiration(int $token_expiration) Return the first ChildAccount filtered by the token_expiration column *
+ * @method     ChildAccount findOneByTokenExpiration(int $token_expiration) Return the first ChildAccount filtered by the token_expiration column
+ * @method     ChildAccount findOneByRole(string $role) Return the first ChildAccount filtered by the role column *
 
  * @method     ChildAccount requirePk($key, ConnectionInterface $con = null) Return the ChildAccount by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOne(ConnectionInterface $con = null) Return the first ChildAccount matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
@@ -105,6 +108,7 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccount requireOneByPassword(string $password) Return the first ChildAccount filtered by the password column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByToken(string $token) Return the first ChildAccount filtered by the token column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildAccount requireOneByTokenExpiration(int $token_expiration) Return the first ChildAccount filtered by the token_expiration column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildAccount requireOneByRole(string $role) Return the first ChildAccount filtered by the role column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildAccount[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildAccount objects based on current ModelCriteria
  * @method     ChildAccount[]|ObjectCollection findById(int $id) Return ChildAccount objects filtered by the id column
@@ -116,6 +120,7 @@ use SciMS\Models\Map\AccountTableMap;
  * @method     ChildAccount[]|ObjectCollection findByPassword(string $password) Return ChildAccount objects filtered by the password column
  * @method     ChildAccount[]|ObjectCollection findByToken(string $token) Return ChildAccount objects filtered by the token column
  * @method     ChildAccount[]|ObjectCollection findByTokenExpiration(int $token_expiration) Return ChildAccount objects filtered by the token_expiration column
+ * @method     ChildAccount[]|ObjectCollection findByRole(string $role) Return ChildAccount objects filtered by the role column
  * @method     ChildAccount[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -214,7 +219,7 @@ abstract class AccountQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT id, uid, email, first_name, last_name, biography, password, token, token_expiration FROM account WHERE id = :p0 AND email = :p1';
+        $sql = 'SELECT id, uid, email, first_name, last_name, biography, password, token, token_expiration, role FROM account WHERE id = :p0 AND email = :p1';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
@@ -571,6 +576,31 @@ abstract class AccountQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(AccountTableMap::COL_TOKEN_EXPIRATION, $tokenExpiration, $comparison);
+    }
+
+    /**
+     * Filter the query on the role column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByRole('fooValue');   // WHERE role = 'fooValue'
+     * $query->filterByRole('%fooValue%', Criteria::LIKE); // WHERE role LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $role The value to use as filter.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return $this|ChildAccountQuery The current query, for fluid interface
+     */
+    public function filterByRole($role = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($role)) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(AccountTableMap::COL_ROLE, $role, $comparison);
     }
 
     /**

@@ -165,7 +165,6 @@ class ArticleTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Article');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('article_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('account_id', 'AccountId', 'INTEGER', 'account', 'id', true, null, null);
@@ -210,7 +209,7 @@ class ArticleTableMap extends TableMap
     0 => ':article_id',
     1 => ':id',
   ),
-), null, null, 'HighlightedArticles', false);
+), 'CASCADE', null, 'HighlightedArticles', false);
         $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -239,6 +238,7 @@ class ArticleTableMap extends TableMap
     {
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+        HighlightedArticleTableMap::clearInstancePool();
         CommentTableMap::clearInstancePool();
     }
 

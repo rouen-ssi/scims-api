@@ -89,4 +89,15 @@ $app->group('/avatar', function() {
         ->add('SciMS\Middlewares\TokenMiddleware');
 });
 
+/******************
+ * Administration *
+ ******************/
+$app->group('/admin', function() {
+    $this->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'));
+
+    $this->group('/accounts', function() {
+        $this->get('', 'SciMS\Controllers\Admin\AccountController:index');
+    });
+});
+
 $app->run();

@@ -10,6 +10,7 @@
         <column name="password" type="varchar" size="255" required="true" />
         <column name="token" type="varchar" size="255" required="false" />
         <column name="token_expiration" type="integer" size="8" required="false" />
+        <column name="role" type="varchar" required="true" default="user"/>
         <behavior name="validate">
             <parameter name="email_blank" value="{column: email, validator: NotBlank, options: {message: INVALID_EMAIL}}" />
             <parameter name="email_already_exists" value="{column: email, validator: Unique, options: {message: EMAIL_ALREADY_EXISTS}}" />

@@ -16,6 +16,7 @@ CREATE TABLE [account]
     [password] VARCHAR(255) NOT NULL,
     [token] VARCHAR(255),
     [token_expiration] INTEGER(8),
+    [role] VARCHAR(255) DEFAULT 'user' NOT NULL,
     UNIQUE ([id],[email])
 );
 
@@ -53,8 +54,10 @@ CREATE TABLE [highlighted_article]
     [article_id] INTEGER NOT NULL,
     PRIMARY KEY ([account_id],[article_id]),
     UNIQUE ([account_id],[article_id]),
-    FOREIGN KEY ([account_id]) REFERENCES [account] ([id]),
+    FOREIGN KEY ([account_id]) REFERENCES [account] ([id])
+        ON DELETE CASCADE,
     FOREIGN KEY ([article_id]) REFERENCES [article] ([id])
+        ON DELETE CASCADE
 );
 
 -----------------------------------------------------------------------
