@@ -96,11 +96,9 @@ $app->group('/avatar', function() {
  * Administration *
  ******************/
 $app->group('/admin', function() {
-    $this->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'));
-
     $this->group('/accounts', function() {
         $this->get('', 'SciMS\Controllers\Admin\AccountController:index');
     });
-});
+})->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'));
 
 $app->run();
