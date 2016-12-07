@@ -99,6 +99,9 @@ $app->group('/admin', function() {
     $this->group('/accounts', function() {
         $this->get('', 'SciMS\Controllers\Admin\AccountController:index');
     });
-})->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'));
+})
+->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'))
+->add('SciMS\Middlewares\TokenMiddleware')
+;
 
 $app->run();
