@@ -20,7 +20,8 @@
       ],
       "migrate": [
         "propel diff",
-        "propel migrate"
+        "propel migrate",
+        "propel model:build"
       ],
       "fake-data": [
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"

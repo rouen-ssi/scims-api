@@ -25,6 +25,9 @@ $app->group('/article', function() {
         $this->delete('', 'SciMS\Controllers\ArticleController:delete')
             ->add('SciMS\Middlewares\TokenMiddleware');
 
+        // Record view
+        $this->put('/record-view', 'SciMS\Controllers\ArticleController:recordView');
+
         /********************
          * Article comments *
          ********************/

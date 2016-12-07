@@ -20,6 +20,8 @@ use SciMS\Models\Account as ChildAccount;
 use SciMS\Models\AccountQuery as ChildAccountQuery;
 use SciMS\Models\Article as ChildArticle;
 use SciMS\Models\ArticleQuery as ChildArticleQuery;
+use SciMS\Models\ArticleView as ChildArticleView;
+use SciMS\Models\ArticleViewQuery as ChildArticleViewQuery;
 use SciMS\Models\Category as ChildCategory;
 use SciMS\Models\CategoryQuery as ChildCategoryQuery;
 use SciMS\Models\Comment as ChildComment;
@@ -27,6 +29,7 @@ use SciMS\Models\CommentQuery as ChildCommentQuery;
 use SciMS\Models\HighlightedArticle as ChildHighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery as ChildHighlightedArticleQuery;
 use SciMS\Models\Map\ArticleTableMap;
+use SciMS\Models\Map\ArticleViewTableMap;
 use SciMS\Models\Map\CommentTableMap;
 use SciMS\Models\Map\HighlightedArticleTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
@@ -163,6 +166,12 @@ abstract class Article implements ActiveRecordInterface
     protected $aSubcategory;
 
     /**
+     * @var        ObjectCollection|ChildArticleView[] Collection to store aggregation of ChildArticleView objects.
+     */
+    protected $collArticleViews;
+    protected $collArticleViewsPartial;
+
+    /**
      * @var        ObjectCollection|ChildHighlightedArticle[] Collection to store aggregation of ChildHighlightedArticle objects.
      */
     protected $collHighlightedArticles;
@@ -198,6 +207,12 @@ abstract class Article implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildArticleView[]
+     */
+    protected $articleViewsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -906,6 +921,8 @@ abstract class Article implements ActiveRecordInterface
             $this->aAccount = null;
             $this->aCategory = null;
             $this->aSubcategory = null;
+            $this->collArticleViews = null;
+
             $this->collHighlightedArticles = null;
 
             $this->collComments = null;
@@ -1044,6 +1061,23 @@ abstract class Article implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->articleViewsScheduledForDeletion !== null) {
+                if (!$this->articleViewsScheduledForDeletion->isEmpty()) {
+                    \SciMS\Models\ArticleViewQuery::create()
+                        ->filterByPrimaryKeys($this->articleViewsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
+                    $this->articleViewsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collArticleViews !== null) {
+                foreach ($this->collArticleViews as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->highlightedArticlesScheduledForDeletion !== null) {
@@ -1352,6 +1386,21 @@ abstract class Article implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aSubcategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collArticleViews) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'articleViews';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'article_views';
+                        break;
+                    default:
+                        $key = 'ArticleViews';
+                }
+
+                $result[$key] = $this->collArticleViews->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collHighlightedArticles) {
 
@@ -1665,6 +1714,12 @@ abstract class Article implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getArticleViews() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addArticleView($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getHighlightedArticles() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addHighlightedArticle($relObj->copy($deepCopy));
@@ -1873,12 +1928,265 @@ abstract class Article implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('ArticleView' == $relationName) {
+            return $this->initArticleViews();
+        }
         if ('HighlightedArticle' == $relationName) {
             return $this->initHighlightedArticles();
         }
         if ('Comment' == $relationName) {
             return $this->initComments();
         }
+    }
+
+    /**
+     * Clears out the collArticleViews collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addArticleViews()
+     */
+    public function clearArticleViews()
+    {
+        $this->collArticleViews = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collArticleViews collection loaded partially.
+     */
+    public function resetPartialArticleViews($v = true)
+    {
+        $this->collArticleViewsPartial = $v;
+    }
+
+    /**
+     * Initializes the collArticleViews collection.
+     *
+     * By default this just sets the collArticleViews collection to an empty array (like clearcollArticleViews());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initArticleViews($overrideExisting = true)
+    {
+        if (null !== $this->collArticleViews && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = ArticleViewTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collArticleViews = new $collectionClassName;
+        $this->collArticleViews->setModel('\SciMS\Models\ArticleView');
+    }
+
+    /**
+     * Gets an array of ChildArticleView objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildArticle is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildArticleView[] List of ChildArticleView objects
+     * @throws PropelException
+     */
+    public function getArticleViews(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticleViewsPartial && !$this->isNew();
+        if (null === $this->collArticleViews || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collArticleViews) {
+                // return empty collection
+                $this->initArticleViews();
+            } else {
+                $collArticleViews = ChildArticleViewQuery::create(null, $criteria)
+                    ->filterByArticle($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collArticleViewsPartial && count($collArticleViews)) {
+                        $this->initArticleViews(false);
+
+                        foreach ($collArticleViews as $obj) {
+                            if (false == $this->collArticleViews->contains($obj)) {
+                                $this->collArticleViews->append($obj);
+                            }
+                        }
+
+                        $this->collArticleViewsPartial = true;
+                    }
+
+                    return $collArticleViews;
+                }
+
+                if ($partial && $this->collArticleViews) {
+                    foreach ($this->collArticleViews as $obj) {
+                        if ($obj->isNew()) {
+                            $collArticleViews[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collArticleViews = $collArticleViews;
+                $this->collArticleViewsPartial = false;
+            }
+        }
+
+        return $this->collArticleViews;
+    }
+
+    /**
+     * Sets a collection of ChildArticleView objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $articleViews A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildArticle The current object (for fluent API support)
+     */
+    public function setArticleViews(Collection $articleViews, ConnectionInterface $con = null)
+    {
+        /** @var ChildArticleView[] $articleViewsToDelete */
+        $articleViewsToDelete = $this->getArticleViews(new Criteria(), $con)->diff($articleViews);
+
+
+        $this->articleViewsScheduledForDeletion = $articleViewsToDelete;
+
+        foreach ($articleViewsToDelete as $articleViewRemoved) {
+            $articleViewRemoved->setArticle(null);
+        }
+
+        $this->collArticleViews = null;
+        foreach ($articleViews as $articleView) {
+            $this->addArticleView($articleView);
+        }
+
+        $this->collArticleViews = $articleViews;
+        $this->collArticleViewsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related ArticleView objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related ArticleView objects.
+     * @throws PropelException
+     */
+    public function countArticleViews(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collArticleViewsPartial && !$this->isNew();
+        if (null === $this->collArticleViews || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collArticleViews) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getArticleViews());
+            }
+
+            $query = ChildArticleViewQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByArticle($this)
+                ->count($con);
+        }
+
+        return count($this->collArticleViews);
+    }
+
+    /**
+     * Method called to associate a ChildArticleView object to this object
+     * through the ChildArticleView foreign key attribute.
+     *
+     * @param  ChildArticleView $l ChildArticleView
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function addArticleView(ChildArticleView $l)
+    {
+        if ($this->collArticleViews === null) {
+            $this->initArticleViews();
+            $this->collArticleViewsPartial = true;
+        }
+
+        if (!$this->collArticleViews->contains($l)) {
+            $this->doAddArticleView($l);
+
+            if ($this->articleViewsScheduledForDeletion and $this->articleViewsScheduledForDeletion->contains($l)) {
+                $this->articleViewsScheduledForDeletion->remove($this->articleViewsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildArticleView $articleView The ChildArticleView object to add.
+     */
+    protected function doAddArticleView(ChildArticleView $articleView)
+    {
+        $this->collArticleViews[]= $articleView;
+        $articleView->setArticle($this);
+    }
+
+    /**
+     * @param  ChildArticleView $articleView The ChildArticleView object to remove.
+     * @return $this|ChildArticle The current object (for fluent API support)
+     */
+    public function removeArticleView(ChildArticleView $articleView)
+    {
+        if ($this->getArticleViews()->contains($articleView)) {
+            $pos = $this->collArticleViews->search($articleView);
+            $this->collArticleViews->remove($pos);
+            if (null === $this->articleViewsScheduledForDeletion) {
+                $this->articleViewsScheduledForDeletion = clone $this->collArticleViews;
+                $this->articleViewsScheduledForDeletion->clear();
+            }
+            $this->articleViewsScheduledForDeletion[]= clone $articleView;
+            $articleView->setArticle(null);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * If this collection has already been initialized with
+     * an identical criteria, it returns the collection.
+     * Otherwise if this Article is new, it will return
+     * an empty collection; or if this Article has previously
+     * been saved, it will retrieve related ArticleViews from storage.
+     *
+     * This method is protected by default in order to keep the public
+     * api reasonable.  You can provide public methods for those you
+     * actually need in Article.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
+     * @return ObjectCollection|ChildArticleView[] List of ChildArticleView objects
+     */
+    public function getArticleViewsJoinAccount(Criteria $criteria = null, ConnectionInterface $con = null, $joinBehavior = Criteria::LEFT_JOIN)
+    {
+        $query = ChildArticleViewQuery::create(null, $criteria);
+        $query->joinWith('Account', $joinBehavior);
+
+        return $this->getArticleViews($query, $con);
     }
 
     /**
@@ -2453,6 +2761,11 @@ abstract class Article implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collArticleViews) {
+                foreach ($this->collArticleViews as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collHighlightedArticles) {
                 foreach ($this->collHighlightedArticles as $o) {
                     $o->clearAllReferences($deep);
@@ -2465,6 +2778,7 @@ abstract class Article implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collArticleViews = null;
         $this->collHighlightedArticles = null;
         $this->collComments = null;
         $this->aAccount = null;
@@ -2548,6 +2862,15 @@ abstract class Article implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collArticleViews) {
+                foreach ($this->collArticleViews as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
             if (null !== $this->collHighlightedArticles) {
                 foreach ($this->collHighlightedArticles as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {

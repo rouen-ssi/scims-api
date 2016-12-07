@@ -190,13 +190,20 @@ class AccountTableMap extends TableMap
     1 => ':id',
   ),
 ), 'CASCADE', null, 'Articles', false);
+        $this->addRelation('ArticleView', '\\SciMS\\Models\\ArticleView', RelationMap::ONE_TO_MANY, array (
+  0 =>
+  array (
+    0 => ':account_id',
+    1 => ':id',
+  ),
+), null, null, 'ArticleViews', false);
         $this->addRelation('HighlightedArticle', '\\SciMS\\Models\\HighlightedArticle', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
     0 => ':account_id',
     1 => ':id',
   ),
-), null, null, 'HighlightedArticles', false);
+), 'CASCADE', null, 'HighlightedArticles', false);
         $this->addRelation('Comment', '\\SciMS\\Models\\Comment', RelationMap::ONE_TO_MANY, array (
   0 =>
   array (
@@ -279,6 +286,7 @@ class AccountTableMap extends TableMap
         // Invalidate objects in related instance pools,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
         ArticleTableMap::clearInstancePool();
+        HighlightedArticleTableMap::clearInstancePool();
         CommentTableMap::clearInstancePool();
     }
 
