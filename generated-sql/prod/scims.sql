@@ -18,6 +18,7 @@ CREATE TABLE "account"
     "password" VARCHAR(255) NOT NULL,
     "token" VARCHAR(255),
     "token_expiration" INTEGER,
+    "role" VARCHAR DEFAULT 'user' NOT NULL,
     PRIMARY KEY ("id","email"),
     CONSTRAINT "account_u_db2f7c" UNIQUE ("id")
 );
@@ -39,6 +40,21 @@ CREATE TABLE "article"
     "last_modification_date" INTEGER NOT NULL,
     "category_id" INTEGER DEFAULT -1,
     "subcategory_id" INTEGER DEFAULT -1,
+    PRIMARY KEY ("id")
+);
+
+-----------------------------------------------------------------------
+-- article_view
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS "article_view" CASCADE;
+
+CREATE TABLE "article_view"
+(
+    "id" serial NOT NULL,
+    "article_id" INTEGER NOT NULL,
+    "account_id" INTEGER,
+    "date" INTEGER NOT NULL,
     PRIMARY KEY ("id")
 );
 
@@ -91,13 +107,23 @@ ALTER TABLE "article" ADD CONSTRAINT "article_fk_474870"
     REFERENCES "account" ("id")
     ON DELETE CASCADE;
 
-ALTER TABLE "highlighted_article" ADD CONSTRAINT "highlighted_article_fk_474870"
+ALTER TABLE "article_view" ADD CONSTRAINT "article_view_fk_3610e9"
+    FOREIGN KEY ("article_id")
+    REFERENCES "article" ("id");
+
+ALTER TABLE "article_view" ADD CONSTRAINT "article_view_fk_474870"
     FOREIGN KEY ("account_id")
     REFERENCES "account" ("id");
 
+ALTER TABLE "highlighted_article" ADD CONSTRAINT "highlighted_article_fk_474870"
+    FOREIGN KEY ("account_id")
+    REFERENCES "account" ("id")
+    ON DELETE CASCADE;
+
 ALTER TABLE "highlighted_article" ADD CONSTRAINT "highlighted_article_fk_3610e9"
     FOREIGN KEY ("article_id")
-    REFERENCES "article" ("id");
+    REFERENCES "article" ("id")
+    ON DELETE CASCADE;
 
 ALTER TABLE "comment" ADD CONSTRAINT "comment_fk_d5af8f"
     FOREIGN KEY ("author_id")
