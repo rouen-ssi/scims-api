@@ -22,7 +22,9 @@ class AccountController {
      * @return Response
      */
     public function index(Request $request, Response $response) {
-        $accounts = AccountQuery::create()->find();
+        $accounts = AccountQuery::create()
+          ->orderByUid('ASC')
+          ->find();
 
         return $response->withJson([
             'results' => $accounts->getData(),
@@ -69,10 +71,11 @@ class AccountController {
      *
      * @param Request $request
      * @param Response $response
+     * @param array $params
      * @return Response
      */
-    public function update(Request $request, Response $response) {
-        if (!$accountUid = $request->getQueryParam('uid')) {
+    public function update(Request $request, Response $response, array $params) {
+        if (!$accountUid = $params['uid']) {
             return $response->withStatus(404);
         }
 
@@ -80,6 +83,7 @@ class AccountController {
         $account->setEmail($request->getParsedBodyParam('email', ''));
         $account->setFirstName($request->getParsedBodyParam('first_name', ''));
         $account->setLastName($request->getParsedBodyParam('last_name', ''));
+        $account->setRole($request->getParsedBodyParam('role', ''));
         $account->save();
 
         return $response->withJson([
@@ -92,11 +96,12 @@ class AccountController {
      *
      * @param Request $request
      * @param Response $response
+     * @param array $params
      * @return Response
      */
-    public function destroy(Request $request, Response $response) {
-        if (!$accountUid = $request->getQueryParam('uid')) {
-            return $response->withStatus(404);
+    public function destroy(Request $request, Response $response, array $params) {
+        if (!$accountUid = $params['uid']) {
+            return $response->withStatus(400);
         }
 
         AccountQuery::create()->filterByUid($accountUid)->delete();

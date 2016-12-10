@@ -98,6 +98,10 @@ $app->group('/avatar', function() {
 $app->group('/admin', function() {
     $this->group('/accounts', function() {
         $this->get('', 'SciMS\Controllers\Admin\AccountController:index');
+        $this->post('', 'SciMS\Controllers\Admin\AccountController:create');
+        $this->put('/{uid}', 'SciMS\Controllers\Admin\AccountController:update');
+        $this->patch('/{uid}', 'SciMS\Controllers\Admin\AccountController:update');
+        $this->delete('/{uid}', 'SciMS\Controllers\Admin\AccountController:destroy');
     });
 })
 ->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'))
