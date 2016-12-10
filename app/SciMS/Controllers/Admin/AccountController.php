@@ -6,13 +6,32 @@
 namespace SciMS\Controllers\Admin;
 
 
+use Interop\Container\ContainerInterface;
+use SciMS\Mailing\Mailers\UserPasswordDefinition;
 use SciMS\Models\Account;
 use SciMS\Models\AccountQuery;
 use SciMS\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SciMS\Mailers\MailerEngine;
+use SciMS\Mailers\MailgunEngine;
 
 class AccountController {
+
+    /**
+     * @var MailerEngine
+     */
+    private $mailerEngine;
+
+    /**
+     * AccountController constructor.
+     * @param ContainerInterface $container
+     */
+    public function __construct(ContainerInterface $container)
+    {
+        $this->mailerEngine = $container->get('mailerEngine');
+    }
+
 
     /**
      * GET /admin/accounts
@@ -59,6 +78,7 @@ class AccountController {
         }
 
         $account->save();
+        $this->mailerEngine->send(new UserPasswordDefinition($account));
 
         return $response->withJson([
             'result' => $account,
