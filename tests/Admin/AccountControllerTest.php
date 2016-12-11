@@ -1,7 +1,10 @@
 <?php
+require 'config/constants.php';
+
 use Faker\Factory;
 use PHPUnit\Framework\TestCase;
 use SciMS\Controllers\Admin\AccountController;
+use SciMS\Mailing\TestEngine;
 use SciMS\Models\Account;
 use SciMS\Models\AccountQuery;
 use Slim\Http\Environment;
@@ -11,7 +14,11 @@ use Slim\Http\Response;
 /**
  * @author Antoine Chauvin <antoine.chauvin@etu.univ-rouen.fr>
  */
-class AccountControllerTest extends TestCase {
+class AdminAccountControllerTest extends TestCase {
+    /**
+     * @var TestEngine
+     */
+    private $mailerEngine;
 
     /**
      * @var AccountController
@@ -25,7 +32,10 @@ class AccountControllerTest extends TestCase {
 
     protected function setUp()
     {
-        $this->controller = new AccountController();
+        $this->mailerEngine = new TestEngine();
+        $this->controller = new AccountController(new \Slim\Container([
+            'mailerEngine' => $this->mailerEngine,
+        ]));
         $this->faker = Factory::create();
     }
 
@@ -69,6 +79,10 @@ class AccountControllerTest extends TestCase {
             'lastName' => $values['last_name'],
             'email' => $values['email'],
         ]));
+        $mailer = $this->mailerEngine->pop();
+        $this->assertEquals($values['email'], $mailer->getDestination());
+        $this->assertContains($values['first_name'], $mailer->getBodyAsHtml());
+        $this->assertContains('<a href="'.FRONTEND_URL.'/register', $mailer->getBodyAsHtml());
     }
 
     public function testUpdate()

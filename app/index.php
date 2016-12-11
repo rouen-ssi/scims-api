@@ -1,9 +1,12 @@
 <?php
 
 require '../vendor/autoload.php';
+require '../config/constants.php';
 include '../generated-conf/prod/config.php';
 
-$app = new \Slim\App();
+$app = new \Slim\App([
+    'mailerEngine' => new \SciMS\Mailers\MailgunEngine(),
+]);
 
 // Add CorsMiddleware to app
 $app->add('SciMS\Middlewares\CorsMiddleware');
