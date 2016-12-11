@@ -31,7 +31,7 @@ class AccountControllerTest extends TestCase
     /**
      * @return Account
      */
-    public function mockAccount(): Account
+    public function mockAccount()
     {
         $account = new Account();
         $account->setUid(uniqid());
