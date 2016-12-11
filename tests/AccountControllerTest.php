@@ -88,4 +88,26 @@ class AccountControllerTest extends TestCase
         $account->reload();
         $this->assertTrue(password_verify($oldPassword, $account->getPassword()));
     }
+
+    public function testChangePasswordSuccessWithPreviouslyEmptyPassword()
+    {
+        $newPassword = $this->faker->password;
+
+        $account = $this->mockAccount();
+        $account->setPassword('');
+        $account->save();
+
+        $request = Request::createFromEnvironment(Environment::mock())
+            ->withAttribute('account', $account)
+            ->withParsedBody([
+                'new_password' => $newPassword,
+            ])
+        ;
+        $response = $this->controller->changePassword($request, new Response());
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $account->reload();
+        $this->assertTrue(password_verify($newPassword, $account->getPassword()));
+    }
 }

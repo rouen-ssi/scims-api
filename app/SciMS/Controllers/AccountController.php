@@ -70,11 +70,17 @@ class AccountController {
         $account = $request->getAttribute('account');
 
         // Checks if the given old password matches
-        if (!password_verify($body['old_password'], $account->getPassword())) {
+        if (isset($body['old_password']) && !password_verify($body['old_password'], $account->getPassword())) {
             return $response->withJson([
                 'errors' => [
                     self::INVALID_OLD_PASSWORD
                 ]
+            ], 400);
+        } else if (!isset($body['old_password']) && $account->getPassword() !== '') {
+            return $response->withJson([
+                'errors' => [
+                    self::INVALID_OLD_PASSWORD,
+                ],
             ], 400);
         }
 
