@@ -60,7 +60,7 @@ class CategoryController {
      */
     public function addCategory(Request $request, Response $response) {
         $name = $request->getParsedBodyParam('name');
-        $parentCategoryId = $request->getParsedBodyParam('parent_category_id', NULL);
+        $parentCategoryId = $request->getParsedBodyParam('parent_categories', NULL);
 
         $category = new Category();
         $category->setName($name);
@@ -87,7 +87,7 @@ class CategoryController {
 
         $category->save();
 
-        return $response->withStatus(200);
+        return $response->withJson(['result' => $category], 200);
     }
 
     /**
@@ -125,7 +125,7 @@ class CategoryController {
 
         // Retreives the parameters
         $categoryName = $request->getParsedBodyParam('name', '');
-        $parentCategoryId = $request->getParsedBodyParam('parent_category_id', NULL);
+        $parentCategoryId = $request->getParsedBodyParam('parent_categories', NULL);
 
         // Retreives the category by its id or returns an error if the category is not found.
         $category = CategoryQuery::create()->findPk($categoryId);
@@ -150,7 +150,7 @@ class CategoryController {
         $category->save();
 
         // Save the category informations and returns http 200 status
-        return $response->withStatus(200);
+        return $response->withJson(['result' => $category], 200);
     }
 
 }

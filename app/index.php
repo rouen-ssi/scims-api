@@ -76,12 +76,15 @@ $app->get('/categories', 'SciMS\Controllers\CategoryController:getCategories');
 
 $app->group('/category', function() {
     $this->post('', 'SciMS\Controllers\CategoryController:addCategory')
+        ->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'))
         ->add('SciMS\Middlewares\TokenMiddleware');
     $this->group('/{id}', function() {
         $this->get('', 'SciMS\Controllers\CategoryController:getCategory');
         $this->delete('', 'SciMS\Controllers\CategoryController:delete')
+            ->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'))
             ->add('SciMS\Middlewares\TokenMiddleware');
         $this->put('', 'SciMS\Controllers\CategoryController:edit')
+            ->add(\SciMS\Middlewares\SecureMiddleware::hasRole('admin'))
             ->add('SciMS\Middlewares\TokenMiddleware');
     });
 });
