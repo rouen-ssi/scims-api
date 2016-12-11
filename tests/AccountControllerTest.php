@@ -51,7 +51,7 @@ class AccountControllerTest extends TestCase
         $account->save();
 
         $request = Request::createFromEnvironment(Environment::mock())
-            ->withAttribute('account', $account)
+            ->withAttribute('user', $account)
             ->withParsedBody([
                 'old_password' => $oldPassword,
                 'new_password' => $newPassword,
@@ -75,7 +75,7 @@ class AccountControllerTest extends TestCase
         $account->save();
 
         $request = Request::createFromEnvironment(Environment::mock())
-            ->withAttribute('account', $account)
+            ->withAttribute('user', $account)
             ->withParsedBody([
                 'old_password' => $this->faker->password, // deliberately provide an incorrect password
                 'new_password' => $newPassword,
@@ -98,7 +98,7 @@ class AccountControllerTest extends TestCase
         $account->save();
 
         $request = Request::createFromEnvironment(Environment::mock())
-            ->withAttribute('account', $account)
+            ->withAttribute('user', $account)
             ->withParsedBody([
                 'new_password' => $newPassword,
             ])

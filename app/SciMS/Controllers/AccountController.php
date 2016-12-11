@@ -67,7 +67,7 @@ class AccountController {
         $body = $request->getParsedBody();
 
         // Gets the accounts from TokenMiddleware
-        $account = $request->getAttribute('account');
+        $account = $request->getAttribute('user');
 
         // Checks if the given old password matches
         if (isset($body['old_password']) && !password_verify($body['old_password'], $account->getPassword())) {
@@ -106,7 +106,7 @@ class AccountController {
      */
     public function updateEmail(Request $request, Response $response) {
         // Retreives the account given by TokenMiddleware
-        $account = $request->getAttribute('account');
+        $account = $request->getAttribute('user');
 
         // Retreives the parameters
         $email = $request->getParsedBodyParam('email', NULL);
@@ -132,7 +132,7 @@ class AccountController {
      */
     public function updateInformations(Request $request, Response $response) {
         // Retreives the account given by its token.
-        $account = $request->getAttribute('account');
+        $account = $request->getAttribute('user');
 
         // Retreives the parameters.
         $firstName = trim($request->getParsedBodyParam('first_name', $account->getFirstName()));
@@ -160,7 +160,7 @@ class AccountController {
 
     public function updateHighlighted(Request $request, Response $response) {
         // Retreives the account given by its token.
-        $account = $request->getAttribute('account');
+        $account = $request->getAttribute('user');
 
         // Retreives the parameters.
         $articleIds = $request->getParsedBodyParam('highlighted_articles', []);
