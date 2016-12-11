@@ -14,7 +14,7 @@ use Slim\Http\Response;
 /**
  * @author Antoine Chauvin <antoine.chauvin@etu.univ-rouen.fr>
  */
-class AccountControllerTest extends TestCase {
+class AdminAccountControllerTest extends TestCase {
     /**
      * @var TestEngine
      */
