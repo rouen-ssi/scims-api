@@ -87,11 +87,10 @@ class AccountControllerTest extends TestCase {
         ];
 
         $request = Request::createFromEnvironment(Environment::mock())
-            ->withQueryParams(['uid' => $account->getUid()])
             ->withParsedBody($values)
         ;
 
-        $response = $this->controller->update($request, new Response());
+        $response = $this->controller->update($request, new Response(), ['uid' => $account->getUid()]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertContains('application/json', $response->getHeader('Content-Type')[0]);
@@ -112,11 +111,9 @@ class AccountControllerTest extends TestCase {
         $account->setPassword($this->faker->password);
         $account->save();
 
-        $request = Request::createFromEnvironment(Environment::mock())
-            ->withQueryParams(['uid' => $account->getUid()])
-        ;
+        $request = Request::createFromEnvironment(Environment::mock());
 
-        $response = $this->controller->destroy($request, new Response());
+        $response = $this->controller->destroy($request, new Response(), ['uid' => $account->getUid()]);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEmpty(AccountQuery::create()->findOneByUid($account->getUid()));
