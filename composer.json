@@ -33,9 +33,11 @@
         "\\SciMS\\Scripts\\FakeFixture::onMigrate"
       ],
       "test": [
+        "rm -f tests.database",
         "PHP_ENV=test propel sql:build --overwrite",
         "PHP_ENV=test propel sql:insert",
         "PHP_ENV=test propel model:build",
+        "@composer dump-autoload",
         "PHP_ENV=test propel config:convert",
         "PHP_ENV=test phpunit tests/ --bootstrap generated-conf/test/config.php"
       ],
