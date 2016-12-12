@@ -27,7 +27,7 @@ class ArticleController {
         $content = $request->getParsedBodyParam('content', '');
         $categoryId = $request->getParsedBodyParam('category_id', -1);
         $subcategoryId = $request->getParsedBodyParam('subcategory_id', -1);
-        $keywords = $request->getParsedBodyParams('keywords', []);
+        $keywords = $request->getParsedBodyParam('keywords', []);
 
         // Retreives the User from the given token.
         $user = $request->getAttribute('user');
@@ -66,7 +66,7 @@ class ArticleController {
         $content = $request->getParsedBodyParam('content', '');
         $categoryId = $request->getParsedBodyParam('category_id', '-1');
         $subcategoryId = $request->getParsedBodyParam('content', '');
-        $keywords = $request->getParsedBodyParams('keywords', []);
+        $keywords = $request->getParsedBodyParam('keywords', []);
 
         // Updates keywords
         if (count($keywords) > 0) {
