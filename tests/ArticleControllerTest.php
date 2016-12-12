@@ -33,7 +33,8 @@ class ArticleControllerTest extends TestCase {
         $this->article = [
             'is_draft' => 'false',
             'title' => 'Dummy Article',
-            'content' => 'Dummy article content'
+            'content' => 'Dummy article content',
+            'keywords' => ['Cryptography', 'RSA']
         ];
     }
 
@@ -73,7 +74,8 @@ class ArticleControllerTest extends TestCase {
         $article = [
             'is_draft' => true,
             'title' => 'An edited dummy article',
-            'content' => 'An edit article content.'
+            'content' => 'An edit article content.',
+            'keywords' => ['Crypto', 'Hellman']
         ];
 
         $request = Request::createFromEnvironment($environment);

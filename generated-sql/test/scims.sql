@@ -43,6 +43,21 @@ CREATE TABLE [article]
 );
 
 -----------------------------------------------------------------------
+-- keyword
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS [keyword];
+
+CREATE TABLE [keyword]
+(
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [article_id] INTEGER,
+    [title] VARCHAR(32) NOT NULL,
+    UNIQUE ([id]),
+    FOREIGN KEY ([article_id]) REFERENCES [article] ([id])
+);
+
+-----------------------------------------------------------------------
 -- article_view
 -----------------------------------------------------------------------
 

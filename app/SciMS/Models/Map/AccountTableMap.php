@@ -170,7 +170,6 @@ class AccountTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Account');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('account_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addColumn('uid', 'Uid', 'VARCHAR', true, 16, null);
@@ -181,7 +180,7 @@ class AccountTableMap extends TableMap
         $this->addColumn('password', 'Password', 'VARCHAR', true, 255, null);
         $this->addColumn('token', 'Token', 'VARCHAR', false, 255, null);
         $this->addColumn('token_expiration', 'TokenExpiration', 'INTEGER', false, 8, null);
-        $this->addColumn('role', 'Role', 'VARCHAR', true, null, 'user');
+        $this->addColumn('role', 'Role', 'VARCHAR', true, 255, 'user');
     } // initialize()
 
     /**

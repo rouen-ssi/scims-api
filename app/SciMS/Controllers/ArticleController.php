@@ -7,6 +7,7 @@ use SciMS\Models\ArticleQuery;
 use SciMS\Models\AccountQuery;
 use SciMS\Models\ArticleView;
 use SciMS\Models\ArticleViewQuery;
+use SciMS\Models\Keyword;
 use SciMS\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -40,15 +41,21 @@ class ArticleController {
         $article->setLastModificationDate(time());
         $article->setCategoryId($categoryId);
         $article->setSubcategoryId($subcategoryId);
-        $article->setKeywords($keywords);
         $errors = Utils::validate($article);
         if (count($errors) > 0 && !$isDraft) {
             return $response->withJson([
                 'errors' => $errors
             ], 400);
         }
-
         $article->save();
+
+        // Create keywords
+        foreach ($keywords as $keyword) {
+            $k = new Keyword();
+            $k->setArticle($article);
+            $k->setTitle($keyword);
+            $k->save();
+        }
 
         return $response->withJson(array(
             'id' => $article->getId()
@@ -67,12 +74,6 @@ class ArticleController {
         $categoryId = $request->getParsedBodyParam('category_id', '-1');
         $subcategoryId = $request->getParsedBodyParam('content', '');
         $keywords = $request->getParsedBodyParam('keywords', []);
-
-        // Updates keywords
-        if (count($keywords) > 0) {
-            $article->getKeywords()->delete();
-            $article->setKeywords($keywords);
-        }
 
         // Retreives the article by its id.
         // Returns an error if the article is not found.
@@ -98,9 +99,18 @@ class ArticleController {
                 'errors' => $errors
             ], 400);
         }
-
-        // Saves the new data and send http 200.
         $article->save();
+
+        // Updates article keywords
+        if (count($keywords) > 0) {
+            $article->getKeywords()->delete();
+            foreach ($keywords as $keyword) {
+                $k = new Keyword();
+                $k->setArticle($article);
+                $k->setTitle($keyword);
+                $k->save();
+            }
+        }
 
         return $response->withStatus(200);
     }

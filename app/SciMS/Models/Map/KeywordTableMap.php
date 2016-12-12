@@ -135,7 +135,6 @@ class KeywordTableMap extends TableMap
         $this->setClassName('\\SciMS\\Models\\Keyword');
         $this->setPackage('SciMS.Models');
         $this->setUseIdGenerator(true);
-        $this->setPrimaryKeyMethodInfo('keyword_id_seq');
         // columns
         $this->addPrimaryKey('id', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('article_id', 'ArticleId', 'INTEGER', 'article', 'id', false, null, null);
