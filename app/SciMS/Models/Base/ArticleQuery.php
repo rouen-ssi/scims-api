@@ -78,6 +78,16 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWithSubcategory() Adds a RIGHT JOIN clause and with to the query using the Subcategory relation
  * @method     ChildArticleQuery innerJoinWithSubcategory() Adds a INNER JOIN clause and with to the query using the Subcategory relation
  *
+ * @method     ChildArticleQuery leftJoinKeyword($relationAlias = null) Adds a LEFT JOIN clause to the query using the Keyword relation
+ * @method     ChildArticleQuery rightJoinKeyword($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Keyword relation
+ * @method     ChildArticleQuery innerJoinKeyword($relationAlias = null) Adds a INNER JOIN clause to the query using the Keyword relation
+ *
+ * @method     ChildArticleQuery joinWithKeyword($joinType = Criteria::INNER_JOIN) Adds a join clause and with to the query using the Keyword relation
+ *
+ * @method     ChildArticleQuery leftJoinWithKeyword() Adds a LEFT JOIN clause and with to the query using the Keyword relation
+ * @method     ChildArticleQuery rightJoinWithKeyword() Adds a RIGHT JOIN clause and with to the query using the Keyword relation
+ * @method     ChildArticleQuery innerJoinWithKeyword() Adds a INNER JOIN clause and with to the query using the Keyword relation
+ *
  * @method     ChildArticleQuery leftJoinArticleView($relationAlias = null) Adds a LEFT JOIN clause to the query using the ArticleView relation
  * @method     ChildArticleQuery rightJoinArticleView($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ArticleView relation
  * @method     ChildArticleQuery innerJoinArticleView($relationAlias = null) Adds a INNER JOIN clause to the query using the ArticleView relation
@@ -108,7 +118,7 @@ use SciMS\Models\Map\ArticleTableMap;
  * @method     ChildArticleQuery rightJoinWithComment() Adds a RIGHT JOIN clause and with to the query using the Comment relation
  * @method     ChildArticleQuery innerJoinWithComment() Adds a INNER JOIN clause and with to the query using the Comment relation
  *
- * @method     \SciMS\Models\AccountQuery|\SciMS\Models\CategoryQuery|\SciMS\Models\ArticleViewQuery|\SciMS\Models\HighlightedArticleQuery|\SciMS\Models\CommentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
+ * @method     \SciMS\Models\AccountQuery|\SciMS\Models\CategoryQuery|\SciMS\Models\KeywordQuery|\SciMS\Models\ArticleViewQuery|\SciMS\Models\HighlightedArticleQuery|\SciMS\Models\CommentQuery endUse() Finalizes a secondary criteria and merges it with its primary Criteria
  *
  * @method     ChildArticle findOne(ConnectionInterface $con = null) Return the first ChildArticle matching the query
  * @method     ChildArticle findOneOrCreate(ConnectionInterface $con = null) Return the first ChildArticle matching the query, or a new ChildArticle object populated from the query conditions when no match is found
@@ -892,6 +902,79 @@ abstract class ArticleQuery extends ModelCriteria
         return $this
             ->joinSubcategory($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Subcategory', '\SciMS\Models\CategoryQuery');
+    }
+
+    /**
+     * Filter the query by a related \SciMS\Models\Keyword object
+     *
+     * @param \SciMS\Models\Keyword|ObjectCollection $keyword the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildArticleQuery The current query, for fluid interface
+     */
+    public function filterByKeyword($keyword, $comparison = null)
+    {
+        if ($keyword instanceof \SciMS\Models\Keyword) {
+            return $this
+                ->addUsingAlias(ArticleTableMap::COL_ID, $keyword->getArticleId(), $comparison);
+        } elseif ($keyword instanceof ObjectCollection) {
+            return $this
+                ->useKeywordQuery()
+                ->filterByPrimaryKeys($keyword->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByKeyword() only accepts arguments of type \SciMS\Models\Keyword or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Keyword relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return $this|ChildArticleQuery The current query, for fluid interface
+     */
+    public function joinKeyword($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Keyword');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Keyword');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Keyword relation Keyword object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return \SciMS\Models\KeywordQuery A secondary query class using the current class as primary query
+     */
+    public function useKeywordQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+    {
+        return $this
+            ->joinKeyword($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Keyword', '\SciMS\Models\KeywordQuery');
     }
 
     /**

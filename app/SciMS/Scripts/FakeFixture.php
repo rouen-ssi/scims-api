@@ -13,6 +13,7 @@ use SciMS\Models\Category;
 use SciMS\Models\Comment;
 use SciMS\Models\HighlightedArticle;
 use SciMS\Models\Account;
+use SciMS\Models\Keyword;
 
 class FakeFixture
 {
@@ -68,6 +69,16 @@ class FakeFixture
       $article->setcategory($faker->randomElement($categories));
       $article->save();
       $articles[] = $article;
+
+      // Generates random keywords
+      for ($j = 0; $j < 4; $j++) {
+        $keyword = new Keyword();
+        $keyword->setArticle($article);
+        $keyword->setTitle($faker->word);
+        $keyword->save();
+        $article->addKeyword($keyword);
+        $article->save();
+      }
 
       /** @var Comment[] $comments */
       $comments = [];

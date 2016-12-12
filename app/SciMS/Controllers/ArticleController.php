@@ -27,10 +27,10 @@ class ArticleController {
         $content = $request->getParsedBodyParam('content', '');
         $categoryId = $request->getParsedBodyParam('category_id', -1);
         $subcategoryId = $request->getParsedBodyParam('subcategory_id', -1);
+        $keywords = $request->getParsedBodyParams('keywords', []);
 
         // Retreives the User from the given token.
         $user = $request->getAttribute('user');
-
         $article = new Article();
         $article->setIsDraft($isDraft);
         $article->setAccountId($user->getId());
@@ -40,6 +40,7 @@ class ArticleController {
         $article->setLastModificationDate(time());
         $article->setCategoryId($categoryId);
         $article->setSubcategoryId($subcategoryId);
+        $article->setKeywords($keywords);
         $errors = Utils::validate($article);
         if (count($errors) > 0 && !$isDraft) {
             return $response->withJson([
@@ -65,6 +66,13 @@ class ArticleController {
         $content = $request->getParsedBodyParam('content', '');
         $categoryId = $request->getParsedBodyParam('category_id', '-1');
         $subcategoryId = $request->getParsedBodyParam('content', '');
+        $keywords = $request->getParsedBodyParams('keywords', []);
+
+        // Updates keywords
+        if (count($keywords) > 0) {
+            $article->getKeywords()->delete();
+            $article->setKeywords($keywords);
+        }
 
         // Retreives the article by its id.
         // Returns an error if the article is not found.

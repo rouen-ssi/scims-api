@@ -28,10 +28,13 @@ use SciMS\Models\Comment as ChildComment;
 use SciMS\Models\CommentQuery as ChildCommentQuery;
 use SciMS\Models\HighlightedArticle as ChildHighlightedArticle;
 use SciMS\Models\HighlightedArticleQuery as ChildHighlightedArticleQuery;
+use SciMS\Models\Keyword as ChildKeyword;
+use SciMS\Models\KeywordQuery as ChildKeywordQuery;
 use SciMS\Models\Map\ArticleTableMap;
 use SciMS\Models\Map\ArticleViewTableMap;
 use SciMS\Models\Map\CommentTableMap;
 use SciMS\Models\Map\HighlightedArticleTableMap;
+use SciMS\Models\Map\KeywordTableMap;
 use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\ConstraintValidatorFactory;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -166,6 +169,12 @@ abstract class Article implements ActiveRecordInterface
     protected $aSubcategory;
 
     /**
+     * @var        ObjectCollection|ChildKeyword[] Collection to store aggregation of ChildKeyword objects.
+     */
+    protected $collKeywords;
+    protected $collKeywordsPartial;
+
+    /**
      * @var        ObjectCollection|ChildArticleView[] Collection to store aggregation of ChildArticleView objects.
      */
     protected $collArticleViews;
@@ -207,6 +216,12 @@ abstract class Article implements ActiveRecordInterface
      * @var     ConstraintViolationList
      */
     protected $validationFailures;
+
+    /**
+     * An array of objects scheduled for deletion.
+     * @var ObjectCollection|ChildKeyword[]
+     */
+    protected $keywordsScheduledForDeletion = null;
 
     /**
      * An array of objects scheduled for deletion.
@@ -921,6 +936,8 @@ abstract class Article implements ActiveRecordInterface
             $this->aAccount = null;
             $this->aCategory = null;
             $this->aSubcategory = null;
+            $this->collKeywords = null;
+
             $this->collArticleViews = null;
 
             $this->collHighlightedArticles = null;
@@ -1061,6 +1078,24 @@ abstract class Article implements ActiveRecordInterface
                     $affectedRows += $this->doUpdate($con);
                 }
                 $this->resetModified();
+            }
+
+            if ($this->keywordsScheduledForDeletion !== null) {
+                if (!$this->keywordsScheduledForDeletion->isEmpty()) {
+                    foreach ($this->keywordsScheduledForDeletion as $keyword) {
+                        // need to save related object because we set the relation to null
+                        $keyword->save($con);
+                    }
+                    $this->keywordsScheduledForDeletion = null;
+                }
+            }
+
+            if ($this->collKeywords !== null) {
+                foreach ($this->collKeywords as $referrerFK) {
+                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
+                        $affectedRows += $referrerFK->save($con);
+                    }
+                }
             }
 
             if ($this->articleViewsScheduledForDeletion !== null) {
@@ -1386,6 +1421,21 @@ abstract class Article implements ActiveRecordInterface
                 }
 
                 $result[$key] = $this->aSubcategory->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->collKeywords) {
+
+                switch ($keyType) {
+                    case TableMap::TYPE_CAMELNAME:
+                        $key = 'keywords';
+                        break;
+                    case TableMap::TYPE_FIELDNAME:
+                        $key = 'keywords';
+                        break;
+                    default:
+                        $key = 'Keywords';
+                }
+
+                $result[$key] = $this->collKeywords->toArray(null, false, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
             }
             if (null !== $this->collArticleViews) {
 
@@ -1714,6 +1764,12 @@ abstract class Article implements ActiveRecordInterface
             // the getter/setter methods for fkey referrer objects.
             $copyObj->setNew(false);
 
+            foreach ($this->getKeywords() as $relObj) {
+                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
+                    $copyObj->addKeyword($relObj->copy($deepCopy));
+                }
+            }
+
             foreach ($this->getArticleViews() as $relObj) {
                 if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
                     $copyObj->addArticleView($relObj->copy($deepCopy));
@@ -1928,6 +1984,9 @@ abstract class Article implements ActiveRecordInterface
      */
     public function initRelation($relationName)
     {
+        if ('Keyword' == $relationName) {
+            return $this->initKeywords();
+        }
         if ('ArticleView' == $relationName) {
             return $this->initArticleViews();
         }
@@ -1937,6 +1996,231 @@ abstract class Article implements ActiveRecordInterface
         if ('Comment' == $relationName) {
             return $this->initComments();
         }
+    }
+
+    /**
+     * Clears out the collKeywords collection
+     *
+     * This does not modify the database; however, it will remove any associated objects, causing
+     * them to be refetched by subsequent calls to accessor method.
+     *
+     * @return void
+     * @see        addKeywords()
+     */
+    public function clearKeywords()
+    {
+        $this->collKeywords = null; // important to set this to NULL since that means it is uninitialized
+    }
+
+    /**
+     * Reset is the collKeywords collection loaded partially.
+     */
+    public function resetPartialKeywords($v = true)
+    {
+        $this->collKeywordsPartial = $v;
+    }
+
+    /**
+     * Initializes the collKeywords collection.
+     *
+     * By default this just sets the collKeywords collection to an empty array (like clearcollKeywords());
+     * however, you may wish to override this method in your stub class to provide setting appropriate
+     * to your application -- for example, setting the initial array to the values stored in database.
+     *
+     * @param      boolean $overrideExisting If set to true, the method call initializes
+     *                                        the collection even if it is not empty
+     *
+     * @return void
+     */
+    public function initKeywords($overrideExisting = true)
+    {
+        if (null !== $this->collKeywords && !$overrideExisting) {
+            return;
+        }
+
+        $collectionClassName = KeywordTableMap::getTableMap()->getCollectionClassName();
+
+        $this->collKeywords = new $collectionClassName;
+        $this->collKeywords->setModel('\SciMS\Models\Keyword');
+    }
+
+    /**
+     * Gets an array of ChildKeyword objects which contain a foreign key that references this object.
+     *
+     * If the $criteria is not null, it is used to always fetch the results from the database.
+     * Otherwise the results are fetched from the database the first time, then cached.
+     * Next time the same method is called without $criteria, the cached collection is returned.
+     * If this ChildArticle is new, it will return
+     * an empty collection or the current collection; the criteria is ignored on a new object.
+     *
+     * @param      Criteria $criteria optional Criteria object to narrow the query
+     * @param      ConnectionInterface $con optional connection object
+     * @return ObjectCollection|ChildKeyword[] List of ChildKeyword objects
+     * @throws PropelException
+     */
+    public function getKeywords(Criteria $criteria = null, ConnectionInterface $con = null)
+    {
+        $partial = $this->collKeywordsPartial && !$this->isNew();
+        if (null === $this->collKeywords || null !== $criteria  || $partial) {
+            if ($this->isNew() && null === $this->collKeywords) {
+                // return empty collection
+                $this->initKeywords();
+            } else {
+                $collKeywords = ChildKeywordQuery::create(null, $criteria)
+                    ->filterByArticle($this)
+                    ->find($con);
+
+                if (null !== $criteria) {
+                    if (false !== $this->collKeywordsPartial && count($collKeywords)) {
+                        $this->initKeywords(false);
+
+                        foreach ($collKeywords as $obj) {
+                            if (false == $this->collKeywords->contains($obj)) {
+                                $this->collKeywords->append($obj);
+                            }
+                        }
+
+                        $this->collKeywordsPartial = true;
+                    }
+
+                    return $collKeywords;
+                }
+
+                if ($partial && $this->collKeywords) {
+                    foreach ($this->collKeywords as $obj) {
+                        if ($obj->isNew()) {
+                            $collKeywords[] = $obj;
+                        }
+                    }
+                }
+
+                $this->collKeywords = $collKeywords;
+                $this->collKeywordsPartial = false;
+            }
+        }
+
+        return $this->collKeywords;
+    }
+
+    /**
+     * Sets a collection of ChildKeyword objects related by a one-to-many relationship
+     * to the current object.
+     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+     * and new objects from the given Propel collection.
+     *
+     * @param      Collection $keywords A Propel collection.
+     * @param      ConnectionInterface $con Optional connection object
+     * @return $this|ChildArticle The current object (for fluent API support)
+     */
+    public function setKeywords(Collection $keywords, ConnectionInterface $con = null)
+    {
+        /** @var ChildKeyword[] $keywordsToDelete */
+        $keywordsToDelete = $this->getKeywords(new Criteria(), $con)->diff($keywords);
+
+
+        $this->keywordsScheduledForDeletion = $keywordsToDelete;
+
+        foreach ($keywordsToDelete as $keywordRemoved) {
+            $keywordRemoved->setArticle(null);
+        }
+
+        $this->collKeywords = null;
+        foreach ($keywords as $keyword) {
+            $this->addKeyword($keyword);
+        }
+
+        $this->collKeywords = $keywords;
+        $this->collKeywordsPartial = false;
+
+        return $this;
+    }
+
+    /**
+     * Returns the number of related Keyword objects.
+     *
+     * @param      Criteria $criteria
+     * @param      boolean $distinct
+     * @param      ConnectionInterface $con
+     * @return int             Count of related Keyword objects.
+     * @throws PropelException
+     */
+    public function countKeywords(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    {
+        $partial = $this->collKeywordsPartial && !$this->isNew();
+        if (null === $this->collKeywords || null !== $criteria || $partial) {
+            if ($this->isNew() && null === $this->collKeywords) {
+                return 0;
+            }
+
+            if ($partial && !$criteria) {
+                return count($this->getKeywords());
+            }
+
+            $query = ChildKeywordQuery::create(null, $criteria);
+            if ($distinct) {
+                $query->distinct();
+            }
+
+            return $query
+                ->filterByArticle($this)
+                ->count($con);
+        }
+
+        return count($this->collKeywords);
+    }
+
+    /**
+     * Method called to associate a ChildKeyword object to this object
+     * through the ChildKeyword foreign key attribute.
+     *
+     * @param  ChildKeyword $l ChildKeyword
+     * @return $this|\SciMS\Models\Article The current object (for fluent API support)
+     */
+    public function addKeyword(ChildKeyword $l)
+    {
+        if ($this->collKeywords === null) {
+            $this->initKeywords();
+            $this->collKeywordsPartial = true;
+        }
+
+        if (!$this->collKeywords->contains($l)) {
+            $this->doAddKeyword($l);
+
+            if ($this->keywordsScheduledForDeletion and $this->keywordsScheduledForDeletion->contains($l)) {
+                $this->keywordsScheduledForDeletion->remove($this->keywordsScheduledForDeletion->search($l));
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param ChildKeyword $keyword The ChildKeyword object to add.
+     */
+    protected function doAddKeyword(ChildKeyword $keyword)
+    {
+        $this->collKeywords[]= $keyword;
+        $keyword->setArticle($this);
+    }
+
+    /**
+     * @param  ChildKeyword $keyword The ChildKeyword object to remove.
+     * @return $this|ChildArticle The current object (for fluent API support)
+     */
+    public function removeKeyword(ChildKeyword $keyword)
+    {
+        if ($this->getKeywords()->contains($keyword)) {
+            $pos = $this->collKeywords->search($keyword);
+            $this->collKeywords->remove($pos);
+            if (null === $this->keywordsScheduledForDeletion) {
+                $this->keywordsScheduledForDeletion = clone $this->collKeywords;
+                $this->keywordsScheduledForDeletion->clear();
+            }
+            $this->keywordsScheduledForDeletion[]= $keyword;
+            $keyword->setArticle(null);
+        }
+
+        return $this;
     }
 
     /**
@@ -2761,6 +3045,11 @@ abstract class Article implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
+            if ($this->collKeywords) {
+                foreach ($this->collKeywords as $o) {
+                    $o->clearAllReferences($deep);
+                }
+            }
             if ($this->collArticleViews) {
                 foreach ($this->collArticleViews as $o) {
                     $o->clearAllReferences($deep);
@@ -2778,6 +3067,7 @@ abstract class Article implements ActiveRecordInterface
             }
         } // if ($deep)
 
+        $this->collKeywords = null;
         $this->collArticleViews = null;
         $this->collHighlightedArticles = null;
         $this->collComments = null;
@@ -2862,6 +3152,15 @@ abstract class Article implements ActiveRecordInterface
                 $failureMap->addAll($retval);
             }
 
+            if (null !== $this->collKeywords) {
+                foreach ($this->collKeywords as $referrerFK) {
+                    if (method_exists($referrerFK, 'validate')) {
+                        if (!$referrerFK->validate($validator)) {
+                            $failureMap->addAll($referrerFK->getValidationFailures());
+                        }
+                    }
+                }
+            }
             if (null !== $this->collArticleViews) {
                 foreach ($this->collArticleViews as $referrerFK) {
                     if (method_exists($referrerFK, 'validate')) {

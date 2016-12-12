@@ -44,6 +44,20 @@ CREATE TABLE "article"
 );
 
 -----------------------------------------------------------------------
+-- keyword
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS "keyword" CASCADE;
+
+CREATE TABLE "keyword"
+(
+    "id" serial NOT NULL,
+    "article_id" INTEGER,
+    "title" VARCHAR(32) NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+-----------------------------------------------------------------------
 -- article_view
 -----------------------------------------------------------------------
 
@@ -106,6 +120,10 @@ ALTER TABLE "article" ADD CONSTRAINT "article_fk_474870"
     FOREIGN KEY ("account_id")
     REFERENCES "account" ("id")
     ON DELETE CASCADE;
+
+ALTER TABLE "keyword" ADD CONSTRAINT "keyword_fk_3610e9"
+    FOREIGN KEY ("article_id")
+    REFERENCES "article" ("id");
 
 ALTER TABLE "article_view" ADD CONSTRAINT "article_view_fk_3610e9"
     FOREIGN KEY ("article_id")
