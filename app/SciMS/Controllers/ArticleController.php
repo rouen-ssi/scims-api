@@ -7,6 +7,8 @@ use SciMS\Models\ArticleQuery;
 use SciMS\Models\AccountQuery;
 use SciMS\Models\ArticleView;
 use SciMS\Models\ArticleViewQuery;
+use SciMS\Models\Attachment;
+use SciMS\Models\AttachmentQuery;
 use SciMS\Models\Keyword;
 use SciMS\Utils;
 use Slim\Http\Request;
@@ -16,6 +18,7 @@ class ArticleController {
 
     const ARTICLES_PER_PAGE = 5;
     const ARTICLE_NOT_FOUND = 'ARTICLE_NOT_FOUND';
+    const ATTACHMENT_NOT_FOUND = 'ATTACHMENT_NOT_FOUND';
 
     /**
      * Endpoint to create an article.
