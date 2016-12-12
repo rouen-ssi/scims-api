@@ -44,6 +44,20 @@ CREATE TABLE "article"
 );
 
 -----------------------------------------------------------------------
+-- attachment
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS "attachment" CASCADE;
+
+CREATE TABLE "attachment"
+(
+    "id" serial NOT NULL,
+    "file" BYTEA NOT NULL,
+    "date" DATE NOT NULL,
+    PRIMARY KEY ("id")
+);
+
+-----------------------------------------------------------------------
 -- keyword
 -----------------------------------------------------------------------
 

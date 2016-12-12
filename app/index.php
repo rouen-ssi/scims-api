@@ -98,6 +98,13 @@ $app->group('/avatar', function() {
         ->add('SciMS\Middlewares\TokenMiddleware');
 });
 
+/***************
+ * Attachments *
+ ***************/
+$app->group('/attachment', function() {
+    $this->post('', 'SciMS\Controllers\AttachmentController:post');
+});
+
 /******************
  * Administration *
  ******************/
