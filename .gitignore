@@ -1,5 +1,7 @@
 vendor/
 generated-conf/
+app/SciMS/Models/Base
+app/SciMS/Models/Map
 .idea/
 *.database
 .DS_Store
