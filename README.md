@@ -14,18 +14,9 @@ composer install --no-dev
 
 Vous devez maintenant créer la base de données SQLite. Le fichier sera placé dans la racine du projet.
 ```
-composer create-database --no-dev
+composer install-db --no-dev
 ```
 **Attention** Si une base de données existait déjà, toutes ses données seront effacées (voir <a href="#migration">Migration</a>)
-
-### Tester l'installation
-Vous devez maintenant tester votre installation. Déplacez-vous dans le dossier `app/` puis exécutez :
-```
-composer run dev-server --timeout=0
-```
-
-Avec votre navigateur, rendez-vous à l'adresse [http://localhost:8080/test.php](http://localhost:8080). Si aucune erreur ne s'affiche ni dans votre navigateur, ni dans votre console, votre installation fonctionne parfaitement.
-**Attention** N'utilisez pas cette commande pour servir votre API en production. N'utilisez la que pour le développement.
 
 <a name="migration"></a>
 ## Migration
