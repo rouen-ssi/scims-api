@@ -53,6 +53,7 @@ CREATE TABLE "attachment"
 (
     "id" serial NOT NULL,
     "file" BYTEA NOT NULL,
+    "content_type" VARCHAR(127) NOT NULL,
     "date" DATE NOT NULL,
     PRIMARY KEY ("id")
 );

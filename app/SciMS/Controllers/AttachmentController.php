@@ -28,9 +28,14 @@ class AttachmentController {
             return $response->withJson(['errors' => [self::INVALID_FILE_SIZE]], 400);
         }
 
+        // Get the MIME type of the file.
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->buffer($file->getStream());
+
         // Create the attachment.
         $attachment = new Attachment();
-        $attachment->setFile($file);
+        $attachment->setFile($file->getStream());
+        $attachment->setContentType($mime);
         $attachment->setDate(new \DateTime());
         $attachment->save();
 
@@ -45,6 +50,10 @@ class AttachmentController {
             return $response->withJson(['errors' => [self::ATTACHMENT_NOT_FOUND]], 400);
         }
 
-        return $response->getBody()->write(stream_get_contents($attachment->getFile()));
+        $response->getBody()->write(stream_get_contents($attachment->getFile()));
+        $response = $response->withHeader('Content-Type', $attachment->getContentType());
+        $response = $response->withStatus(200);
+
+        return $response;
     }
 }
