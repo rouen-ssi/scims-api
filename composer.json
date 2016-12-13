@@ -1,5 +1,5 @@
 {
-    "name": "rouenssi/scims-backend",
+    "name": "rouenssi/scims-api",
     "description": "Un CMS open-source pour les scientifiques",
     "require": {
         "slim/slim": "^3.5",
