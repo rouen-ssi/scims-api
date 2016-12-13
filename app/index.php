@@ -102,7 +102,8 @@ $app->group('/avatar', function() {
  * Attachments *
  ***************/
 $app->group('/attachment', function() {
-    $this->post('', 'SciMS\Controllers\AttachmentController:post');
+    $this->post('', 'SciMS\Controllers\AttachmentController:post'); // TODO: add TokenMiddleware !!!!
+    $this->get('/{attachment_id}', 'SciMS\Controllers\AttachmentController:get');
 });
 
 /******************
