@@ -47,13 +47,9 @@
 
     <table name="attachment" phpName="Attachment">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true" />
-        <column name="article_id" type="integer" required="true" />
         <column name="file" type="blob" required="true" />
         <column name="content_type" type="varchar" size="127" required="true" />
         <column name="date" type="date" required="true" />
-        <foreign-key foreignTable="article" phpName="Article" onDelete="cascade">
-            <reference local="article_id" foreign="id" />
-        </foreign-key>
     </table>
 
     <table name="keyword" phpName="Keyword">

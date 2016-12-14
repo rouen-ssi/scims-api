@@ -43,6 +43,24 @@ CREATE TABLE [article]
 );
 
 -----------------------------------------------------------------------
+-- attachment
+-----------------------------------------------------------------------
+
+DROP TABLE IF EXISTS [attachment];
+
+CREATE TABLE [attachment]
+(
+    [id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    [article_id] INTEGER NOT NULL,
+    [file] BLOB NOT NULL,
+    [content_type] VARCHAR(127) NOT NULL,
+    [date] DATETIME NOT NULL,
+    UNIQUE ([id]),
+    FOREIGN KEY ([article_id]) REFERENCES [article] ([id])
+        ON DELETE CASCADE
+);
+
+-----------------------------------------------------------------------
 -- keyword
 -----------------------------------------------------------------------
 

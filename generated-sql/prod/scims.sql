@@ -52,7 +52,6 @@ DROP TABLE IF EXISTS "attachment" CASCADE;
 CREATE TABLE "attachment"
 (
     "id" serial NOT NULL,
-    "article_id" INTEGER NOT NULL,
     "file" BYTEA NOT NULL,
     "content_type" VARCHAR(127) NOT NULL,
     "date" DATE NOT NULL,
@@ -135,11 +134,6 @@ CREATE TABLE "comment"
 ALTER TABLE "article" ADD CONSTRAINT "article_fk_474870"
     FOREIGN KEY ("account_id")
     REFERENCES "account" ("id")
-    ON DELETE CASCADE;
-
-ALTER TABLE "attachment" ADD CONSTRAINT "attachment_fk_3610e9"
-    FOREIGN KEY ("article_id")
-    REFERENCES "article" ("id")
     ON DELETE CASCADE;
 
 ALTER TABLE "keyword" ADD CONSTRAINT "keyword_fk_3610e9"
