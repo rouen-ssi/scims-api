@@ -18,9 +18,10 @@
     "scripts": {
       "install-db": [
         "propel model:build",
-        "propel sql:build",
+        "propel sql:build --overwrite",
         "propel sql:insert",
         "propel config:convert",
+        "\\SciMS\\Scripts\\DataSeed::create",
         "@composer dump-autoload"
       ],
       "migrate": [
