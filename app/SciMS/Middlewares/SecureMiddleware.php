@@ -11,7 +11,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 class SecureMiddleware {
-    public static function hasRole(string $role) {
+    public static function hasRole($role) {
         return function(Request $request, Response $response, callable $next) use ($role) {
             /** @var Account $user */
             $user = $request->getAttribute('user');
