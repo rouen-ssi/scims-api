@@ -31,7 +31,7 @@ class Article extends BaseArticle implements \JsonSerializable {
                 'first_name' => $this->getaccount()->getFirstName(),
             ],
             'title' => $this->title,
-            'content' => $this->content,
+            'content' => json_decode($this->content),
             'category_id' => $this->category_id,
             'subcategory_id' => $this->subcategory_id,
             'publication_date' => date_timestamp_set(new \DateTime(), $this->publication_date)->format(\DateTime::ISO8601),

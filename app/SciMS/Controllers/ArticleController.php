@@ -28,7 +28,7 @@ class ArticleController {
         // Retreives the parameters.
         $isDraft = $request->getParsedBodyParam('is_draft', true);
         $title = $request->getParsedBodyParam('title', '');
-        $content = $request->getParsedBodyParam('content', '');
+        $content = $request->getParsedBodyParam('content', new \stdClass());
         $categoryId = $request->getParsedBodyParam('category_id', -1);
         $subcategoryId = $request->getParsedBodyParam('subcategory_id', -1);
         $keywords = $request->getParsedBodyParam('keywords', []);
@@ -39,7 +39,7 @@ class ArticleController {
         $article->setIsDraft($isDraft);
         $article->setAccountId($user->getId());
         $article->setTitle($title);
-        $article->setContent($content);
+        $article->setContent(json_encode($content));
         $article->setPublicationDate(time());
         $article->setLastModificationDate(time());
         $article->setCategoryId($categoryId);
@@ -73,7 +73,7 @@ class ArticleController {
         // Retreives all the parameters.
         $isDraft = $request->getParsedBodyParam('is_draft', true);
         $title = $request->getParsedBodyParam('title', '');
-        $content = $request->getParsedBodyParam('content', '');
+        $content = $request->getParsedBodyParam('content', new \stdClass());
         $categoryId = $request->getParsedBodyParam('category_id', '-1');
         $subcategoryId = $request->getParsedBodyParam('content', '');
         $keywords = $request->getParsedBodyParam('keywords', []);
@@ -92,7 +92,7 @@ class ArticleController {
         // Updates the article informations.
         $article->setIsDraft($isDraft);
         $article->setTitle($title);
-        $article->setContent($content);
+        $article->setContent(json_encode($content));
         $article->setCategoryId($categoryId);
         $article->setLastModificationDate(time());
         $article->setSubcategoryId($subcategoryId);
